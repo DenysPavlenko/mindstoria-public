@@ -1,0 +1,40 @@
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+// import * as RNLocalize from 'react-native-localize';
+import { APP_LANGUAGE_KEY } from "@/appConstants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import en from "./locales/en.json";
+import ua from "./locales/ua.json";
+
+const resources = {
+  en: { translation: en },
+  ua: { translation: ua },
+};
+
+const loadLanguage = async () => {
+  try {
+    const savedLang = await AsyncStorage.getItem(APP_LANGUAGE_KEY);
+    return savedLang || "en";
+  } catch (e) {
+    return "en";
+  }
+};
+
+// const fallback = { languageTag: 'en', isRTL: false };
+// const { languageTag } =
+//   RNLocalize.findBestAvailableLanguage(Object.keys(resources)) || fallback;
+
+export const initI18n = async () => {
+  const lang = await loadLanguage();
+  return i18n.use(initReactI18next).init({
+    resources,
+    lng: lang,
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
+};
+
+export const setAppLanguage = async (lang: string) => {
+  await AsyncStorage.setItem(APP_LANGUAGE_KEY, lang);
+  i18n.changeLanguage(lang);
+};
