@@ -1,195 +1,277 @@
 import {
-  HeaderTitle,
-  HeaderTitleProps,
-  MetricChart,
-  MetricPagination,
-  Placeholder,
-  SafeView,
+  Header,
+  MedsChart,
+  SentimentStatsView,
+  SleepLogsChart,
+  TAB_BAR_HEIGHT,
+  TimePeriodSelect,
+  Typography,
+  WellbeingLogsChart,
 } from "@/components";
 import { useAppSelector } from "@/store";
-import {
-  selectEntriesByTrackerId,
-  selectMetricsByTrackerId,
-} from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
-import { TrackerMetricType } from "@/types";
 import {
-  getFirstEntryDate,
-  getLastEntryDate,
-  getMissedDays,
-  MONTH_DAY_FORMAT,
+  TChartDataMap,
+  TChartDataPoint,
+  TLog,
+  TSortBy,
+  TTimePeriod,
+} from "@/types";
+import {
+  filterDataByTimePeriod,
+  getEmotions,
+  getEmotionsStats,
+  getImpacts,
+  getImpactsStats,
+  getMedicationsChartData,
+  getSleepLogChartDataMap,
+  getTakenMedications,
+  getWellbeingChartDataMap,
 } from "@/utils";
-import { FeatherIconName } from "@react-native-vector-icons/feather";
+import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
-import { useNavigation } from "expo-router";
-import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
-import { InfoCard } from "./components/InfoCard";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface StatisticsProps {
-  trackerId: string;
-}
-
-type TInfoDataItem = {
-  label: string;
-  value: string | number;
-  iconName: FeatherIconName;
-};
-
-export const Statistics = ({ trackerId }: StatisticsProps) => {
-  const { t } = useTranslation();
-  const navigation = useNavigation();
+export const Statistics = () => {
   const { theme } = useTheme();
-  const selectedEntries = useAppSelector((state) => {
-    return selectEntriesByTrackerId(state, trackerId);
-  });
-  const [currentDate, setCurrentDate] = useState(() => {
-    const lastEntryDate = getLastEntryDate(selectedEntries);
-    return dayjs(lastEntryDate);
-  });
-  const metrics = useAppSelector((state) =>
-    selectMetricsByTrackerId(state, trackerId)
+  const isFocused = useIsFocused();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const { showMedications } = useAppSelector((state) => state.settings);
+  const logsItems = useAppSelector((state) => state.logs.items);
+  const medicationsItems = useAppSelector((state) => state.medications.items);
+  const sleepLogsItems = useAppSelector((state) => state.sleepLogs.items);
+  const medLogsItems = useAppSelector((state) => state.medLogs.items);
+  const impactDefsItems = useAppSelector(
+    (state) => state.impactDefinitions.items
   );
-  // Create theme-aware styles (memoized for performance)
+  const emotionDefsItems = useAppSelector(
+    (state) => state.emotionDefinitions.items
+  );
+  const cachedLogs = useRef<TLog[] | null>(null);
+  const cachedSleepData = useRef<TChartDataMap | null>(null);
+  const cachedTakenMedsData = useRef<Record<string, TChartDataPoint[]> | null>(
+    null
+  );
+  const [impactsSortBy, setImpactsSortBy] = useState<TSortBy>("count");
+  const [emotionsSortBy, setEmotionsSortBy] = useState<TSortBy>("count");
+  const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
+  const [currentDate, setCurrentDate] = useState(dayjs());
+
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const validMetrics = useMemo(() => {
-    return metrics.filter((metric) => {
-      return metric.type !== TrackerMetricType.Notes;
-    });
-  }, [metrics]);
+  const filteredLogItems = useMemo(() => {
+    const cachedData = cachedLogs.current;
+    if (!isFocused && cachedData) return cachedData;
+    const logs = Object.values(logsItems);
+    const filtered = filterDataByTimePeriod(
+      logs,
+      "timestamp",
+      currentPeriod,
+      currentDate
+    );
+    cachedLogs.current = filtered;
+    return filtered;
+  }, [logsItems, isFocused, currentPeriod, currentDate]);
 
-  const renderHeaderTitle = useCallback(
-    ({ tintColor }: HeaderTitleProps) => {
-      return (
-        <HeaderTitle tintColor={tintColor}>{t("statistics.title")}</HeaderTitle>
-      );
-    },
-    [t]
-  );
+  const wellbeingChartDataMap = useMemo(() => {
+    return getWellbeingChartDataMap(filteredLogItems, currentPeriod);
+  }, [filteredLogItems, currentPeriod]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: renderHeaderTitle,
-    });
-  }, [navigation, renderHeaderTitle]);
+  const sleepLogsChartDataMap = useMemo(() => {
+    const cached = cachedSleepData.current;
+    if (!isFocused && cached) return cached;
+    const sleepLogs = Object.values(sleepLogsItems);
+    const filteredLogs = filterDataByTimePeriod(
+      sleepLogs,
+      "timestamp",
+      currentPeriod,
+      currentDate
+    );
+    const data = getSleepLogChartDataMap(filteredLogs, currentPeriod);
+    cachedSleepData.current = data;
+    return data;
+  }, [sleepLogsItems, isFocused, currentPeriod, currentDate]);
 
-  const minDate = useMemo(() => {
-    if (selectedEntries.length === 0) return dayjs();
-    return dayjs(getFirstEntryDate(selectedEntries));
-  }, [selectedEntries]);
+  const medicationsChartData = useMemo(() => {
+    if (!showMedications) return {};
+    const cached = cachedTakenMedsData.current;
+    if (!isFocused && cached) return cached;
+    const medLogs = Object.values(medLogsItems);
+    const filteredLogs = filterDataByTimePeriod(
+      medLogs,
+      "timestamp",
+      currentPeriod,
+      currentDate
+    );
+    const takenMeds = getTakenMedications(filteredLogs, medicationsItems);
+    const data = getMedicationsChartData(takenMeds, currentPeriod);
+    cachedTakenMedsData.current = data;
+    return data;
+  }, [
+    medLogsItems,
+    medicationsItems,
+    isFocused,
+    currentPeriod,
+    currentDate,
+    showMedications,
+  ]);
 
-  const maxDate = useMemo(() => {
-    if (selectedEntries.length === 0) return dayjs();
-    return dayjs(getLastEntryDate(selectedEntries));
-  }, [selectedEntries]);
+  const impactsStatsData = useMemo(() => {
+    const impactLogItems = filteredLogItems.flatMap(
+      (log) => log.values.impacts || []
+    );
+    const impacts = getImpacts(impactLogItems, impactDefsItems);
+    return getImpactsStats(impacts, impactsSortBy);
+  }, [filteredLogItems, impactDefsItems, impactsSortBy]);
 
-  const lastEntryDate = useMemo(() => {
-    const date = getLastEntryDate(selectedEntries);
-    if (!date) return "N/A";
-    return dayjs(date).format(MONTH_DAY_FORMAT);
-  }, [selectedEntries]);
+  const emotionsStatsData = useMemo(() => {
+    const emotionLogItems = filteredLogItems.flatMap(
+      (log) => log.values.emotions || []
+    );
+    const emotions = getEmotions(emotionLogItems, emotionDefsItems);
+    return getEmotionsStats(emotions, emotionsSortBy);
+  }, [filteredLogItems, emotionDefsItems, emotionsSortBy]);
 
-  const firstEntryDate = useMemo(() => {
-    const date = getFirstEntryDate(selectedEntries);
-    if (!date) return "N/A";
-    return dayjs(date).format(MONTH_DAY_FORMAT);
-  }, [selectedEntries]);
+  const paddingBottom = useMemo(() => {
+    return insets.bottom + TAB_BAR_HEIGHT + theme.layout.spacing.lg;
+  }, [insets.bottom, theme.layout.spacing.lg]);
 
-  const missedDays = useMemo(() => {
-    return getMissedDays(selectedEntries);
-  }, [selectedEntries]);
+  const renderTimePeriodSelector = () => {
+    return (
+      <TimePeriodSelect
+        date={currentDate}
+        period={currentPeriod}
+        onChangePeriod={setCurrentPeriod}
+        onChangeDate={setCurrentDate}
+      />
+    );
+  };
 
-  const infoData: TInfoDataItem[] = useMemo(() => {
+  const renderWellbeingChart = useCallback(() => {
+    return (
+      <WellbeingLogsChart
+        dataMap={wellbeingChartDataMap}
+        currentDate={currentDate}
+        period={currentPeriod}
+      />
+    );
+  }, [wellbeingChartDataMap, currentDate, currentPeriod]);
+
+  const renderSleepLogsChart = useCallback(() => {
+    return (
+      <SleepLogsChart
+        dataMap={sleepLogsChartDataMap}
+        currentDate={currentDate}
+        period={currentPeriod}
+      />
+    );
+  }, [sleepLogsChartDataMap, currentDate, currentPeriod]);
+
+  const renderMedLogsCard = useCallback(() => {
+    if (!showMedications) return null;
+    return (
+      <MedsChart
+        data={medicationsChartData}
+        currentDate={currentDate}
+        period={currentPeriod}
+      />
+    );
+  }, [medicationsChartData, currentDate, currentPeriod, showMedications]);
+
+  const renderImpactsStats = useCallback(() => {
+    return (
+      <SentimentStatsView
+        title={t("impacts.title")}
+        data={impactsStatsData}
+        sortBy={impactsSortBy}
+        onSortPress={() =>
+          setImpactsSortBy((prev) => (prev === "count" ? "avg" : "count"))
+        }
+        category="impact"
+      />
+    );
+  }, [impactsSortBy, impactsStatsData, t]);
+
+  const renderEmotionsStats = useCallback(() => {
+    return (
+      <SentimentStatsView
+        title={t("emotions.title")}
+        data={emotionsStatsData}
+        sortBy={emotionsSortBy}
+        onSortPress={() =>
+          setEmotionsSortBy((prev) => (prev === "count" ? "avg" : "count"))
+        }
+        category="emotion"
+      />
+    );
+  }, [emotionsSortBy, emotionsStatsData, t]);
+
+  const listData = useMemo(() => {
     return [
       {
-        label: t("statistics.total_records"),
-        value: selectedEntries.length,
-        iconName: "list",
+        key: "sleepQuality",
+        renderItem: () => renderSleepLogsChart(),
       },
       {
-        label: t("statistics.missed_days", { count: missedDays }),
-        value: missedDays,
-        iconName: "alert-circle",
+        key: "wellbeing",
+        renderItem: () => renderWellbeingChart(),
       },
       {
-        label: t("statistics.first_entry_date"),
-        value: firstEntryDate,
-        iconName: "calendar",
+        key: "medications",
+        renderItem: () => renderMedLogsCard(),
       },
       {
-        label: t("statistics.last_entry_date"),
-        value: lastEntryDate,
-        iconName: "calendar",
+        key: "impactsStats",
+        renderItem: () => renderImpactsStats(),
+      },
+      {
+        key: "emotionsStats",
+        renderItem: () => renderEmotionsStats(),
       },
     ];
-  }, [selectedEntries.length, missedDays, firstEntryDate, lastEntryDate, t]);
+  }, [
+    renderWellbeingChart,
+    renderSleepLogsChart,
+    renderMedLogsCard,
+    renderImpactsStats,
+    renderEmotionsStats,
+  ]);
+
+  const renderList = () => {
+    return (
+      <FlatList
+        data={listData}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          gap: theme.layout.spacing.sm,
+          paddingBottom,
+        }}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => item.renderItem()}
+      />
+    );
+  };
 
   const renderHeader = () => {
     return (
-      <>
-        <View style={styles.infoContainer}>
-          {infoData.map((item) => {
-            return (
-              <View style={styles.infoCardContainer} key={item.label}>
-                <InfoCard
-                  label={item.label}
-                  value={item.value}
-                  iconName={item.iconName}
-                />
-              </View>
-            );
-          })}
-        </View>
-        {validMetrics.length > 0 && (
-          <MetricPagination
-            currentDate={currentDate}
-            setCurrentDate={setCurrentDate}
-            style={styles.pagination}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
-        )}
-      </>
-    );
-  };
-
-  const renderPlaceholder = () => {
-    return (
-      <View style={styles.placeholder}>
-        <Placeholder
-          title={t("common.no_data")}
-          content={t("statistics.notes_data")}
-        />
-      </View>
-    );
-  };
-
-  const renderCharts = () => {
-    return (
-      <FlatList
-        data={validMetrics}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={renderPlaceholder}
-        ListHeaderComponent={renderHeader}
-        renderItem={({ item }) => (
-          <MetricChart
-            metric={item}
-            entries={selectedEntries}
-            style={styles.chart}
-            currentDate={currentDate}
-          />
-        )}
-        showsVerticalScrollIndicator={false}
+      <Header
+        leftContent={
+          <Typography variant="h4">{t("statistics.title")}</Typography>
+        }
       />
     );
   };
 
   return (
-    <SafeView>
-      <View style={styles.container}>{renderCharts()}</View>
-    </SafeView>
+    <View style={styles.container}>
+      {renderHeader()}
+      <View style={styles.periodSelect}>{renderTimePeriodSelector()}</View>
+      <View style={styles.wrapper}>{renderList()}</View>
+    </View>
   );
 };
 
@@ -197,7 +279,19 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
+    },
+    periodSelect: {
       padding: theme.layout.spacing.lg,
+      paddingTop: 0,
+    },
+    wrapper: {
+      flex: 1,
+      paddingHorizontal: theme.layout.spacing.lg,
+    },
+    impactsSection: {
+      flex: 1,
+      padding: theme.layout.spacing.lg,
+      paddingTop: 0,
     },
     placeholder: {
       flex: 1,
@@ -205,23 +299,11 @@ const createStyles = (theme: TTheme) =>
       alignItems: "center",
       padding: theme.layout.spacing.xl,
     },
-    infoContainer: {
-      flexWrap: "wrap",
+    impactsSectionHeader: {
       flexDirection: "row",
+      alignItems: "center",
+      gap: theme.layout.spacing.md,
       justifyContent: "space-between",
-      marginHorizontal: -theme.layout.spacing.md / 2,
-      marginBottom: theme.layout.spacing.md / 2,
-    },
-    infoCardContainer: {
-      width: "50%",
-      padding: theme.layout.spacing.md / 2,
-    },
-    pagination: {
-      marginBottom: theme.layout.spacing.md,
-    },
-    chart: {
       marginBottom: theme.layout.spacing.md,
     },
   });
-
-export default Statistics;

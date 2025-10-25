@@ -1,41 +1,36 @@
-import GBIcon from "@/assets/images/flags/gb.svg";
-import UaIcon from "@/assets/images/flags/ua.svg";
 import {
-  HeaderTitle,
-  HeaderTitleProps,
-  IconButton,
+  Card,
+  ConfirmationDialog,
+  Header,
+  Modal,
   SafeView,
-  SlideInModal,
+  Switch,
   Typography,
 } from "@/components";
 import { useThemedSnackbar } from "@/hooks";
-import { usePremium } from "@/hooks/usePremium";
 import { setAppLanguage } from "@/i18n";
+import { useRevenueCat } from "@/services";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { importTrackersDataThunk } from "@/store/slices";
-import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
-import { exportTrackersAsJSON, importTrackerAsJSON } from "@/utils";
-import { useNavigation } from "expo-router";
-import { JSX, useCallback, useLayoutEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { importDataThunk } from "@/store/slices";
+import { selectDataToBackUp } from "@/store/slices/backUpData/backUpDataSelectors";
 import {
-  FlatList,
-  StyleSheet,
-  Switch,
-  TouchableOpacity,
-  View,
-} from "react-native";
+  DISABLED_ALPHA,
+  TOUCHABLE_ACTIVE_OPACITY,
+  TTheme,
+  useTheme,
+} from "@/theme";
+import {
+  exportDataAsJSON,
+  getAppVariant,
+  hasBackUpData,
+  importDataAsJSON,
+} from "@/utils";
+import Feather from "@react-native-vector-icons/feather";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { LanguageList, TLanguageListItem } from "./components/LanguageList";
-
-interface SettingItem {
-  key: string;
-  renderItem: () => JSX.Element;
-}
-
-const ICONS_MAP = {
-  en: GBIcon,
-  ua: UaIcon,
-} as const;
 
 const TITLE_MAP = {
   en: "English",
@@ -44,200 +39,181 @@ const TITLE_MAP = {
 
 export const Settings = () => {
   const { t, i18n } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
   const { theme, isDark, toggleTheme } = useTheme();
   const snackbar = useThemedSnackbar();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const trackersData = useAppSelector((state) => state.trackersData);
-  const { checkPremiumFeature } = usePremium();
+  const { checkPremiumFeature } = useRevenueCat();
   const dispatch = useAppDispatch();
+  const backUpData = useAppSelector(selectDataToBackUp);
+  const [showImportConfirmation, setShowImportConfirmation] = useState(false);
+
   const currentLanguage = i18n.language;
   const languageResources = Object.keys(i18n.store.data);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const appVariant = useMemo(() => getAppVariant(), []);
+  const showDevScreen =
+    appVariant === "development" || appVariant === "preview";
+
   const languages: TLanguageListItem[] = useMemo(() => {
     return languageResources.map((code) => ({
       code,
       label: TITLE_MAP[code as keyof typeof TITLE_MAP] || code.toUpperCase(),
-      icon: ICONS_MAP[code as keyof typeof ICONS_MAP] || GBIcon,
     }));
   }, [languageResources]);
 
-  const hasDataToExport = useMemo(() => {
-    return Object.keys(trackersData.trackers).length > 0;
-  }, [trackersData]);
+  const hasData = useMemo(() => {
+    return hasBackUpData(backUpData);
+  }, [backUpData]);
 
-  const renderHeaderTitle = useCallback(
-    ({ tintColor }: HeaderTitleProps) => {
-      return (
-        <HeaderTitle tintColor={tintColor}>{t("settings.title")}</HeaderTitle>
-      );
-    },
-    [t]
-  );
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: renderHeaderTitle,
-    });
-  }, [navigation, renderHeaderTitle]);
-
-  const handleDataImport = useCallback(() => {
+  const handleDataImportPress = useCallback(() => {
     checkPremiumFeature(async () => {
-      try {
-        const data = await importTrackerAsJSON();
-        if (data) {
-          dispatch(importTrackersDataThunk(data));
-          snackbar.success(t("common.import_success"));
-        }
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : t("common.import_failure");
-        snackbar.error(message);
-      }
+      setShowImportConfirmation(true);
     });
-  }, [dispatch, snackbar, t, checkPremiumFeature]);
+  }, [checkPremiumFeature]);
+
+  const handleDataImport = useCallback(async () => {
+    try {
+      const data = await importDataAsJSON();
+      if (data) {
+        await dispatch(importDataThunk(data));
+        snackbar.success(t("common.import_success"));
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t("common.import_failure");
+      snackbar.error(message);
+    }
+  }, [dispatch, snackbar, t]);
 
   const handleDataExport = useCallback(async () => {
-    if (!hasDataToExport) return;
+    if (!hasData) return;
     checkPremiumFeature(async () => {
       try {
-        await exportTrackersAsJSON(trackersData);
+        await exportDataAsJSON(backUpData);
       } catch (error) {
         const message =
           error instanceof Error ? error.message : t("common.export_failure");
         snackbar.error(message);
       }
     });
-  }, [checkPremiumFeature, snackbar, t, hasDataToExport, trackersData]);
+  }, [hasData, checkPremiumFeature, backUpData, snackbar, t]);
 
   const renderThemeSetting = useCallback(() => {
     return (
       <View style={styles.settingItem}>
-        <Typography variant="h5" style={styles.settingTitle}>
-          {t("settings.dark_theme")}
-        </Typography>
+        <View style={styles.settingTitle}>
+          <Feather name="moon" size={20} color={theme.colors.onBackground} />
+          <Typography variant="bodyBold">{t("settings.dark_theme")}</Typography>
+        </View>
         <View style={styles.settingAction}>
-          <Switch
-            value={isDark}
-            onValueChange={toggleTheme}
-            trackColor={{
-              false: theme.colors.primaryContainer,
-              true: theme.colors.primaryContainer,
-            }}
-            thumbColor={theme.colors.primary}
-            ios_backgroundColor={theme.colors.primaryContainer}
-          />
+          <Switch value={isDark} onChange={toggleTheme} />
         </View>
       </View>
     );
   }, [styles, t, isDark, toggleTheme, theme]);
 
   const renderLanguageSetting = useCallback(() => {
-    const Icon = ICONS_MAP[currentLanguage as keyof typeof ICONS_MAP];
     return (
-      <View style={styles.settingItem}>
-        <Typography variant="h5" style={styles.settingTitle}>
-          {t("settings.language")}
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={styles.settingItem}
+        onPress={() => setShowLanguageModal(true)}
+      >
+        <View style={styles.settingTitle}>
+          <Feather name="globe" size={20} color={theme.colors.onBackground} />
+          <Typography variant="bodyBold" style={styles.settingTitle}>
+            {t("settings.language")}
+          </Typography>
+        </View>
+        <Typography variant="body" style={styles.settingTitle}>
+          {TITLE_MAP[currentLanguage as keyof typeof TITLE_MAP]}
         </Typography>
-        <TouchableOpacity
-          style={styles.langIcon}
-          onPress={() => setShowLanguageModal(true)}
-          activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        >
-          {Icon && (
-            <Icon width={32} height={32} fill={theme.colors.onBackground} />
-          )}
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     );
   }, [styles, currentLanguage, t, theme]);
 
   const renderImportSetting = useCallback(() => {
     return (
-      <View style={styles.settingItem}>
-        <Typography variant="h5" style={styles.settingTitle}>
-          {t("settings.import_data")}
-        </Typography>
-        <View style={styles.settingAction}>
-          <IconButton
-            onPress={handleDataImport}
-            icon="download"
-            variant="text"
-            iconColor="onBackground"
-            autoSize
-            size="lg"
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={styles.settingItem}
+        onPress={handleDataImportPress}
+      >
+        <View style={styles.settingTitle}>
+          <Feather
+            name="download"
+            size={20}
+            color={theme.colors.onBackground}
           />
+          <Typography variant="bodyBold" style={styles.settingTitle}>
+            {t("settings.import_data")}
+          </Typography>
         </View>
-      </View>
+      </TouchableOpacity>
     );
-  }, [styles, handleDataImport, t]);
+  }, [styles, t, theme, handleDataImportPress]);
 
   const renderExportSetting = useCallback(() => {
     return (
-      <View style={styles.settingItem}>
-        <Typography variant="h5" style={styles.settingTitle}>
-          {t("settings.export_data")}
-        </Typography>
-        <View style={styles.settingAction}>
-          <IconButton
-            onPress={handleDataExport}
-            icon="upload"
-            variant="text"
-            iconColor="onBackground"
-            disabled={!hasDataToExport}
-            autoSize
-            size="lg"
-          />
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={[styles.settingItem, !hasData && { opacity: DISABLED_ALPHA }]}
+        onPress={handleDataExport}
+        disabled={!hasData}
+      >
+        <View style={styles.settingTitle}>
+          <Feather name="upload" size={20} color={theme.colors.onBackground} />
+          <Typography variant="bodyBold" style={styles.settingTitle}>
+            {t("settings.export_data")}
+          </Typography>
         </View>
-      </View>
+      </TouchableOpacity>
     );
-  }, [styles, handleDataExport, hasDataToExport, t]);
+  }, [styles, handleDataExport, t, hasData, theme]);
 
-  const settingsList: SettingItem[] = useMemo(
-    () => [
-      {
-        key: "theme",
-        renderItem: renderThemeSetting,
-      },
-      {
-        key: "language",
-        renderItem: renderLanguageSetting,
-      },
-      {
-        key: "export",
-        renderItem: renderExportSetting,
-      },
-      {
-        key: "import",
-        renderItem: renderImportSetting,
-      },
-    ],
-    [
-      renderThemeSetting,
-      renderLanguageSetting,
-      renderImportSetting,
-      renderExportSetting,
-    ]
-  );
+  const renderDevScreenButton = useCallback(() => {
+    if (!showDevScreen) return null;
+    return (
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={styles.settingItem}
+        onPress={() => {
+          router.push("/dev-screen");
+        }}
+      >
+        <View style={styles.settingTitle}>
+          <Feather name="settings" size={20} color={theme.colors.error} />
+          <Typography
+            variant="bodyBold"
+            color="error"
+            style={styles.settingTitle}
+          >
+            Developer screen
+          </Typography>
+        </View>
+      </TouchableOpacity>
+    );
+  }, [styles, router, theme, showDevScreen]);
 
   const renderList = () => (
-    <FlatList
-      data={settingsList}
-      renderItem={({ item }) => item.renderItem()}
-      keyExtractor={(item) => item.key}
-      showsVerticalScrollIndicator={false}
-      style={styles.sectionList}
-    />
+    <Card>
+      {renderThemeSetting()}
+      {renderLanguageSetting()}
+      {renderImportSetting()}
+      {renderExportSetting()}
+      {renderDevScreenButton()}
+    </Card>
   );
 
   const renderLanguageModal = () => {
     return (
-      <SlideInModal
+      <Modal
         visible={showLanguageModal}
         onClose={() => setShowLanguageModal(false)}
-        hideCloseButton
+        style={{ paddingVertical: theme.layout.spacing.sm }}
       >
         <LanguageList
           languages={languages}
@@ -246,15 +222,52 @@ export const Settings = () => {
             setShowLanguageModal(false);
           }}
         />
-      </SlideInModal>
+      </Modal>
+    );
+  };
+
+  const renderHeader = () => {
+    return (
+      <Header
+        leftContent={
+          <Typography variant="h4">{t("settings.title")}</Typography>
+        }
+      />
+    );
+  };
+
+  const renderImportConfirmation = () => {
+    return (
+      <ConfirmationDialog
+        visible={showImportConfirmation}
+        onClose={() => setShowImportConfirmation(false)}
+        onConfirm={() => {
+          setShowImportConfirmation(false);
+          // There is a conflict between the file picker and the dialog closing animation.
+          setTimeout(() => {
+            handleDataImport();
+          }, 500);
+        }}
+        title={t("settings.import_data")}
+        content={t("settings.import_data_warning")}
+        actionText={t("common.import")}
+        actionProps={{
+          buttonColor: "primary",
+          textColor: "onPrimary",
+        }}
+      />
     );
   };
 
   return (
-    <SafeView style={styles.container}>
-      {renderList()}
-      {renderLanguageModal()}
-    </SafeView>
+    <>
+      {renderHeader()}
+      <SafeView style={styles.container}>
+        {renderList()}
+        {renderLanguageModal()}
+      </SafeView>
+      {renderImportConfirmation()}
+    </>
   );
 };
 
@@ -262,13 +275,9 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingTop: theme.layout.spacing.lg,
-    },
-    sectionList: {
-      flex: 1,
+      paddingHorizontal: theme.layout.spacing.lg,
     },
     settingItem: {
-      paddingHorizontal: theme.layout.spacing.lg,
       paddingVertical: theme.layout.spacing.lg,
       flexDirection: "row",
       alignItems: "center",
@@ -276,7 +285,9 @@ const createStyles = (theme: TTheme) =>
       height: theme.layout.size.xl,
     },
     settingTitle: {
-      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.layout.spacing.sm,
     },
     settingAction: {
       alignItems: "center",

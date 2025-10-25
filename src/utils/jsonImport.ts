@@ -1,8 +1,18 @@
-import { TEntries, TTrackers, TTrackersData } from "@/types";
+import { TBackUpData } from "@/types";
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 
-export const importTrackerAsJSON = async (): Promise<TTrackersData | null> => {
+export const hasBackUpData = (data: TBackUpData) => {
+  const allData = [
+    ...Object.values(data.logs),
+    ...Object.values(data.sleepLogs),
+    ...Object.values(data.medLogs),
+  ];
+  if (allData.length > 0) return true;
+  return false;
+};
+
+export const importDataAsJSON = async (): Promise<TBackUpData | null> => {
   const result = await DocumentPicker.getDocumentAsync({
     copyToCacheDirectory: true,
   });
@@ -10,12 +20,28 @@ export const importTrackerAsJSON = async (): Promise<TTrackersData | null> => {
     // User cancelled the document picker
     return null;
   }
-  const file = new File(result.assets[0]);
-  const data = JSON.parse(file.textSync());
-  const trackers = data.trackers as TTrackers;
-  const entries = data.entries as TEntries;
-  if (!trackers || !entries) {
-    throw new Error("Invalid JSON format");
+  try {
+    const file = new File(result.assets[0].uri);
+    const fileContent = file.textSync();
+    if (!fileContent || fileContent.trim() === "") {
+      throw new Error("File is empty");
+    }
+    const data = JSON.parse(fileContent) as TBackUpData;
+
+    // Validate required fields exist
+    if (!data || typeof data !== "object") {
+      throw new Error("Invalid JSON structure");
+    }
+
+    if (!hasBackUpData(data)) {
+      throw new Error("No data to import");
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error("Invalid JSON file");
+    }
+    throw error;
   }
-  return { trackers, entries };
 };

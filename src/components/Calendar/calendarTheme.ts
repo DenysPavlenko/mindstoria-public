@@ -10,13 +10,13 @@ export const getCalendarTheme = (theme: TTheme): CalendarProps["theme"] => {
     // Text colors
     todayTextColor: theme.colors.primary,
     selectedDayTextColor: theme.colors.primary,
-    dayTextColor: theme.colors.onBackground,
-    textDisabledColor: disabledColor(theme.colors.onBackground),
-    monthTextColor: theme.colors.onBackground,
+    dayTextColor: theme.colors.onSurface,
+    textDisabledColor: disabledColor(theme.colors.onSurface),
+    monthTextColor: theme.colors.onSurface,
+    arrowColor: theme.colors.onSurface,
     // Font family
     textDayFontFamily: typography.bodyBold.fontFamily,
     textMonthFontFamily: typography.bodyBold.fontFamily,
     textDayHeaderFontFamily: typography.bodyBold.fontFamily,
-    dotColor: theme.colors.onSecondary,
   };
 };

@@ -1,79 +1,73 @@
+export const fonts = {
+  regular: "Nunito_400Regular",
+  semibold: "Nunito_600SemiBold",
+  bold: "Nunito_700Bold",
+} as const;
+
+// Helper function to calculate line height
+const lineHeight = (fontSize: number, ratio: number = 1.5) => {
+  return Math.round(fontSize * ratio);
+};
+
 export const typography = {
   h1: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 24,
-    lineHeight: 28,
+    fontFamily: fonts.bold,
+    fontSize: 28,
+    lineHeight: lineHeight(28, 1.29),
   },
   h2: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 22,
-    lineHeight: 26,
+    fontFamily: fonts.bold,
+    fontSize: 24,
+    lineHeight: lineHeight(24, 1.33),
   },
   h3: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 20,
-    lineHeight: 24,
+    fontFamily: fonts.bold,
+    fontSize: 22,
+    lineHeight: lineHeight(22, 1.27),
   },
   h4: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 18,
-    lineHeight: 23,
+    fontFamily: fonts.bold,
+    fontSize: 20,
+    lineHeight: lineHeight(20, 1.4),
   },
   h5: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 16,
-    lineHeight: 20,
-  },
-  bodyBold: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 16,
-    lineHeight: 24,
+    fontFamily: fonts.bold,
+    fontSize: 18,
+    lineHeight: lineHeight(18, 1.33),
   },
   body: {
-    fontFamily: "Manrope_400Regular",
+    fontFamily: fonts.regular,
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: lineHeight(16, 1.5),
   },
-  smallBold: {
-    fontFamily: "Manrope_700Bold",
-    fontSize: 14,
-    lineHeight: 20,
+  bodyBold: {
+    fontFamily: fonts.bold,
+    fontSize: 16,
+    lineHeight: lineHeight(16, 1.5),
   },
   small: {
-    fontFamily: "Manrope_400Regular",
+    fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: lineHeight(14, 1.43),
+  },
+  smallBold: {
+    fontFamily: fonts.semibold,
+    fontSize: 14,
+    lineHeight: lineHeight(14, 1.43),
   },
   tiny: {
-    fontFamily: "Manrope_400Regular",
+    fontFamily: fonts.regular,
     fontSize: 12,
-    lineHeight: 14,
+    lineHeight: lineHeight(12, 1.33),
   },
   tinyBold: {
-    fontFamily: "Manrope_700Bold",
+    fontFamily: fonts.semibold,
     fontSize: 12,
-    lineHeight: 14,
-  },
-  extraTiny: {
-    fontFamily: "Manrope_400Regular",
-    fontSize: 10,
-    lineHeight: 15,
+    lineHeight: lineHeight(12, 1.33),
   },
   buttonText: {
-    fontFamily: "Manrope_700Bold",
+    fontFamily: fonts.semibold,
     fontSize: 16,
-    lineHeight: 24,
-  },
-  link: {
-    fontFamily: "Manrope_400Regular",
-    fontSize: 16,
-    lineHeight: 20,
-    textDecorationLine: "underline",
-  },
-  bodyItalic: {
-    fontFamily: "Manrope_400Regular",
-    fontSize: 16,
-    lineHeight: 24,
-    fontStyle: "italic",
+    lineHeight: lineHeight(16, 1.5),
   },
 } as const;

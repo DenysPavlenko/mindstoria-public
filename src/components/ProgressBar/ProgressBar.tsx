@@ -1,15 +1,17 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/theme";
+import { TColorKeys } from "@/types/common";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 export interface ProgressProps {
   progress: number;
   height?: number;
-  color?: keyof TTheme["colors"];
-  backgroundColor?: keyof TTheme["colors"];
+  color?: TColorKeys;
+  backgroundColor?: TColorKeys;
   borderRadius?: number;
   animationDuration?: number;
   style?: StyleProp<ViewStyle>;
+  progressStyle?: StyleProp<ViewStyle>;
   animated?: boolean;
 }
 
@@ -21,6 +23,7 @@ export const ProgressBar = ({
   borderRadius,
   animationDuration = 300,
   style,
+  progressStyle,
   animated = true,
 }: ProgressProps) => {
   const { theme } = useTheme();
@@ -34,7 +37,7 @@ export const ProgressBar = ({
   const bgColor = backgroundColor
     ? theme.colors[backgroundColor]
     : theme.colors.primaryContainer;
-  const progressBarHeight = height ?? theme.layout.size.xxs / 2;
+  const progressBarHeight = height ?? 12;
   const radius = borderRadius ?? progressBarHeight / 2;
 
   useEffect(() => {
@@ -59,20 +62,21 @@ export const ProgressBar = ({
     style,
   ];
 
-  const progressStyle = [
+  const barStyle = [
     styles.progress,
     {
       height: progressBarHeight,
       backgroundColor: progressColor,
       borderRadius: radius,
     },
+    progressStyle,
   ];
 
   return (
     <View style={containerStyle}>
       <Animated.View
         style={[
-          progressStyle,
+          barStyle,
           {
             width: animatedWidth.interpolate({
               inputRange: [0, 1],
@@ -96,5 +100,3 @@ const styles = StyleSheet.create({
     top: 0,
   },
 });
-
-export default ProgressBar;

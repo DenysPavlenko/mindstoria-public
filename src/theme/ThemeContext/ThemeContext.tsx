@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { useColorScheme } from "react-native";
 import { darkTheme, lightTheme, TTheme } from "../theme";
 
 const THEME_STORAGE_KEY = "@theme_preference";
@@ -21,7 +22,8 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isDark, setIsDark] = useState(true);
+  const systemColorScheme = useColorScheme();
+  const [isDark, setIsDark] = useState(systemColorScheme === "dark");
   const [isLoading, setIsLoading] = useState(true);
 
   // Load theme preference from storage on mount

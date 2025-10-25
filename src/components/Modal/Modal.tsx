@@ -1,4 +1,5 @@
 import { TTheme, useTheme, withAlpha } from "@/theme";
+import { TColorKeys } from "@/types/common";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   Animated,
@@ -9,6 +10,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Card } from "../Card/Card";
 import { KeyboardAwareView } from "../KeyboardAwareView/KeyboardAwareView";
 
@@ -20,8 +22,9 @@ interface ModalProps {
   onShow?: () => void;
   closeOnBackdropPress?: boolean;
   animated?: boolean;
-  cardStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   maxWidth?: number;
+  bgColor?: TColorKeys;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -32,8 +35,9 @@ export const Modal: React.FC<ModalProps> = ({
   onShow,
   closeOnBackdropPress = true,
   animated = true,
-  cardStyle,
+  style,
   maxWidth,
+  bgColor = "surface",
 }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -76,16 +80,24 @@ export const Modal: React.FC<ModalProps> = ({
       statusBarTranslucent
     >
       <Pressable style={styles.backdrop} onPress={handleBackdropPress} />
-      <KeyboardAwareView>
-        <View style={styles.wrapper}>
-          <Animated.View
-            style={[styles.content, { transform: [{ scale: scaleAnimation }] }]}
-          >
-            <Card cardStyle={[styles.card, cardStyle, { maxWidth }]}>
-              {children}
-            </Card>
-          </Animated.View>
-        </View>
+      <KeyboardAwareView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <View style={styles.wrapper}>
+            <Animated.View
+              style={[
+                styles.content,
+                { transform: [{ scale: scaleAnimation }] },
+              ]}
+            >
+              <Card
+                bgColor={bgColor}
+                style={[styles.card, style, { maxWidth }]}
+              >
+                {children}
+              </Card>
+            </Animated.View>
+          </View>
+        </GestureHandlerRootView>
       </KeyboardAwareView>
     </RNModal>
   );

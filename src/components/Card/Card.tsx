@@ -1,18 +1,20 @@
 import { TTheme, useTheme } from "@/theme";
+import { TColorKeys } from "@/types/common";
 import { useMemo } from "react";
 import {
-  Pressable,
   StyleProp,
   StyleSheet,
+  TouchableOpacity,
+  TouchableOpacityProps,
   View,
-  ViewProps,
   ViewStyle,
 } from "react-native";
 
-interface CardProps extends Omit<ViewProps, "style"> {
+interface CardProps extends TouchableOpacityProps {
   children: React.ReactNode;
-  cardStyle?: StyleProp<ViewStyle>;
-  containerStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
+  bgColor?: TColorKeys;
+  padding?: keyof TTheme["layout"]["spacing"];
   onPress?: () => void;
   onLongPress?: () => void;
   noPadding?: boolean;
@@ -24,11 +26,12 @@ export const Card = ({
   children,
   onPress,
   onLongPress,
-  cardStyle,
-  containerStyle,
+  style,
+  padding = "lg",
   noPadding = false,
   noHorizontalPadding = false,
   noVerticalPadding = false,
+  bgColor = "surfaceContainer",
 }: CardProps) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -37,7 +40,7 @@ export const Card = ({
     if (noPadding) {
       return { padding: 0 };
     }
-    const basePadding = theme.layout.spacing.lg;
+    const basePadding = theme.layout.spacing[padding];
     const paddingHorizontal = noHorizontalPadding ? 0 : basePadding;
     const paddingVertical = noVerticalPadding ? 0 : basePadding;
     return {
@@ -46,22 +49,24 @@ export const Card = ({
     };
   };
 
-  const cardContent = (
-    <View style={[styles.card, getPaddingStyle(), cardStyle]}>{children}</View>
-  );
-
-  if (!onPress && !onLongPress) {
-    return cardContent;
-  }
+  const Component = onPress || onLongPress ? TouchableOpacity : View;
 
   return (
-    <Pressable
-      style={[styles.container, containerStyle]}
+    <Component
+      style={StyleSheet.compose(
+        [
+          styles.card,
+          getPaddingStyle(),
+          { backgroundColor: theme.colors[bgColor] },
+        ],
+        style
+      )}
       onPress={onPress}
       onLongPress={onLongPress}
+      activeOpacity={1}
     >
-      {cardContent}
-    </Pressable>
+      {children}
+    </Component>
   );
 };
 
@@ -71,9 +76,6 @@ const createStyles = (theme: TTheme) =>
       overflow: "hidden",
     },
     card: {
-      backgroundColor: theme.colors.surfaceContainer,
       borderRadius: theme.layout.borderRadius.xl,
     },
   });
-
-export default Card;

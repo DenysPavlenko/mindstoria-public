@@ -1,31 +1,58 @@
 import { TTheme, useTheme } from "@/theme";
 import { useMemo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { IconButton } from "../IconButton/IconButton";
+import NoData from "../../assets/images/no-data.svg";
 import { Typography } from "../Typography/Typography";
 
 interface PlaceholderProps {
-  title: string | React.ReactNode;
+  title?: string | React.ReactNode;
   content?: string | React.ReactNode;
-  action?: {
-    onPress: () => void;
-  };
   style?: StyleProp<ViewStyle>;
+  size?: "sm" | "lg";
+  hideIcon?: boolean;
 }
 
 export const Placeholder = ({
   title,
   content,
-  action,
   style,
+  size = "lg",
+  hideIcon = false,
 }: PlaceholderProps) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const iconSize = size === "lg" ? 100 : 70;
+  const iconWidth = iconSize * 1.5;
+  const iconHeight = iconSize;
+
+  const renderImage = () => {
+    if (hideIcon) return null;
+    return (
+      <View
+        style={{
+          height: iconHeight,
+          width: iconWidth,
+          overflow: "hidden",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: theme.layout.spacing.md,
+        }}
+      >
+        <NoData
+          width={iconWidth * 1.5}
+          height={iconHeight * 1.5}
+          fill={theme.colors.outlineVariant}
+          color={theme.colors.outlineVariant}
+        />
+      </View>
+    );
+  };
+
   const renderTitle = () => {
     if (typeof title === "string") {
       return (
-        <Typography variant="h2" align="center">
+        <Typography variant={size === "lg" ? "h4" : "h5"} align="center">
           {title}
         </Typography>
       );
@@ -36,7 +63,7 @@ export const Placeholder = ({
   const renderContent = () => {
     if (typeof content === "string") {
       return (
-        <Typography align="center" style={styles.content}>
+        <Typography align="center" variant="small" style={styles.content}>
           {content}
         </Typography>
       );
@@ -44,28 +71,11 @@ export const Placeholder = ({
     return <View style={styles.content}>{content}</View>;
   };
 
-  const renderAction = () => {
-    if (action) {
-      return (
-        <IconButton
-          onPress={action.onPress}
-          variant="outlined"
-          icon="plus"
-          style={styles.action}
-          borderColor="onBackground"
-          iconColor="onBackground"
-          size="xl"
-        />
-      );
-    }
-    return null;
-  };
-
   return (
     <View style={[styles.container, style]}>
+      {renderImage()}
       {renderTitle()}
       {renderContent()}
-      {renderAction()}
     </View>
   );
 };
@@ -78,9 +88,7 @@ const createStyles = (theme: TTheme) =>
       maxWidth: 270,
       marginHorizontal: "auto",
     },
-    content: {
-      marginTop: theme.layout.spacing.xs,
-    },
+    content: {},
     action: {
       marginTop: theme.layout.spacing.lg,
     },

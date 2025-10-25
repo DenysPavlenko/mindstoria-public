@@ -46,7 +46,7 @@ export const Checkbox = ({
       height: sizeConfig.containerSize,
       backgroundColor: checked
         ? theme.colors.primary
-        : theme.colors.surfaceContainerHighest,
+        : theme.colors.surfaceVariant,
       borderRadius: sizeConfig.containerSize / 2,
       opacity: disabled ? 0.5 : 1,
     }),
@@ -84,5 +84,3 @@ const createStyles = (theme: TTheme) =>
       justifyContent: "center",
     },
   });
-
-export default Checkbox;

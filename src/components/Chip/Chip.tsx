@@ -1,5 +1,7 @@
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
-import React, { useMemo } from "react";
+import { TColorKeys } from "@/types/common";
+import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
+import React, { ReactNode, useMemo } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -10,31 +12,45 @@ import {
 import { Typography } from "../Typography/Typography";
 
 interface ChipProps {
-  label: string;
+  label: string | ReactNode;
+  minHeight?: keyof TTheme["layout"]["size"] | number;
+  icon?: FeatherIconName;
+  customContent?: ReactNode;
   onPress?: () => void;
   selected?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  bgColor?: TColorKeys;
+  textColor?: TColorKeys;
+  selectedBgColor?: TColorKeys;
   testID?: string;
 }
 
 export const Chip = ({
   label,
+  icon,
+  customContent,
   onPress,
   selected = false,
   disabled = false,
   style,
   textStyle,
   testID,
+  bgColor = "surfaceVariant",
+  selectedBgColor = "primary",
+  textColor = "onSurfaceVariant",
+  minHeight = "sm",
 }: ChipProps) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const getVariantStyle = () => {
-    const colorStyle: ViewStyle = {};
+    const colorStyle: ViewStyle = {
+      backgroundColor: theme.colors[bgColor],
+    };
     if (selected) {
-      colorStyle.backgroundColor = theme.colors.tertiary;
+      colorStyle.backgroundColor = theme.colors[selectedBgColor];
     }
     if (disabled) {
       colorStyle.opacity = 0.6;
@@ -42,21 +58,53 @@ export const Chip = ({
     return colorStyle;
   };
 
-  const getTextColor = (): keyof TTheme["colors"] => {
-    return selected ? "onTertiary" : "onTertiaryContainer";
+  const chipMinHeight =
+    typeof minHeight === "number" ? minHeight : theme.layout.size[minHeight];
+
+  const renderLabel = () => {
+    if (typeof label === "string") {
+      return (
+        <Typography
+          color={selected ? "onPrimary" : textColor}
+          variant="smallBold"
+          style={textStyle}
+        >
+          {label}
+        </Typography>
+      );
+    }
+    return label;
+  };
+
+  const renderIcon = () => {
+    if (customContent) return customContent;
+    if (icon) {
+      return (
+        <Feather
+          name={icon}
+          size={theme.layout.size.xxs}
+          color={selected ? theme.colors.onPrimary : theme.colors.primary}
+        />
+      );
+    }
+    return null;
   };
 
   return (
     <TouchableOpacity
-      style={[styles.chip, getVariantStyle(), style]}
+      style={[
+        styles.chip,
+        getVariantStyle(),
+        { minHeight: chipMinHeight },
+        style,
+      ]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
       testID={testID}
     >
-      <Typography color={getTextColor()} variant="smallBold" style={textStyle}>
-        {label}
-      </Typography>
+      {renderIcon()}
+      {renderLabel()}
     </TouchableOpacity>
   );
 };
@@ -64,15 +112,12 @@ export const Chip = ({
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     chip: {
-      paddingHorizontal: theme.layout.spacing.lg,
-      paddingVertical: theme.layout.spacing.xxs,
-      minHeight: theme.layout.size.md,
-      backgroundColor: theme.colors.tertiaryContainer,
+      paddingHorizontal: theme.layout.spacing.md,
       borderRadius: theme.layout.borderRadius.xl,
-      alignSelf: "flex-start",
+      minWidth: theme.layout.size.xxl,
       justifyContent: "center",
+      flexDirection: "row",
       alignItems: "center",
+      gap: theme.layout.spacing.sm,
     },
   });
-
-export default Chip;

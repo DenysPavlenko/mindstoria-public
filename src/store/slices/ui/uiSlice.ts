@@ -1,23 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface TDataState {
-  calendar: "month" | "week";
-}
+interface TUIState {}
 
-const initialState: TDataState = {
-  calendar: "week",
-};
+const initialState: TUIState = {};
 
 export const uiSlice = createSlice({
   name: "ui",
   initialState,
-  reducers: {
-    toggleCalendarWeekMonth: (state) => {
-      state.calendar = state.calendar === "week" ? "month" : "week";
-    },
-  },
+  reducers: {},
 });
-
-export const { toggleCalendarWeekMonth } = uiSlice.actions;
 
 export default uiSlice.reducer;

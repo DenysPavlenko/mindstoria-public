@@ -1,3 +1,33 @@
+export const DISABLED_ALPHA = 0.38;
+
+export const TOUCHABLE_ACTIVE_OPACITY = 0.54;
+
+// Utility function to add alpha to hex colors
+export const withAlpha = (color: string, alpha: number): string => {
+  // Handle hex colors
+  if (color.startsWith("#")) {
+    const hex = color.slice(1);
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  // Handle rgb colors
+  if (color.startsWith("rgb(")) {
+    return color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  }
+  // Handle rgba colors
+  if (color.startsWith("rgba(")) {
+    return color.replace(/,\s*[\d.]+\)$/, `, ${alpha})`);
+  }
+  // Fallback for named colors (convert to rgba)
+  return `rgba(0, 0, 0, ${alpha})`;
+};
+
+export const disabledColor = (color: string) => {
+  return withAlpha(color, DISABLED_ALPHA);
+};
+
 export type TTextTheme = {
   text: string;
   textSecondary: string;
@@ -35,8 +65,7 @@ export interface TColorsTheme {
   inverseSurface: string;
   inverseOnSurface: string;
   inversePrimary: string;
-
-  /** Extended / Fixed roles */
+  // Extended / Fixed roles
   primaryFixed: string;
   onPrimaryFixed: string;
   primaryFixedDim: string;
@@ -49,8 +78,7 @@ export interface TColorsTheme {
   onTertiaryFixed: string;
   tertiaryFixedDim: string;
   onTertiaryFixedVariant: string;
-
-  /** Surface containers */
+  // Surface containers
   surfaceDim: string;
   surfaceBright: string;
   surfaceContainerLowest: string;
@@ -58,6 +86,30 @@ export interface TColorsTheme {
   surfaceContainer: string;
   surfaceContainerHigh: string;
   surfaceContainerHighest: string;
+  // Semantic impact scales
+  rating: {
+    50: string;
+    100: string;
+    200: string;
+    300: string;
+    400: string;
+  };
+  sentiment: {
+    negative: {
+      50: string;
+      100: string;
+      200: string;
+      300: string;
+      400: string;
+    };
+    positive: {
+      50: string;
+      100: string;
+      200: string;
+      300: string;
+      400: string;
+    };
+  };
 }
 
 const size = {
@@ -105,55 +157,78 @@ export const lightTheme: TTheme = {
   mode: "light",
   statusBar: "dark",
   colors: {
-    primary: "#00687A",
-    surfaceTint: "#00687A",
+    primary: "#415F91",
+    surfaceTint: "#415F91",
     onPrimary: "#FFFFFF",
-    primaryContainer: "#ADECFF",
-    onPrimaryContainer: "#004E5D",
-    secondary: "#4B6269",
+    primaryContainer: "#D6E3FF",
+    onPrimaryContainer: "#284777",
+    secondary: "#565F71",
     onSecondary: "#FFFFFF",
-    secondaryContainer: "#CEE7EF",
-    onSecondaryContainer: "#334A51",
-    tertiary: "#575C7E",
+    secondaryContainer: "#DAE2F9",
+    onSecondaryContainer: "#3E4759",
+    tertiary: "#705575",
     onTertiary: "#FFFFFF",
-    tertiaryContainer: "#DDE1FF",
-    onTertiaryContainer: "#3F4565",
+    tertiaryContainer: "#FAD8FD",
+    onTertiaryContainer: "#573E5C",
     error: "#BA1A1A",
     onError: "#FFFFFF",
     errorContainer: "#FFDAD6",
     onErrorContainer: "#93000A",
-    background: "#F5FAFC",
-    onBackground: "#171C1E",
-    surface: "#F5FAFC",
-    onSurface: "#171C1E",
-    surfaceVariant: "#DBE4E7",
-    onSurfaceVariant: "#3F484B",
-    outline: "#70797C",
-    outlineVariant: "#BFC8CB",
+    background: "#F9F9FF",
+    onBackground: "#191C20",
+    surface: "#F9F9FF",
+    onSurface: "#191C20",
+    surfaceVariant: "#E0E2EC",
+    onSurfaceVariant: "#44474E",
+    outline: "#74777F",
+    outlineVariant: "#C4C6D0",
     shadow: "#000000",
     scrim: "#000000",
-    inverseSurface: "#2C3133",
-    inverseOnSurface: "#ECF2F4",
-    inversePrimary: "#85D2E7",
-    primaryFixed: "#ADECFF",
-    onPrimaryFixed: "#001F26",
-    primaryFixedDim: "#85D2E7",
-    onPrimaryFixedVariant: "#004E5D",
-    secondaryFixed: "#CEE7EF",
-    onSecondaryFixed: "#061F25",
-    secondaryFixedDim: "#B2CBD2",
-    onSecondaryFixedVariant: "#334A51",
-    tertiaryFixed: "#DDE1FF",
-    onTertiaryFixed: "#131937",
-    tertiaryFixedDim: "#BFC4EB",
-    onTertiaryFixedVariant: "#3F4565",
-    surfaceDim: "#D5DBDD",
-    surfaceBright: "#F5FAFC",
+    inverseSurface: "#2E3036",
+    inverseOnSurface: "#F0F0F7",
+    inversePrimary: "#AAC7FF",
+    primaryFixed: "#D6E3FF",
+    onPrimaryFixed: "#001B3E",
+    primaryFixedDim: "#AAC7FF",
+    onPrimaryFixedVariant: "#284777",
+    secondaryFixed: "#DAE2F9",
+    onSecondaryFixed: "#131C2B",
+    secondaryFixedDim: "#BEC6DC",
+    onSecondaryFixedVariant: "#3E4759",
+    tertiaryFixed: "#FAD8FD",
+    onTertiaryFixed: "#28132E",
+    tertiaryFixedDim: "#DDBCE0",
+    onTertiaryFixedVariant: "#573E5C",
+    surfaceDim: "#D9D9E0",
+    surfaceBright: "#F9F9FF",
     surfaceContainerLowest: "#FFFFFF",
-    surfaceContainerLow: "#EFF4F7",
-    surfaceContainer: "#E9EFF1",
-    surfaceContainerHigh: "#E4E9EB",
-    surfaceContainerHighest: "#DEE3E5",
+    surfaceContainerLow: "#F3F3FA",
+    surfaceContainer: "#EDEDF4",
+    surfaceContainerHigh: "#E7E8EE",
+    surfaceContainerHighest: "#E2E2E9",
+    rating: {
+      50: withAlpha("#BA1A1A", 0.8),
+      100: withAlpha("#E65100", 0.8),
+      200: withAlpha("#C69C26", 0.8),
+      300: withAlpha("#7CB342", 0.8),
+      400: withAlpha("#388E3C", 0.8),
+    },
+    sentiment: {
+      negative: {
+        50: "#FFDAD6",
+        100: "#FFB4AB",
+        200: "#EF9A9A",
+        300: "#E57373",
+        400: "#BA1A1A",
+      },
+      positive: {
+        50: "#C8E6C9",
+        100: "#A5D6A7",
+        200: "#81C784",
+        300: "#66BB6A",
+        400: "#388E3C",
+      },
+    },
   },
   layout: {
     size,
@@ -166,89 +241,82 @@ export const darkTheme: TTheme = {
   mode: "dark",
   statusBar: "light",
   colors: {
-    primary: "#85D2E7",
-    surfaceTint: "#85D2E7",
-    onPrimary: "#003640",
-    primaryContainer: "#004E5D",
-    onPrimaryContainer: "#ADECFF",
-    secondary: "#B2CBD2",
-    onSecondary: "#1D343A",
-    secondaryContainer: "#334A51",
-    onSecondaryContainer: "#CEE7EF",
-    tertiary: "#BFC4EB",
-    onTertiary: "#292E4D",
-    tertiaryContainer: "#3F4565",
-    onTertiaryContainer: "#DDE1FF",
+    primary: "#AAC7FF",
+    surfaceTint: "#AAC7FF",
+    onPrimary: "#0A305F",
+    primaryContainer: "#284777",
+    onPrimaryContainer: "#D6E3FF",
+    secondary: "#BEC6DC",
+    onSecondary: "#283141",
+    secondaryContainer: "#3E4759",
+    onSecondaryContainer: "#DAE2F9",
+    tertiary: "#DDBCE0",
+    onTertiary: "#3F2844",
+    tertiaryContainer: "#573E5C",
+    onTertiaryContainer: "#FAD8FD",
     error: "#FFB4AB",
     onError: "#690005",
     errorContainer: "#93000A",
     onErrorContainer: "#FFDAD6",
-    background: "#0F1416",
-    onBackground: "#DEE3E5",
-    surface: "#0F1416",
-    onSurface: "#DEE3E5",
-    surfaceVariant: "#3F484B",
-    onSurfaceVariant: "#BFC8CB",
-    outline: "#899295",
-    outlineVariant: "#3F484B",
+    background: "#111318",
+    onBackground: "#E2E2E9",
+    surface: "#111318",
+    onSurface: "#E2E2E9",
+    surfaceVariant: "#44474E",
+    onSurfaceVariant: "#C4C6D0",
+    outline: "#8E9099",
+    outlineVariant: "#44474E",
     shadow: "#000000",
     scrim: "#000000",
-    inverseSurface: "#DEE3E5",
-    inverseOnSurface: "#2C3133",
-    inversePrimary: "#00687A",
-    primaryFixed: "#ADECFF",
-    onPrimaryFixed: "#001F26",
-    primaryFixedDim: "#85D2E7",
-    onPrimaryFixedVariant: "#004E5D",
-    secondaryFixed: "#CEE7EF",
-    onSecondaryFixed: "#061F25",
-    secondaryFixedDim: "#B2CBD2",
-    onSecondaryFixedVariant: "#334A51",
-    tertiaryFixed: "#DDE1FF",
-    onTertiaryFixed: "#131937",
-    tertiaryFixedDim: "#BFC4EB",
-    onTertiaryFixedVariant: "#3F4565",
-    surfaceDim: "#0F1416",
-    surfaceBright: "#343A3C",
-    surfaceContainerLowest: "#090F11",
-    surfaceContainerLow: "#171C1E",
-    surfaceContainer: "#1B2022",
-    surfaceContainerHigh: "#252B2D",
-    surfaceContainerHighest: "#303638",
+    inverseSurface: "#E2E2E9",
+    inverseOnSurface: "#2E3036",
+    inversePrimary: "#415F91",
+    primaryFixed: "#D6E3FF",
+    onPrimaryFixed: "#001B3E",
+    primaryFixedDim: "#AAC7FF",
+    onPrimaryFixedVariant: "#284777",
+    secondaryFixed: "#DAE2F9",
+    onSecondaryFixed: "#131C2B",
+    secondaryFixedDim: "#BEC6DC",
+    onSecondaryFixedVariant: "#3E4759",
+    tertiaryFixed: "#FAD8FD",
+    onTertiaryFixed: "#28132E",
+    tertiaryFixedDim: "#DDBCE0",
+    onTertiaryFixedVariant: "#573E5C",
+    surfaceDim: "#111318",
+    surfaceBright: "#37393E",
+    surfaceContainerLowest: "#0C0E13",
+    surfaceContainerLow: "#191C20",
+    surfaceContainer: "#1D2024",
+    surfaceContainerHigh: "#282A2F",
+    surfaceContainerHighest: "#33353A",
+    rating: {
+      50: "#FFB4AB",
+      100: "#FFB74D",
+      200: "#FFD54F",
+      300: "#AED581",
+      400: "#81C784",
+    },
+    sentiment: {
+      negative: {
+        50: "#FFDAD6",
+        100: "#FFB4AB",
+        200: "#F28B82",
+        300: "#E57373",
+        400: "#93000A",
+      },
+      positive: {
+        50: "#C8E6C9",
+        100: "#A5D6A7",
+        200: "#81C784",
+        300: "#66BB6A",
+        400: "#2E7D32",
+      },
+    },
   },
   layout: {
     size,
     spacing,
     borderRadius,
   },
-};
-
-export const DISABLED_ALPHA = 0.38;
-
-export const TOUCHABLE_ACTIVE_OPACITY = 0.54;
-
-// Utility function to add alpha to hex colors
-export const withAlpha = (color: string, alpha: number): string => {
-  // Handle hex colors
-  if (color.startsWith("#")) {
-    const hex = color.slice(1);
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-  // Handle rgb colors
-  if (color.startsWith("rgb(")) {
-    return color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
-  }
-  // Handle rgba colors
-  if (color.startsWith("rgba(")) {
-    return color.replace(/,\s*[\d.]+\)$/, `, ${alpha})`);
-  }
-  // Fallback for named colors (convert to rgba)
-  return `rgba(0, 0, 0, ${alpha})`;
-};
-
-export const disabledColor = (color: string) => {
-  return withAlpha(color, DISABLED_ALPHA);
 };

@@ -1,4 +1,4 @@
-import { DISABLED_ALPHA, TTheme, useTheme, withAlpha } from "@/theme";
+import { TTheme, useTheme, withAlpha } from "@/theme";
 import { useMemo } from "react";
 import {
   StyleProp,
@@ -16,6 +16,7 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
   label?: string;
   placeholder?: string;
   onChangeText?: (text: string) => void;
+  minHeight?: keyof TTheme["layout"]["size"];
   error?: string;
   disabled?: boolean;
   multiline?: boolean;
@@ -30,6 +31,8 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
   inputContainerStyle?: StyleProp<ViewStyle>;
   testID?: string;
   ref?: React.Ref<TextInput>;
+  left?: React.ReactNode;
+  right?: React.ReactNode;
 }
 
 export const Input = ({
@@ -42,11 +45,14 @@ export const Input = ({
   autoCapitalize = "sentences",
   autoCorrect = true,
   secureTextEntry = false,
+  minHeight = "lg",
   style,
   inputContainerStyle,
   inputStyle,
   testID,
   ref,
+  left,
+  right,
   ...rest
 }: InputProps) => {
   const { theme } = useTheme();
@@ -55,6 +61,10 @@ export const Input = ({
   const getInputContainerStyle = () => {
     return StyleSheet.flatten([
       styles.inputContainer,
+      {
+        minHeight: theme.layout.size[minHeight],
+        borderRadius: theme.layout.size[minHeight] / 2,
+      },
       error && styles.inputError,
       disabled && styles.inputDisabled,
       multiline && styles.inputMultiline,
@@ -66,6 +76,7 @@ export const Input = ({
     return StyleSheet.flatten([
       styles.input,
       multiline && styles.inputMultilineText,
+      multiline && styles.inputMultiline,
       inputStyle,
     ]);
   };
@@ -75,13 +86,11 @@ export const Input = ({
       {label && <Label style={styles.label} label={label} />}
 
       <View style={getInputContainerStyle()}>
+        {left}
         <TextInput
           ref={ref}
           style={getInputStyle()}
-          placeholderTextColor={withAlpha(
-            theme.colors.onSurface,
-            DISABLED_ALPHA
-          )}
+          placeholderTextColor={withAlpha(theme.colors.onSurfaceVariant, 0.5)}
           editable={!disabled}
           multiline={multiline}
           numberOfLines={numberOfLines}
@@ -92,6 +101,7 @@ export const Input = ({
           testID={testID ? `${testID}-input` : undefined}
           {...rest}
         />
+        {right}
       </View>
 
       {error && (
@@ -107,23 +117,24 @@ export const Input = ({
   );
 };
 
-const createStyles = (theme: TTheme) =>
-  StyleSheet.create({
+const createStyles = (theme: TTheme) => {
+  return StyleSheet.create({
     label: {
       marginBottom: theme.layout.spacing.xs,
     },
     inputContainer: {
       borderWidth: 1,
-      borderRadius: theme.layout.borderRadius.xl,
-      backgroundColor: theme.colors.surfaceContainerHighest,
-      borderColor: theme.colors.surfaceContainerHighest,
-      minHeight: theme.layout.size.lg,
+      backgroundColor: theme.colors.surfaceVariant,
+      borderColor: theme.colors.surfaceVariant,
       paddingHorizontal: theme.layout.spacing.md,
+      alignItems: "center",
+      flexDirection: "row",
+      gap: theme.layout.spacing.sm,
     },
     input: {
       flex: 1,
       fontSize: 16,
-      color: theme.colors.onSurface,
+      color: theme.colors.onSurfaceVariant,
       padding: 0,
     },
     inputError: {
@@ -133,10 +144,11 @@ const createStyles = (theme: TTheme) =>
       opacity: 0.6,
     },
     inputMultiline: {
-      minHeight: 80,
-      paddingTop: theme.layout.spacing.sm,
+      minHeight: 90,
+      borderRadius: theme.layout.borderRadius.lg,
     },
     inputMultilineText: {
+      paddingVertical: theme.layout.spacing.sm,
       textAlignVertical: "top",
     },
     errorText: {
@@ -144,5 +156,4 @@ const createStyles = (theme: TTheme) =>
       color: theme.colors.error,
     },
   });
-
-export default Input;
+};

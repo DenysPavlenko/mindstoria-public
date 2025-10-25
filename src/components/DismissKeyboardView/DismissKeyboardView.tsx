@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { TouchableWithoutFeedback, Keyboard, ViewProps } from 'react-native';
+import { ReactNode } from "react";
+import { Keyboard, Pressable, ViewProps } from "react-native";
 
 interface DismissKeyboardViewProps extends ViewProps {
   children: ReactNode;
@@ -20,14 +20,8 @@ export const DismissKeyboardView = ({
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={dismissKeyboard}
-      accessible={false}
-      {...restProps}
-    >
+    <Pressable onPress={dismissKeyboard} accessible={false} {...restProps}>
       {children}
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
-
-export default DismissKeyboardView;

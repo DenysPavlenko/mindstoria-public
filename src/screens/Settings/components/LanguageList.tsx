@@ -1,13 +1,11 @@
 import { Typography } from "@/components";
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
-import { FC, useMemo } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { SvgProps } from "react-native-svg";
+import { useMemo } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 export type TLanguageListItem = {
   code: string;
   label: string;
-  icon: FC<SvgProps>;
 };
 
 interface LanguageListProps {
@@ -21,7 +19,6 @@ export const LanguageList = ({ languages, onSelect }: LanguageListProps) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return languages.map((lang, index) => {
-    const Icon = lang.icon;
     const isLastItem = index === languages.length - 1;
     return (
       <TouchableOpacity
@@ -30,9 +27,6 @@ export const LanguageList = ({ languages, onSelect }: LanguageListProps) => {
         onPress={() => onSelect(lang.code)}
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
       >
-        <View style={styles.icon}>
-          <Icon width={32} height={32} />
-        </View>
         <Typography variant="body" style={styles.title}>
           {lang.label}
         </Typography>

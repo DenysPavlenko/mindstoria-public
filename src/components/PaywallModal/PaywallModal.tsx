@@ -1,11 +1,18 @@
+import { ENTITLEMENT_ID } from "@/appConstants";
+import { useRevenueCat } from "@/services";
 import { useTheme } from "@/theme";
 import { TTheme } from "@/theme/theme";
-import { Feather, FeatherIconName } from "@react-native-vector-icons/feather";
-import { useState } from "react";
+import { getErrorMessage } from "@/utils";
+import { FeatherIconName } from "@react-native-vector-icons/feather";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
-import { usePremium } from "../../hooks/usePremium";
+import Purchases, {
+  PACKAGE_TYPE,
+  PurchasesPackage,
+} from "react-native-purchases";
 import { Button } from "../Button/Button";
+import { IconBox } from "../IconBox/IconBox";
 import { SelectableItem } from "../SelectableItem/SelectableItem";
 import { SlideInModal } from "../SlideInModal/SlideInModal";
 import { Typography } from "../Typography/Typography";
@@ -16,118 +23,175 @@ type TBenefit = {
   description: string;
 };
 
-type TPlan = "monthly" | "yearly" | "lifetime";
-
-type TPlanItem = {
-  name: TPlan;
-  title: string;
-  description: string;
-  price: string;
-};
-
 export const PaywallModal = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { isPaywallVisible, hidePaywallModal } = usePremium();
-  const [selectedPlan, setSelectedPlan] = useState<TPlan>("yearly");
+  const { isReady, error, showPaywall, setShowPaywall } = useRevenueCat();
+  const [packages, setPackages] = useState<PurchasesPackage[]>([]);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [selectedPackage, setSelectedPackage] =
+    useState<PurchasesPackage | null>(null);
 
-  const styles = createStyles(theme);
+  useEffect(() => {
+    if (!isReady) return;
+    const fetchPackages = async () => {
+      try {
+        const offerings = await Purchases.getOfferings();
+        if (
+          offerings.current !== null &&
+          offerings.current.availablePackages.length !== 0
+        ) {
+          setPackages(offerings.current.availablePackages);
+        }
+      } catch (e) {
+        const errorMsg = getErrorMessage(e, t("common.something_went_wrong"));
+        setLocalError(errorMsg);
+      }
+    };
+    fetchPackages();
+  }, [isReady, t]);
 
-  const plansList: TPlanItem[] = [
-    {
-      name: "monthly",
-      title: t("paywall.monthly"),
-      description: t("paywall.monthly_desc"),
-      price: "$2.99",
-    },
-    {
-      name: "yearly",
-      title: t("paywall.yearly"),
-      description: t("paywall.yearly_desc"),
-      price: "$29.99",
-    },
-    {
-      name: "lifetime",
-      title: t("paywall.lifetime"),
-      description: t("paywall.lifetime_desc"),
-      price: "$79.99",
-    },
-  ];
+  useEffect(() => {
+    // Auto-select annual package if available
+    if (packages.length > 0 && !selectedPackage) {
+      const annualPackage = packages.find(
+        (pkg) => pkg.packageType === PACKAGE_TYPE.ANNUAL
+      );
+      if (annualPackage) {
+        setSelectedPackage(annualPackage);
+      }
+    }
+  }, [packages, selectedPackage]);
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const benefitsList: TBenefit[] = [
     {
       icon: "hash",
-      title: t("paywall.benefit_1_title"),
-      description: t("paywall.benefit_1_desc"),
+      title: t("paywall.charts_and_stats"),
+      description: t("paywall.charts_and_stats_desc"),
     },
     {
-      icon: "bar-chart",
-      title: t("paywall.benefit_2_title"),
-      description: t("paywall.benefit_2_desc"),
+      icon: "smile",
+      title: t("paywall.impacts"),
+      description: t("paywall.impacts_desc"),
+    },
+    {
+      icon: "heart",
+      title: t("paywall.emotions"),
+      description: t("paywall.emotions_desc"),
     },
     {
       icon: "upload",
-      title: t("paywall.benefit_3_title"),
-      description: t("paywall.benefit_3_desc"),
+      title: t("paywall.import_data"),
+      description: t("paywall.import_data_desc"),
     },
     {
       icon: "download",
-      title: t("paywall.benefit_4_title"),
-      description: t("paywall.benefit_4_desc"),
+      title: t("paywall.export_data"),
+      description: t("paywall.export_data_desc"),
+    },
+    {
+      icon: "coffee",
+      title: t("paywall.support_indie_developer"),
+      description: t("paywall.support_indie_developer_desc"),
     },
     {
       icon: "star",
-      title: t("paywall.benefit_5_title"),
-      description: t("paywall.benefit_5_desc"),
+      title: t("paywall.more_to_come"),
+      description: t("paywall.more_to_come_desc"),
     },
   ];
 
-  const handleSubscribe = () => {
-    // Handle subscription logic here
-    hidePaywallModal();
+  const handlePurchase = async () => {
+    if (!selectedPackage) return;
+    setIsPurchasing(true);
+    setLocalError(null);
+    try {
+      const { customerInfo } = await Purchases.purchasePackage(selectedPackage);
+      if (
+        typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined"
+      ) {
+        setShowPaywall(false);
+      }
+    } catch (e: unknown) {
+      const errorMsg = getErrorMessage(e, t("common.something_went_wrong"));
+      setLocalError(errorMsg);
+    } finally {
+      setIsPurchasing(false);
+    }
   };
 
-  const renderPlans = () => {
+  const restorePurchases = async () => {
+    setLocalError(null);
+    try {
+      const customerInfo = await Purchases.restorePurchases();
+      if (customerInfo.entitlements.active[ENTITLEMENT_ID]) {
+        setShowPaywall(false);
+      } else {
+        throw new Error(t("paywall.no_purchases_to_restore")!);
+      }
+    } catch (e) {
+      const errorMsg = getErrorMessage(e, t("common.something_went_wrong"));
+      setLocalError(errorMsg);
+    }
+  };
+
+  const handleClose = () => {
+    setShowPaywall(false);
+    setLocalError(null);
+    setIsPurchasing(false);
+  };
+
+  const renderHeader = () => {
     return (
-      <View style={styles.plansContainer}>
-        {plansList.map((plan, index) => {
-          const isLast = index === plansList.length - 1;
-          return (
-            <SelectableItem
-              key={index}
-              isSelected={selectedPlan === plan.name}
-              onPress={() => setSelectedPlan(plan.name)}
-              style={[
-                styles.planItem,
-                !isLast && { marginBottom: theme.layout.spacing.md },
-              ]}
-            >
-              <View>
-                <Typography variant="h4">{plan.title}</Typography>
-                <Typography variant="small" color="outline">
-                  {plan.description}
-                </Typography>
-              </View>
-              <Typography variant="h4">{plan.price}</Typography>
-            </SelectableItem>
-          );
-        })}
+      <View style={styles.header}>
+        <View style={styles.plansContainer}>
+          {packages.map((pkg, index) => {
+            let transKey = "";
+            if (pkg.packageType === PACKAGE_TYPE.MONTHLY) {
+              transKey = "monthly";
+            } else if (pkg.packageType === PACKAGE_TYPE.ANNUAL) {
+              transKey = "yearly";
+            } else if (pkg.packageType === PACKAGE_TYPE.LIFETIME) {
+              transKey = "lifetime";
+            }
+            return (
+              <SelectableItem
+                key={index}
+                isSelected={selectedPackage?.identifier === pkg.identifier}
+                onPress={() => setSelectedPackage(pkg)}
+                style={styles.planItem}
+              >
+                <View>
+                  <Typography variant="h5">
+                    {t(`paywall.${transKey}`)}
+                  </Typography>
+                  {pkg.product.description && (
+                    <Typography variant="small" color="outline">
+                      {pkg.product.description}
+                    </Typography>
+                  )}
+                </View>
+                <Typography variant="h4">{pkg.product.priceString}</Typography>
+              </SelectableItem>
+            );
+          })}
+        </View>
+        <Button variant="text" textColor="primary" onPress={restorePurchases}>
+          {t("paywall.restore")}
+        </Button>
       </View>
     );
   };
 
   const renderBenefitItem = ({ item }: { item: TBenefit }) => {
     return (
-      <View style={styles.benefitItem} key={item.title}>
-        <View style={styles.benefitIcon}>
-          <Feather
-            name={item.icon}
-            size={theme.layout.size.lg * 0.5}
-            color={theme.colors.onPrimary}
-          />
-        </View>
+      <View style={styles.benefitItem}>
+        <IconBox icon={item.icon} radius="lg" />
         <View style={styles.benefitInfo}>
-          <Typography variant="h4">{item.title}</Typography>
+          <Typography variant="h5">{item.title}</Typography>
           <Typography variant="small">{item.description}</Typography>
         </View>
       </View>
@@ -138,32 +202,81 @@ export const PaywallModal = () => {
     return (
       <FlatList
         data={benefitsList}
-        ListHeaderComponent={renderPlans}
+        ListHeaderComponent={renderHeader}
         renderItem={renderBenefitItem}
         keyExtractor={(item) => item.title}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listsContainer}
         style={styles.container}
       />
     );
   };
 
+  const renderLocalError = () => {
+    if (!localError) return null;
+    return (
+      <Typography
+        variant="bodyBold"
+        color="error"
+        align="center"
+        style={{ marginBottom: 8 }}
+      >
+        {localError}
+      </Typography>
+    );
+  };
+
   const renderSubscribeButton = () => {
     return (
-      <View style={styles.buttonContainer}>
-        <Button onPress={handleSubscribe}>{t("paywall.subscribe")}</Button>
+      <View style={styles.footerContainer}>
+        {renderLocalError()}
+        <Button isLoading={isPurchasing} onPress={handlePurchase}>
+          {t("paywall.subscribe")}
+        </Button>
       </View>
+    );
+  };
+
+  const renderLoading = () => {
+    // TODO: Replace with a proper loading indicator
+    return (
+      <View style={styles.statusContainer}>
+        <Typography variant="body">Loading...</Typography>
+      </View>
+    );
+  };
+
+  const renderError = () => {
+    // TODO: Replace with a proper error component
+    return (
+      <View style={styles.statusContainer}>
+        <Typography variant="body" color="error">
+          {error}
+        </Typography>
+      </View>
+    );
+  };
+
+  const renderContent = () => {
+    if (!isReady) return renderLoading();
+    if (error) return renderError();
+    return (
+      <>
+        {renderList()}
+        {renderSubscribeButton()}
+      </>
     );
   };
 
   return (
     <SlideInModal
-      visible={isPaywallVisible}
-      onClose={hidePaywallModal}
+      visible={showPaywall}
+      onClose={handleClose}
       maxHeightPercent={1}
       fixedHeight
+      title={t("paywall.title")}
     >
-      {renderList()}
-      {renderSubscribeButton()}
+      {renderContent()}
     </SlideInModal>
   );
 };
@@ -171,11 +284,23 @@ export const PaywallModal = () => {
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
-      flex: 1,
       paddingHorizontal: theme.layout.spacing.lg,
     },
+    statusContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    header: {
+      gap: theme.layout.spacing.sm,
+      marginBottom: theme.layout.spacing.lg,
+    },
     plansContainer: {
-      marginBottom: theme.layout.spacing.xxl,
+      gap: theme.layout.spacing.sm,
+    },
+    listsContainer: {
+      gap: theme.layout.spacing.md,
+      paddingBottom: theme.layout.spacing.lg,
     },
     planItem: {
       flexDirection: "row",
@@ -184,22 +309,12 @@ const createStyles = (theme: TTheme) =>
     },
     benefitItem: {
       flexDirection: "row",
-      marginBottom: theme.layout.spacing.md,
-    },
-    benefitIcon: {
-      width: theme.layout.size.lg,
-      height: theme.layout.size.lg,
-      borderRadius: theme.layout.borderRadius.lg,
-      backgroundColor: theme.colors.primary,
-      justifyContent: "center",
-      alignItems: "center",
-      marginRight: theme.layout.spacing.md,
-      marginBottom: theme.layout.spacing.sm,
+      gap: theme.layout.spacing.sm,
     },
     benefitInfo: {
       flex: 1,
     },
-    buttonContainer: {
+    footerContainer: {
       padding: theme.layout.spacing.lg,
     },
   });

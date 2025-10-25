@@ -4,8 +4,10 @@ import {
   TTheme,
   useTheme,
 } from "@/theme";
+import { TColorKeys } from "@/types/common";
 import { useMemo } from "react";
 import {
+  ActivityIndicator,
   StyleProp,
   StyleSheet,
   TouchableOpacity,
@@ -13,15 +15,17 @@ import {
 } from "react-native";
 import { Typography } from "../Typography/Typography";
 
-interface ButtonProps {
+export interface ButtonProps {
   children: React.ReactNode;
   onPress?: () => void;
-  variant?: "contained" | "text" | "outlined";
+  variant?: "contained" | "text";
   disabled?: boolean;
   fullWidth?: boolean;
-  buttonColor?: keyof TTheme["colors"];
-  textColor?: keyof TTheme["colors"];
+  buttonColor?: TColorKeys;
+  textColor?: TColorKeys;
+  autoSize?: boolean;
   style?: StyleProp<ViewStyle>;
+  isLoading?: boolean;
 }
 
 export const Button = ({
@@ -32,7 +36,9 @@ export const Button = ({
   disabled = false,
   buttonColor,
   textColor,
+  autoSize,
   style,
+  isLoading,
 }: ButtonProps) => {
   const { theme } = useTheme();
 
@@ -47,13 +53,9 @@ export const Button = ({
     case "contained":
       buttonTextColor = textColor || "onPrimary";
       backgroundColor = theme.colors[buttonColor || "primary"];
-      borderColor = theme.colors[buttonColor || "primary"];
-      break;
-    case "outlined":
-      buttonTextColor = textColor || "onPrimary";
-      borderColor = theme.colors[buttonColor || "primary"];
       break;
     case "text":
+      buttonTextColor = textColor || "onSurface";
     default:
       break;
   }
@@ -63,7 +65,27 @@ export const Button = ({
     backgroundColor,
     borderColor,
     width: fullWidth ? "100%" : "auto",
+    minHeight: autoSize ? "auto" : theme.layout.size.lg,
+    paddingVertical: autoSize ? 0 : theme.layout.spacing.sm,
+    paddingHorizontal: autoSize ? 0 : theme.layout.spacing.lg,
     ...(disabled && { opacity: DISABLED_ALPHA }),
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <ActivityIndicator color={theme.colors[buttonTextColor]} size="small" />
+      );
+    }
+    return (
+      <Typography
+        variant="buttonText"
+        numberOfLines={1}
+        color={buttonTextColor}
+      >
+        {children}
+      </Typography>
+    );
   };
 
   return (
@@ -73,13 +95,7 @@ export const Button = ({
       style={[buttonStyle, style]}
       activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
     >
-      <Typography
-        variant="buttonText"
-        numberOfLines={1}
-        color={buttonTextColor}
-      >
-        {children}
-      </Typography>
+      {renderContent()}
     </TouchableOpacity>
   );
 };
@@ -87,14 +103,8 @@ export const Button = ({
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     button: {
-      borderWidth: 1,
-      minHeight: theme.layout.size.md,
       borderRadius: theme.layout.borderRadius.xl,
-      paddingVertical: theme.layout.spacing.sm,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: theme.layout.spacing.lg,
     },
   });
-
-export default Button;

@@ -2,7 +2,7 @@ import { TTheme, useTheme } from "@/theme";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Button } from "../Button/Button";
+import { Button, ButtonProps } from "../Button/Button";
 import { Modal } from "../Modal/Modal";
 import { Typography } from "../Typography/Typography";
 
@@ -13,6 +13,7 @@ export interface ConfirmationDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   actionText?: React.ReactNode;
+  actionProps?: Partial<ButtonProps>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -23,6 +24,7 @@ export const ConfirmationDialog = ({
   onClose,
   onConfirm,
   actionText,
+  actionProps,
 }: ConfirmationDialogProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -35,13 +37,7 @@ export const ConfirmationDialog = ({
       </Typography>
       <Typography style={styles.content}>{content}</Typography>
       <View style={styles.actions}>
-        <Button
-          buttonColor="secondary"
-          textColor="onBackground"
-          variant="outlined"
-          onPress={onClose}
-          style={styles.cancelButton}
-        >
+        <Button variant="text" onPress={onClose} style={styles.cancelButton}>
           {t("common.cancel")}
         </Button>
         <Button
@@ -49,6 +45,7 @@ export const ConfirmationDialog = ({
           buttonColor="error"
           textColor="onError"
           onPress={onConfirm}
+          {...actionProps}
         >
           {actionText || t("common.delete")}
         </Button>
@@ -73,5 +70,3 @@ const createStyles = (theme: TTheme) =>
       marginRight: theme.layout.spacing.sm,
     },
   });
-
-export default ConfirmationDialog;

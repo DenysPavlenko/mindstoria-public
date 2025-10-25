@@ -1,64 +1,24 @@
-import { TTrackerMetric, TrackerMetricType } from "@/types";
-import {
-  integer,
-  primaryKey,
-  sqliteTable,
-  text,
-} from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-// Trackers table
-export const trackers = sqliteTable("trackers", {
+export const sleepLogs = sqliteTable("sleep_logs", {
   id: text().primaryKey(),
-  name: text().notNull(),
-  iconName: text().notNull(),
-  description: text(),
-  createdAt: text().notNull(),
-  order: integer().notNull().default(0),
+  quality: integer().notNull(),
+  timestamp: text().notNull(),
 });
 
-// Metrics table
-export const metrics = sqliteTable("metrics", {
+export const medLogs = sqliteTable("med_logs", {
   id: text().primaryKey(),
-  trackerId: text()
-    .notNull()
-    .references(() => trackers.id, { onDelete: "cascade" }),
-  label: text().notNull(),
-  type: integer().notNull().$type<TrackerMetricType>(),
-  config: text({
-    mode: "json",
-  }).$type<TTrackerMetric["config"] | null>(),
-  order: integer().notNull().default(0),
+  medId: text().notNull(),
+  dosage: integer().notNull(),
+  timestamp: text().notNull(),
 });
 
-// Entries table
-export const entries = sqliteTable("entries", {
+export const logs = sqliteTable("logs", {
   id: text().primaryKey(),
-  trackerId: text()
-    .notNull()
-    .references(() => trackers.id, { onDelete: "cascade" }),
-  date: text().notNull(),
-  createdAt: text().notNull(),
+  timestamp: text().notNull(),
+  values: text("values", { mode: "json" }).notNull(),
 });
 
-// EntryValues table (metric values per entry)
-export const entryValues = sqliteTable(
-  "entry_values",
-  {
-    entryId: text()
-      .notNull()
-      .references(() => entries.id, { onDelete: "cascade" }),
-    metricId: text()
-      .notNull()
-      .references(() => metrics.id, { onDelete: "cascade" }),
-    // since values can be string | number | boolean | null, we need to normalize
-    valueString: text(),
-    valueNumber: integer(),
-    valueBoolean: integer({ mode: "boolean" }),
-  },
-  (table) => [primaryKey({ columns: [table.entryId, table.metricId] })]
-);
-
-export type TMetricTableRow = typeof metrics.$inferSelect;
-export type TTrackerTableRow = typeof trackers.$inferSelect;
-export type TEntryTableRow = typeof entries.$inferSelect;
-export type TEntryValueTableRow = typeof entryValues.$inferSelect;
+export type TSleepLogTableRow = typeof sleepLogs.$inferSelect;
+export type TMedLogTableRow = typeof medLogs.$inferSelect;
+export type TLogTableRow = typeof logs.$inferSelect;

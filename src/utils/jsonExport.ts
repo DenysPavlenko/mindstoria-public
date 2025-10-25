@@ -1,4 +1,5 @@
-import { TTrackersData } from "@/types";
+import { TBackUpData } from "@/types";
+import dayjs from "dayjs";
 import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
@@ -34,12 +35,13 @@ const handleIOSExport = async (jsonContent: string, fileName: string) => {
   }
 };
 
-export const exportTrackersAsJSON = async (data: TTrackersData) => {
+export const exportDataAsJSON = async (data: TBackUpData) => {
   const jsonContent = JSON.stringify(data, null, 2);
-  const trackerName = `trackers_export_${new Date().toISOString()}.json`;
+  const timestamp = dayjs().format("YYYY-MM-DD_HH:mm:ss");
+  const name = `mindstoria-${timestamp}.json`;
   if (Platform.OS === "android") {
-    return await handleAndroidExport(jsonContent, trackerName);
+    return await handleAndroidExport(jsonContent, name);
   } else {
-    return await handleIOSExport(jsonContent, trackerName);
+    return await handleIOSExport(jsonContent, name);
   }
 };

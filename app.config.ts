@@ -1,0 +1,110 @@
+import { ConfigContext, ExpoConfig } from "expo/config";
+
+const APP_VARIANT = process.env.APP_VARIANT ?? "development";
+const IS_DEV = APP_VARIANT === "development";
+const IS_PREVIEW = APP_VARIANT === "preview";
+
+const getUniqueIdentifier = () => {
+  if (IS_DEV) {
+    return "com.denyspavlenko.mindstoria.dev";
+  }
+  if (IS_PREVIEW) {
+    return "com.denyspavlenko.mindstoria.preview";
+  }
+  return "com.denyspavlenko.mindstoria";
+};
+
+const getAppName = () => {
+  if (IS_DEV) {
+    return "Mindstoria (Dev)";
+  }
+  if (IS_PREVIEW) {
+    return "Mindstoria (Preview)";
+  }
+  return "Mindstoria";
+};
+
+export default ({ config }: ConfigContext): ExpoConfig => {
+  return {
+    ...config,
+    name: getAppName(),
+    slug: "mindstoria",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./src/assets/images/icon.png",
+    scheme: "mindstoria",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    platforms: ["ios", "android"],
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: getUniqueIdentifier(),
+      icon: {
+        dark: "./src/assets/images/ios-dark.png",
+        light: "./src/assets/images/ios-light.png",
+        tinted: "./src/assets/images/ios-tinted.png",
+      },
+    },
+    android: {
+      adaptiveIcon: {
+        foregroundImage: "./src/assets/images/adaptive-icon.png",
+        monochromeImage: "./src/assets/images/adaptive-icon.png",
+        backgroundColor: "#F9F9FF",
+      },
+      edgeToEdgeEnabled: true,
+      predictiveBackGestureEnabled: false,
+      package: getUniqueIdentifier(),
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          image: "./src/assets/images/splash-icon-dark.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#F9F9FF",
+          dark: {
+            image: "./src/assets/images/splash-icon-light.png",
+            backgroundColor: "#111318",
+          },
+        },
+      ],
+      [
+        "expo-sqlite",
+        {
+          enableFTS: true,
+          useSQLCipher: true,
+          android: {
+            enableFTS: false,
+            useSQLCipher: false,
+          },
+          ios: {
+            customBuildFlags: [
+              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1",
+            ],
+          },
+        },
+      ],
+      "expo-localization",
+      "expo-web-browser",
+    ],
+    experiments: {
+      typedRoutes: true,
+      reactCompiler: true,
+    },
+    extra: {
+      router: {},
+      APP_VARIANT: APP_VARIANT,
+      eas: {
+        projectId: "7c6015c0-d5e3-46b8-85ac-b567bd299cfd",
+      },
+    },
+    runtimeVersion: {
+      policy: "appVersion",
+    },
+    updates: {
+      url: "https://u.expo.dev/7c6015c0-d5e3-46b8-85ac-b567bd299cfd",
+    },
+  };
+};

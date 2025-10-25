@@ -1,5 +1,5 @@
 import React from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface KeyboardAwareViewProps {
@@ -23,7 +23,7 @@ export const KeyboardAwareView: React.FC<KeyboardAwareViewProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, style]}
+      style={style}
       behavior={behavior || (Platform.OS === "ios" ? "padding" : "height")}
       keyboardVerticalOffset={finalOffset}
     >
@@ -31,11 +31,3 @@ export const KeyboardAwareView: React.FC<KeyboardAwareViewProps> = ({
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default KeyboardAwareView;

@@ -1,14 +1,18 @@
-import { Typography } from '../Typography/Typography';
-import { StyleProp, ViewStyle } from 'react-native';
+import { useTheme } from "@/theme";
+import { Typography, TypographyProps } from "../Typography/Typography";
 
 interface LabelProps {
   label: string;
-  style?: StyleProp<ViewStyle>;
+  style?: TypographyProps["style"];
 }
 
 export const Label = ({ label, style }: LabelProps) => {
+  const { theme } = useTheme();
   return (
-    <Typography variant="small" style={style}>
+    <Typography
+      variant="smallBold"
+      style={[style, { marginBottom: theme.layout.spacing.xs }]}
+    >
       {label}
     </Typography>
   );

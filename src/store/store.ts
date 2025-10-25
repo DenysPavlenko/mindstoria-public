@@ -1,24 +1,90 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { configureStore } from "@reduxjs/toolkit";
+import { createMMKV } from "react-native-mmkv";
 import devToolsEnhancer from "redux-devtools-expo-dev-plugin";
-import { persistReducer, persistStore } from "redux-persist";
-import { trackersDataSlice, uiSlice } from "./slices";
-import premiumReducer from "./slices/premium/premiumSlice";
+import { persistReducer, persistStore, Storage } from "redux-persist";
+import emotionDefinitionsReducer from "./slices/emotionDefinitions/emotionDefinitionsSlice";
+import impactDefinitionsReducer from "./slices/impactDefinitions/impactDefinitionsSlice";
+import logMetricsReducer from "./slices/logMetrics/logMetricsSlice";
+import logsReducer from "./slices/logs/logsSlice";
+import medicationsReducer from "./slices/medications/medicationsSlice";
+import medLogsReducer from "./slices/medLogs/medLogsSlice";
+import settingsReducer from "./slices/settings/settingsSlice";
+import sleepLogsReducer from "./slices/sleepLogs/sleepLogsSlice";
+import uiSliceReducer from "./slices/ui/uiSlice";
+
+const storage = createMMKV();
+
+export const reduxStorage: Storage = {
+  setItem: (key, value) => {
+    storage.set(key, value);
+    return Promise.resolve(true);
+  },
+  getItem: (key) => {
+    const value = storage.getString(key);
+    return Promise.resolve(value);
+  },
+  removeItem: (key) => {
+    storage.remove(key);
+    return Promise.resolve();
+  },
+};
 
 // Persist config for UI slice
 const uiPersistConfig = {
   key: "ui",
-  storage: AsyncStorage,
+  storage: reduxStorage,
 };
 
-// Create persisted UI reducer
-const persistedUIReducer = persistReducer(uiPersistConfig, uiSlice.reducer);
+const settingsPersistConfig = {
+  key: "settings",
+  storage: reduxStorage,
+};
+
+const medicationsPersistConfig = {
+  key: "medications",
+  storage: reduxStorage,
+};
+
+const impactDefinitionsPersistConfig = {
+  key: "impactDefinitions",
+  storage: reduxStorage,
+};
+
+const emotionDefinitionsPersistConfig = {
+  key: "emotionDefinitions",
+  storage: reduxStorage,
+};
+
+// Create persisted reducers
+const persistedUIReducer = persistReducer(uiPersistConfig, uiSliceReducer);
+const persistedSettingsReducer = persistReducer(
+  settingsPersistConfig,
+  settingsReducer
+);
+const persistedMedicationsReducer = persistReducer(
+  medicationsPersistConfig,
+  medicationsReducer
+);
+const persistedImpactDefinitionsReducer = persistReducer(
+  impactDefinitionsPersistConfig,
+  impactDefinitionsReducer
+);
+const persistedEmotionDefinitionsReducer = persistReducer(
+  emotionDefinitionsPersistConfig,
+  emotionDefinitionsReducer
+);
 
 export const store = configureStore({
   reducer: {
     ui: persistedUIReducer,
-    trackersData: trackersDataSlice.reducer,
-    premium: premiumReducer,
+    settings: persistedSettingsReducer,
+    impactDefinitions: persistedImpactDefinitionsReducer,
+    emotionDefinitions: persistedEmotionDefinitionsReducer,
+    logMetrics: logMetricsReducer,
+    logs: logsReducer,
+    medications: persistedMedicationsReducer,
+    sleepLogs: sleepLogsReducer,
+    medLogs: medLogsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

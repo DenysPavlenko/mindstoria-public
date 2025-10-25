@@ -1,4 +1,5 @@
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
+import { TColorKeys } from "@/types/common";
 import { Feather, FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
 import {
@@ -19,8 +20,8 @@ if (Platform.OS === "android") {
 
 interface UnderlayButtonProps {
   onPress?: () => void;
-  backgroundColor: keyof TTheme["colors"];
-  iconColor: keyof TTheme["colors"];
+  backgroundColor: TColorKeys;
+  iconColor: TColorKeys;
   position: "left" | "right";
   iconName: FeatherIconName;
   width: number;
