@@ -49,14 +49,27 @@ export const impactDefinitionsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(REHYDRATE, (state) => {
       if (state.version !== IMPACT_DEFINITIONS_VERSION) {
-        // Merge new definitions with existing user-created ones
-        const userCreated = Object.values(state.items).filter(
-          (item) => item.isUserCreated
-        );
+        // Get current default IDs
+        const currentDefaultIds = new Set([
+          ...positiveImpacts.map((def) => def.id),
+          ...negativeImpacts.map((def) => def.id),
+        ]);
+
+        // Keep existing items that are either user-created OR still in defaults
+        const itemsToKeep = Object.values(state.items).filter((item) => {
+          return item.isUserCreated || currentDefaultIds.has(item.id);
+        });
+
+        // Add any new default items
+        const existingIds = new Set(itemsToKeep.map((item) => item.id));
+        const newDefaults = [
+          ...positiveImpacts.filter((def) => !existingIds.has(def.id)),
+          ...negativeImpacts.filter((def) => !existingIds.has(def.id)),
+        ];
+
         state.items = {
-          ...Object.fromEntries(positiveImpacts.map((def) => [def.id, def])),
-          ...Object.fromEntries(negativeImpacts.map((def) => [def.id, def])),
-          ...Object.fromEntries(userCreated.map((def) => [def.id, def])),
+          ...Object.fromEntries(itemsToKeep.map((item) => [item.id, item])),
+          ...Object.fromEntries(newDefaults.map((def) => [def.id, def])),
         };
         state.version = IMPACT_DEFINITIONS_VERSION;
       }

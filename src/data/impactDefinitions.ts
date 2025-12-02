@@ -2,13 +2,6 @@ import { TImpactDefinition } from "@/types";
 
 export const positiveImpacts: TImpactDefinition[] = [
   {
-    id: "socializing",
-    name: "TEST",
-    type: "positive",
-    icon: "users",
-    isUserCreated: false,
-  },
-  {
     id: "exercise",
     name: "positive_impacts.exercise",
     type: "positive",

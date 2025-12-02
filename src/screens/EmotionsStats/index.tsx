@@ -139,6 +139,7 @@ export const EmotionsStats = () => {
               icon={item.icon}
               count={item.count}
               type={item.type}
+              isArchived={item.isArchived}
             />
           );
         }}

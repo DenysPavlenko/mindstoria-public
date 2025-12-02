@@ -52,14 +52,27 @@ export const emotionDefinitionsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(REHYDRATE, (state) => {
       if (state.version !== EMOTION_DEFINITIONS_VERSION) {
-        // Merge new definitions with existing user-created ones
-        const userCreated = Object.values(state.items).filter(
-          (item) => item.isUserCreated
-        );
+        // Get current default IDs
+        const currentDefaultIds = new Set([
+          ...positiveEmotions.map((def) => def.id),
+          ...negativeEmotions.map((def) => def.id),
+        ]);
+
+        // Keep existing items that are either user-created OR still in defaults
+        const itemsToKeep = Object.values(state.items).filter((item) => {
+          return item.isUserCreated || currentDefaultIds.has(item.id);
+        });
+
+        // Add any new default items
+        const existingIds = new Set(itemsToKeep.map((item) => item.id));
+        const newDefaults = [
+          ...positiveEmotions.filter((def) => !existingIds.has(def.id)),
+          ...negativeEmotions.filter((def) => !existingIds.has(def.id)),
+        ];
+
         state.items = {
-          ...Object.fromEntries(positiveEmotions.map((def) => [def.id, def])),
-          ...Object.fromEntries(negativeEmotions.map((def) => [def.id, def])),
-          ...Object.fromEntries(userCreated.map((def) => [def.id, def])),
+          ...Object.fromEntries(itemsToKeep.map((item) => [item.id, item])),
+          ...Object.fromEntries(newDefaults.map((def) => [def.id, def])),
         };
         state.version = EMOTION_DEFINITIONS_VERSION;
       }

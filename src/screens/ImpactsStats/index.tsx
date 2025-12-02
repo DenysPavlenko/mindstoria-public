@@ -139,6 +139,7 @@ export const ImpactsStats = () => {
               icon={item.icon}
               count={item.count}
               type={item.type}
+              isArchived={item.isArchived}
             />
           );
         }}
