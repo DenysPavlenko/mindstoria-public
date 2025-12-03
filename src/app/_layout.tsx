@@ -2,7 +2,7 @@ import { PaywallModal } from "@/components";
 import { db, expoDb } from "@/db";
 import migrations from "@/drizzle/migrations";
 import { initI18n } from "@/i18n";
-import { persistor, store } from "@/store";
+import { persistor, store, useAppSelector } from "@/store";
 import { MenuProvider } from "react-native-popup-menu";
 
 import { RevenueCatProvider } from "@/services";
@@ -53,6 +53,9 @@ const AppContent = () => {
   const { theme, isLoading } = useTheme();
   const { success } = useMigrations(db, migrations);
   const [isTransReady, setIsTransReady] = useState(false);
+  const isWelcomeShown = useAppSelector(
+    (state) => state.settings.isWelcomeShown
+  );
   let [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_600SemiBold,
@@ -108,7 +111,13 @@ const AppContent = () => {
                 headerShown: false,
               }}
             >
-              <Stack.Screen name="(tabs)" />
+              <Stack.Protected guard={!isWelcomeShown}>
+                <Stack.Screen name="welcome" />
+              </Stack.Protected>
+
+              <Stack.Protected guard={isWelcomeShown}>
+                <Stack.Screen name="(tabs)" />
+              </Stack.Protected>
             </Stack>
             <PaywallModal />
           </NavigationThemeProvider>

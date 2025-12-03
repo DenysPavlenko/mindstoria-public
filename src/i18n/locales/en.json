@@ -44,6 +44,12 @@
     "archived": "Archived",
     "inactive": "Inactive"
   },
+  "welcome": {
+    "title": "Welcome to Mindstoria!",
+    "subtitle": "Track how your day really feels",
+    "description": "Mindstoria helps you log moments, your emotions, and the impacts behind them — so you can notice patterns and understand yourself better over time",
+    "get_started": "Get Started"
+  },
   "rating": {
     "awful": "Awful",
     "bad": "Bad",

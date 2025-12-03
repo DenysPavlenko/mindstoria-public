@@ -8,7 +8,6 @@ interface PlaceholderProps {
   title?: string | React.ReactNode;
   content?: string | React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  size?: "sm" | "lg";
   hideIcon?: boolean;
 }
 
@@ -16,23 +15,20 @@ export const Placeholder = ({
   title,
   content,
   style,
-  size = "lg",
   hideIcon = false,
 }: PlaceholderProps) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const iconSize = size === "lg" ? 100 : 70;
-  const iconWidth = iconSize * 1.5;
-  const iconHeight = iconSize;
+  const iconSize = 150;
 
   const renderImage = () => {
     if (hideIcon) return null;
     return (
       <View
         style={{
-          height: iconHeight,
-          width: iconWidth,
+          height: iconSize,
+          width: iconSize,
           overflow: "hidden",
           justifyContent: "center",
           alignItems: "center",
@@ -40,10 +36,10 @@ export const Placeholder = ({
         }}
       >
         <NoData
-          width={iconWidth * 1.5}
-          height={iconHeight * 1.5}
-          fill={theme.colors.outlineVariant}
-          color={theme.colors.outlineVariant}
+          width={iconSize * 1.2}
+          height={iconSize * 1.2}
+          fill={theme.colors.outline}
+          color={theme.colors.outline}
         />
       </View>
     );
@@ -52,7 +48,7 @@ export const Placeholder = ({
   const renderTitle = () => {
     if (typeof title === "string") {
       return (
-        <Typography variant={size === "lg" ? "h4" : "h5"} align="center">
+        <Typography variant="h4" align="center">
           {title}
         </Typography>
       );

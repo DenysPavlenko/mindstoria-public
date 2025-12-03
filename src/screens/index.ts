@@ -9,3 +9,4 @@ export * from "./Medications";
 export * from "./MedLogs";
 export * from "./Settings";
 export * from "./Statistics";
+export * from "./Welcome";

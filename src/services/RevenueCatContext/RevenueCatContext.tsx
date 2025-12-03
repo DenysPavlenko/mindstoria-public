@@ -45,13 +45,10 @@ export const RevenueCatProvider = ({
       setIsReady(true);
       return;
     }
-    if (androidApiKey && iosApiKey) {
+    const apiKey = Platform.OS === "android" ? androidApiKey : iosApiKey;
+    if (apiKey) {
       Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
-      if (Platform.OS === "ios") {
-        Purchases.configure({ apiKey: iosApiKey });
-      } else if (Platform.OS === "android") {
-        Purchases.configure({ apiKey: androidApiKey });
-      }
+      Purchases.configure({ apiKey });
     } else {
       setSetupError("RevenueCat API keys are not set");
     }
