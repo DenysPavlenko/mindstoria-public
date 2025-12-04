@@ -4,7 +4,7 @@ import { useTheme } from "@/theme";
 import { TTheme } from "@/theme/theme";
 import { getErrorMessage } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
 import Purchases, {
@@ -13,14 +13,50 @@ import Purchases, {
 } from "react-native-purchases";
 import { Button } from "../Button/Button";
 import { IconBox } from "../IconBox/IconBox";
+import { IconButton } from "../IconButton/IconButton";
 import { SelectableItem } from "../SelectableItem/SelectableItem";
 import { SlideInModal } from "../SlideInModal/SlideInModal";
 import { Typography } from "../Typography/Typography";
+import { BackdoorModal } from "./components/BackdoorModal";
 
 type TBenefit = {
   icon: FeatherIconName;
   title: string;
   description: string;
+};
+
+const getDiscountInfo = (pkg: PurchasesPackage) => {
+  const { product } = pkg;
+
+  // Check for introductory price
+  if (product.introPrice) {
+    return {
+      hasDiscount: true,
+      type: "intro",
+      discountPrice: product.introPrice.priceString,
+      originalPrice: product.priceString,
+      period: `${product.introPrice.periodNumberOfUnits} ${product.introPrice.periodUnit}`,
+    };
+  }
+
+  // Check for promotional discounts
+  if (product.discounts && product.discounts.length > 0) {
+    const discount = product.discounts[0]; // Use first available discount
+    if (discount) {
+      const savings = product.price - discount.price;
+      const savingsPercent = Math.round((savings / product.price) * 100);
+
+      return {
+        hasDiscount: true,
+        type: "promotional",
+        discountPrice: discount.priceString,
+        originalPrice: product.priceString,
+        savingsPercent,
+      };
+    }
+  }
+
+  return { hasDiscount: false };
 };
 
 export const PaywallModal = () => {
@@ -32,6 +68,8 @@ export const PaywallModal = () => {
   const [localError, setLocalError] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] =
     useState<PurchasesPackage | null>(null);
+  const [showBackdoor, setShowBackdoor] = useState(false);
+  const tapCountRef = useRef(0);
 
   useEffect(() => {
     if (!isReady) return;
@@ -104,6 +142,15 @@ export const PaywallModal = () => {
     },
   ];
 
+  const handleBackdoorIconPress = () => {
+    tapCountRef.current += 1;
+    if (tapCountRef.current >= 7) {
+      setShowBackdoor(true);
+      setShowPaywall(false);
+      tapCountRef.current = 0; // Reset counter
+    }
+  };
+
   const handlePurchase = async () => {
     if (!selectedPackage) return;
     setIsPurchasing(true);
@@ -149,32 +196,50 @@ export const PaywallModal = () => {
       <View style={styles.header}>
         <View style={styles.plansContainer}>
           {packages.map((pkg, index) => {
-            let transKey = "";
-            if (pkg.packageType === PACKAGE_TYPE.MONTHLY) {
-              transKey = "monthly";
-            } else if (pkg.packageType === PACKAGE_TYPE.ANNUAL) {
-              transKey = "yearly";
-            } else if (pkg.packageType === PACKAGE_TYPE.LIFETIME) {
-              transKey = "lifetime";
-            }
+            const { product } = pkg;
+            const discountInfo = getDiscountInfo(pkg);
             return (
               <SelectableItem
                 key={index}
                 isSelected={selectedPackage?.identifier === pkg.identifier}
                 onPress={() => setSelectedPackage(pkg)}
-                style={styles.planItem}
+                style={[
+                  styles.planItem,
+                  {
+                    alignItems: discountInfo.hasDiscount
+                      ? "flex-start"
+                      : "center",
+                  },
+                ]}
               >
-                <View>
-                  <Typography variant="h5">
-                    {t(`paywall.${transKey}`)}
-                  </Typography>
-                  {pkg.product.description && (
+                <View style={styles.planInfo}>
+                  <View style={styles.planHeader}>
+                    <Typography variant="h5">{product.title}</Typography>
+                  </View>
+                  {/* {product.description && (
                     <Typography variant="small" color="outline">
-                      {pkg.product.description}
+                      {product.description}
                     </Typography>
+                  )} */}
+                </View>
+                <View style={styles.priceContainer}>
+                  {discountInfo.hasDiscount ? (
+                    <View style={styles.discountPricing}>
+                      <Typography
+                        variant="small"
+                        color="outline"
+                        style={styles.originalPrice}
+                      >
+                        {discountInfo.originalPrice}
+                      </Typography>
+                      <Typography variant="h4">
+                        {discountInfo.discountPrice}
+                      </Typography>
+                    </View>
+                  ) : (
+                    <Typography variant="h4">{product.priceString}</Typography>
                   )}
                 </View>
-                <Typography variant="h4">{pkg.product.priceString}</Typography>
               </SelectableItem>
             );
           })}
@@ -189,7 +254,16 @@ export const PaywallModal = () => {
   const renderBenefitItem = ({ item }: { item: TBenefit }) => {
     return (
       <View style={styles.benefitItem}>
-        <IconBox icon={item.icon} radius="lg" />
+        {item.icon === "star" ? (
+          <IconButton
+            icon={item.icon}
+            radius="lg"
+            onPress={handleBackdoorIconPress}
+            activeOpacity={1}
+          />
+        ) : (
+          <IconBox icon={item.icon} radius="lg" />
+        )}
         <View style={styles.benefitInfo}>
           <Typography variant="h5">{item.title}</Typography>
           <Typography variant="small">{item.description}</Typography>
@@ -268,16 +342,30 @@ export const PaywallModal = () => {
     );
   };
 
+  const renderBackdoor = () => {
+    if (!showBackdoor) return null;
+    return (
+      <BackdoorModal
+        onClose={() => {
+          setShowBackdoor(false);
+        }}
+      />
+    );
+  };
+
   return (
-    <SlideInModal
-      visible={showPaywall}
-      onClose={handleClose}
-      maxHeightPercent={1}
-      fixedHeight
-      title={t("paywall.title")}
-    >
-      {renderContent()}
-    </SlideInModal>
+    <>
+      <SlideInModal
+        visible={showPaywall}
+        onClose={handleClose}
+        maxHeightPercent={1}
+        fixedHeight
+        title={t("paywall.title")}
+      >
+        {renderContent()}
+      </SlideInModal>
+      {renderBackdoor()}
+    </>
   );
 };
 
@@ -307,6 +395,24 @@ const createStyles = (theme: TTheme) =>
       alignItems: "center",
       justifyContent: "space-between",
     },
+    planInfo: {
+      flex: 1,
+      marginRight: theme.layout.spacing.sm,
+    },
+    planHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.layout.spacing.xs,
+    },
+    priceContainer: {
+      alignItems: "flex-end",
+    },
+    discountPricing: {
+      alignItems: "flex-end",
+    },
+    originalPrice: {
+      textDecorationLine: "line-through",
+    },
     benefitItem: {
       flexDirection: "row",
       gap: theme.layout.spacing.sm,
@@ -316,6 +422,7 @@ const createStyles = (theme: TTheme) =>
     },
     footerContainer: {
       padding: theme.layout.spacing.lg,
+      paddingBottom: 0,
     },
   });
 

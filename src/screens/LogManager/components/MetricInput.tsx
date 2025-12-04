@@ -83,6 +83,7 @@ export const MetricInput = ({
         return (
           <View style={styles.notesContainer}>
             <FullScreenInput
+              autoFocus
               value={values.notes || ""}
               onChangeText={handleValueChange}
               placeholder={t("common.add_note")}
@@ -106,6 +107,7 @@ const createStyles = (theme: TTheme) =>
     notesContainer: {
       flex: 1,
       padding: theme.layout.spacing.lg,
+      paddingBottom: 0,
     },
   });
 

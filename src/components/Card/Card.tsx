@@ -32,6 +32,7 @@ export const Card = ({
   noHorizontalPadding = false,
   noVerticalPadding = false,
   bgColor = "surfaceContainer",
+  ...restProps
 }: CardProps) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -64,6 +65,7 @@ export const Card = ({
       onPress={onPress}
       onLongPress={onLongPress}
       activeOpacity={1}
+      {...restProps}
     >
       {children}
     </Component>

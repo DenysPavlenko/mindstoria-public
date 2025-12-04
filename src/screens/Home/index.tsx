@@ -6,15 +6,22 @@ import {
   Typography,
   WeekCalendar,
 } from "@/components";
-import { useAppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
+  fetchCBTLogsThunk,
   fetchLogsThunk,
   fetchMedLogsThunk,
   fetchSleepLogsThunk,
+  selectCBTConnectionsMap,
+  selectLogDateAvailability,
+  selectMedLogDateAvailability,
+  selectSleepLogsGroupedByDate,
 } from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
 import { TLog } from "@/types";
-import dayjs from "dayjs";
+import { CALENDAR_DATE_FORMAT } from "@/utils/dateConstants";
+import dayjs, { Dayjs } from "dayjs";
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
@@ -23,9 +30,14 @@ import { LogsList } from "./components/LogsList";
 
 export const Home = () => {
   const { theme } = useTheme();
+  const router = useRouter();
   const { t, i18n } = useTranslation();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const dispatch = useAppDispatch();
+  const sleepLogs = useAppSelector(selectSleepLogsGroupedByDate);
+  const medLogsLookup = useAppSelector(selectMedLogDateAvailability);
+  const logsLookup = useAppSelector(selectLogDateAvailability);
+  const cbtConnections = useAppSelector(selectCBTConnectionsMap);
   const [showCalendarPicker, setShowCalendarPicker] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<TLog | null>(null);
@@ -36,6 +48,7 @@ export const Home = () => {
       dispatch(fetchLogsThunk()),
       dispatch(fetchSleepLogsThunk()),
       dispatch(fetchMedLogsThunk()),
+      dispatch(fetchCBTLogsThunk()),
     ]).finally(() => setIsLoading(false));
   }, [dispatch]);
 
@@ -52,15 +65,40 @@ export const Home = () => {
     return selectedDate.locale(i18n.language).format("MMMM D");
   }, [selectedDate, t, i18n.language]);
 
+  const getDotsCount = (date: Dayjs) => {
+    const dayKey = dayjs(date).format(CALENDAR_DATE_FORMAT);
+    const dotsCount = [
+      sleepLogs[dayKey],
+      medLogsLookup[dayKey],
+      logsLookup[dayKey],
+    ].filter(Boolean).length;
+    return dotsCount;
+  };
+
   const renderHeader = () => {
     return (
       <Header
-        leftContent={<Typography variant="h4">{title}</Typography>}
+        leftContent={
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: theme.layout.spacing.sm,
+            }}
+          >
+            <IconButton
+              icon="calendar"
+              size="md"
+              onPress={() => setShowCalendarPicker(true)}
+            />
+            <Typography variant="h4">{title}</Typography>
+          </View>
+        }
         rightContent={
           <IconButton
-            icon="calendar"
+            icon="bar-chart-2"
             size="md"
-            onPress={() => setShowCalendarPicker(true)}
+            onPress={() => router.push("/statistics")}
           />
         }
       />
@@ -69,8 +107,13 @@ export const Home = () => {
 
   const renderLogsPreview = () => {
     if (!selectedLog) return null;
+    const cbtId = cbtConnections[selectedLog.id];
     return (
-      <LogPreview log={selectedLog} onClose={() => setSelectedLog(null)} />
+      <LogPreview
+        log={selectedLog}
+        onClose={() => setSelectedLog(null)}
+        connectedCBTId={cbtId}
+      />
     );
   };
 
@@ -82,6 +125,7 @@ export const Home = () => {
         onClose={() => setShowCalendarPicker(false)}
         date={selectedDate}
         onDateChange={setSelectedDate}
+        getDotsCount={getDotsCount}
       />
     );
   };
@@ -94,6 +138,7 @@ export const Home = () => {
           date={selectedDate}
           onDateChange={setSelectedDate}
           style={styles.weekCalendar}
+          getDotsCount={getDotsCount}
         />
         <Essentials date={selectedDate} />
         <LogsList

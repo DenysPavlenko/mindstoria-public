@@ -1,4 +1,5 @@
 export * from "./backUp";
+export * from "./CBTLog";
 export * from "./common";
 export * from "./emotions";
 export * from "./impacts";

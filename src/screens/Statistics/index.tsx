@@ -5,18 +5,11 @@ import {
   SleepLogsChart,
   TAB_BAR_HEIGHT,
   TimePeriodSelect,
-  Typography,
   WellbeingLogsChart,
 } from "@/components";
 import { useAppSelector } from "@/store";
 import { TTheme, useTheme } from "@/theme";
-import {
-  TChartDataMap,
-  TChartDataPoint,
-  TLog,
-  TSortBy,
-  TTimePeriod,
-} from "@/types";
+import { TSortBy, TTimePeriod } from "@/types";
 import {
   filterDataByTimePeriod,
   getEmotions,
@@ -28,16 +21,14 @@ import {
   getTakenMedications,
   getWellbeingChartDataMap,
 } from "@/utils";
-import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const Statistics = () => {
   const { theme } = useTheme();
-  const isFocused = useIsFocused();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { showMedications } = useAppSelector((state) => state.settings);
@@ -51,11 +42,6 @@ export const Statistics = () => {
   const emotionDefsItems = useAppSelector(
     (state) => state.emotionDefinitions.items
   );
-  const cachedLogs = useRef<TLog[] | null>(null);
-  const cachedSleepData = useRef<TChartDataMap | null>(null);
-  const cachedTakenMedsData = useRef<Record<string, TChartDataPoint[]> | null>(
-    null
-  );
   const [impactsSortBy, setImpactsSortBy] = useState<TSortBy>("count");
   const [emotionsSortBy, setEmotionsSortBy] = useState<TSortBy>("count");
   const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
@@ -64,8 +50,6 @@ export const Statistics = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const filteredLogItems = useMemo(() => {
-    const cachedData = cachedLogs.current;
-    if (!isFocused && cachedData) return cachedData;
     const logs = Object.values(logsItems);
     const filtered = filterDataByTimePeriod(
       logs,
@@ -73,17 +57,14 @@ export const Statistics = () => {
       currentPeriod,
       currentDate
     );
-    cachedLogs.current = filtered;
     return filtered;
-  }, [logsItems, isFocused, currentPeriod, currentDate]);
+  }, [logsItems, currentPeriod, currentDate]);
 
   const wellbeingChartDataMap = useMemo(() => {
     return getWellbeingChartDataMap(filteredLogItems, currentPeriod);
   }, [filteredLogItems, currentPeriod]);
 
   const sleepLogsChartDataMap = useMemo(() => {
-    const cached = cachedSleepData.current;
-    if (!isFocused && cached) return cached;
     const sleepLogs = Object.values(sleepLogsItems);
     const filteredLogs = filterDataByTimePeriod(
       sleepLogs,
@@ -92,14 +73,11 @@ export const Statistics = () => {
       currentDate
     );
     const data = getSleepLogChartDataMap(filteredLogs, currentPeriod);
-    cachedSleepData.current = data;
     return data;
-  }, [sleepLogsItems, isFocused, currentPeriod, currentDate]);
+  }, [sleepLogsItems, currentPeriod, currentDate]);
 
   const medicationsChartData = useMemo(() => {
     if (!showMedications) return {};
-    const cached = cachedTakenMedsData.current;
-    if (!isFocused && cached) return cached;
     const medLogs = Object.values(medLogsItems);
     const filteredLogs = filterDataByTimePeriod(
       medLogs,
@@ -109,15 +87,13 @@ export const Statistics = () => {
     );
     const takenMeds = getTakenMedications(filteredLogs, medicationsItems);
     const data = getMedicationsChartData(takenMeds, currentPeriod);
-    cachedTakenMedsData.current = data;
     return data;
   }, [
+    showMedications,
     medLogsItems,
     medicationsItems,
-    isFocused,
     currentPeriod,
     currentDate,
-    showMedications,
   ]);
 
   const impactsStatsData = useMemo(() => {
@@ -257,13 +233,7 @@ export const Statistics = () => {
   };
 
   const renderHeader = () => {
-    return (
-      <Header
-        leftContent={
-          <Typography variant="h4">{t("statistics.title")}</Typography>
-        }
-      />
-    );
+    return <Header title={t("statistics.title")} />;
   };
 
   return (

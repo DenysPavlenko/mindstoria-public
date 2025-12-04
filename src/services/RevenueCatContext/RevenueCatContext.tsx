@@ -1,5 +1,11 @@
 import { ENTITLEMENT_ID } from "@/appConstants";
-import { getAppVariant, getErrorMessage } from "@/utils";
+import {
+  activateBackdoor,
+  getAppVariant,
+  getErrorMessage,
+  isBackdoorActive,
+  validateBackdoorCode,
+} from "@/utils";
 import React, {
   createContext,
   useCallback,
@@ -20,6 +26,7 @@ interface RevenueCatContextValue {
   showPaywall: boolean;
   setShowPaywall: (visible: boolean) => void;
   checkPremiumFeature: (callback: () => void) => void;
+  submitBackdoorCode: (code: string) => boolean;
 }
 
 const RevenueCatContext = createContext<RevenueCatContextValue | undefined>(
@@ -36,6 +43,9 @@ export const RevenueCatProvider = ({
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [setupError, setSetupError] = useState<string | null>(null);
+  const [backdoorActive, setBackdoorActive] = useState(() =>
+    isBackdoorActive()
+  );
 
   const isPreviewEnv = useMemo(() => getAppVariant() === "preview", []);
 
@@ -81,10 +91,19 @@ export const RevenueCatProvider = ({
     };
   }, [getCustomerInfo]);
 
+  const submitBackdoorCode = useCallback((code: string): boolean => {
+    if (validateBackdoorCode(code)) {
+      activateBackdoor();
+      setBackdoorActive(true);
+      return true;
+    }
+    return false;
+  }, []);
+
   const checkPremiumFeature = useCallback(
     (callback: () => void) => {
-      // Always allow premium features in preview
-      if (isPreviewEnv) {
+      // Always allow premium features in preview or if backdoor is active
+      if (isPreviewEnv || backdoorActive) {
         callback();
         return;
       }
@@ -95,7 +114,7 @@ export const RevenueCatProvider = ({
         setShowPaywall(true);
       }
     },
-    [setShowPaywall, isPreviewEnv, subscriptionActive]
+    [setShowPaywall, isPreviewEnv, subscriptionActive, backdoorActive]
   );
 
   const value = useMemo(() => {
@@ -105,6 +124,7 @@ export const RevenueCatProvider = ({
       showPaywall,
       setShowPaywall,
       checkPremiumFeature,
+      submitBackdoorCode,
     };
   }, [
     showPaywall,
@@ -113,6 +133,7 @@ export const RevenueCatProvider = ({
     error,
     setupError,
     checkPremiumFeature,
+    submitBackdoorCode,
   ]);
 
   return (

@@ -199,7 +199,7 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
   const renderPlaceholder = () => {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Placeholder content={t("medications.no_medications_text")} />
+        <Placeholder title={t("medications.no_medications_text")} />
       </View>
     );
   };

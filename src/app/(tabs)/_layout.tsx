@@ -9,7 +9,7 @@ export default function TabLayout() {
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="statistics" />
+      <Tabs.Screen name="cbt-logs" />
       <Tabs.Screen name="settings" />
     </Tabs>
   );

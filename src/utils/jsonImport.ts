@@ -7,6 +7,7 @@ export const hasBackUpData = (data: TBackUpData) => {
     ...Object.values(data.logs),
     ...Object.values(data.sleepLogs),
     ...Object.values(data.medLogs),
+    ...Object.values(data.cbtLogs),
   ];
   if (allData.length > 0) return true;
   return false;

@@ -1,6 +1,7 @@
 import { addLogToDb, removeLogFromDb, updateLogInDb } from "@/db";
 import { TLog } from "@/types";
-import { AppDispatch } from "../../store";
+import { AppDispatch, RootState } from "../../store";
+import { updateCBTLogThunk } from "../cbtLogs/cbtLogsThunks";
 import { logsSlice } from "./logsSlice";
 
 const { addLog, updateLog, removeLog } = logsSlice.actions;
@@ -29,8 +30,25 @@ export const updateLogThunk = (log: TLog) => {
 };
 
 export const removeLogThunk = (log: TLog) => {
-  return async (dispatch: AppDispatch) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
+      // First, find and orphan the connected CBT entry (if any)
+      const state = getState();
+      const cbtLogs = Object.values(state.cbtLogs.items);
+      const connectedCBTEntry = cbtLogs.find(
+        (cbtLog) => cbtLog.wellbeingLogId === log.id
+      );
+
+      // Orphan the connected CBT entry (remove wellbeingLogId reference)
+      if (connectedCBTEntry) {
+        const updatedCBTEntry = {
+          ...connectedCBTEntry,
+          wellbeingLogId: undefined,
+        };
+        await dispatch(updateCBTLogThunk(updatedCBTEntry));
+      }
+
+      // Then remove the log
       await removeLogFromDb(log.id);
       dispatch(removeLog(log.id));
     } catch {

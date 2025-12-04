@@ -88,6 +88,7 @@ export const ImpactDefinitionForm = ({
     if (createdByUserCount >= MAX_FREE_CUSTOM_SENTIMENT_DEFINITIONS) {
       checkPremiumFeature(() => {
         dispatch(addImpactDefinition(newDefinition));
+        navigation.goBack();
       });
     } else {
       dispatch(addImpactDefinition(newDefinition));

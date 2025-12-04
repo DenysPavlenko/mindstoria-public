@@ -1,11 +1,5 @@
-import { useAppSelector } from "@/store";
-import {
-  selectLogDateAvailability,
-  selectMedLogDateAvailability,
-  selectSleepLogsGroupedByDate,
-} from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
-import { CALENDAR_DATE_FORMAT, generatePeriodDates } from "@/utils";
+import { generatePeriodDates } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,18 +19,18 @@ interface WeekCalendarProps {
   date: Dayjs;
   onDateChange: (date: Dayjs) => void;
   style?: StyleProp<ViewStyle>;
+  getDotsCount: (date: Dayjs) => number;
 }
+const ICON_SIZE = SCREEN_WIDTH / 8;
 
 export const WeekCalendar = ({
   style,
   date,
   onDateChange,
+  getDotsCount,
 }: WeekCalendarProps) => {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
-  const sleepLogs = useAppSelector(selectSleepLogsGroupedByDate);
-  const medLogsLookup = useAppSelector(selectMedLogDateAvailability);
-  const logsLookup = useAppSelector(selectLogDateAvailability);
   const currentLanguage = i18n.language;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -50,12 +44,8 @@ export const WeekCalendar = ({
   }, [currentLanguage]);
 
   const renderDots = (isoDay: string) => {
-    const dayKey = dayjs(isoDay).format(CALENDAR_DATE_FORMAT);
-    const dotsCount = [
-      sleepLogs[dayKey],
-      medLogsLookup[dayKey],
-      logsLookup[dayKey],
-    ].filter(Boolean).length;
+    const dotsCount = getDotsCount(dayjs(isoDay));
+    if (dotsCount === 0) return null;
     return (
       <View style={styles.dotsWrapper}>
         {Array.from({ length: dotsCount }).map((_, index) => (
@@ -73,7 +63,6 @@ export const WeekCalendar = ({
 
   const renderDayItem = (isoDay: string) => {
     const isToday = dayjs(isoDay).isSame(date, "day");
-    const size = SCREEN_WIDTH / 8;
     return (
       <View
         key={isoDay}
@@ -100,8 +89,8 @@ export const WeekCalendar = ({
               {renderDots(isoDay)}
             </>
           }
-          size={size}
-          radius={size / 2}
+          size={ICON_SIZE}
+          radius={ICON_SIZE / 2}
           backgroundColor={isToday ? "primary" : "surfaceVariant"}
           onPress={() => onDateChange(dayjs(isoDay))}
         />

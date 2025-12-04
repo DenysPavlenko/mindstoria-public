@@ -1,4 +1,4 @@
-import { TAB_BAR_BUTTON_PRESS } from "@/appConstants";
+import { TAB_BAR_LOG_BUTTON_PRESS } from "@/appConstants";
 import {
   Card,
   ConfirmationDialog,
@@ -7,7 +7,11 @@ import {
   Typography,
 } from "@/components";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { removeLogThunk, selectLogs } from "@/store/slices";
+import {
+  removeLogThunk,
+  selectCBTConnectionsMap,
+  selectLogs,
+} from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
 import { TLog } from "@/types";
 import dayjs, { Dayjs } from "dayjs";
@@ -31,7 +35,8 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const logs = useAppSelector(selectLogs);
-  const [impactToDelete, setLogToDelete] = useState<TLog | null>(null);
+  const cbtConnections = useAppSelector(selectCBTConnectionsMap);
+  const [logToDelete, setLogToDelete] = useState<TLog | null>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -51,7 +56,7 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
-      TAB_BAR_BUTTON_PRESS,
+      TAB_BAR_LOG_BUTTON_PRESS,
       () => {
         router.push({
           pathname: "/log-manager",
@@ -62,7 +67,7 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
     return () => subscription.remove();
   }, [router, date]);
 
-  const handleDeleteImpact = (log: TLog) => {
+  const handleDeleteLog = (log: TLog) => {
     dispatch(removeLogThunk(log));
     setLogToDelete(null);
   };
@@ -77,13 +82,13 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
   };
 
   const renderConfirmDelete = () => {
-    if (!impactToDelete) return null;
+    if (!logToDelete) return null;
     return (
       <ConfirmationDialog
         visible
         title={t("common.confirm_delete")}
-        content={t("impacts.confirm_delete")}
-        onConfirm={() => handleDeleteImpact(impactToDelete)}
+        content={t("common.log_confirm_delete")}
+        onConfirm={() => handleDeleteLog(logToDelete)}
         onClose={() => setLogToDelete(null)}
       />
     );
@@ -93,7 +98,7 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
     if (isLoading) return null;
     return (
       <View style={styles.placeholder}>
-        <Placeholder content={t("wellbeing.add_log")} />
+        <Placeholder title={t("wellbeing.add_log")} />
       </View>
     );
   };
@@ -111,6 +116,7 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
             log={item}
             onPress={onCardPress}
             onDelete={setLogToDelete}
+            hasConnectedCBT={!!cbtConnections[item.id]}
           />
         )}
         showsVerticalScrollIndicator={false}

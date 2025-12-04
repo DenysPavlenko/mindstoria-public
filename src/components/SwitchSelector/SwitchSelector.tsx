@@ -58,6 +58,7 @@ export function SwitchSelector<T extends string | number>({
             <Typography
               variant="smallBold"
               color={isSelected ? "onSurface" : "onSurfaceVariant"}
+              numberOfLines={1}
             >
               {option.label}
             </Typography>

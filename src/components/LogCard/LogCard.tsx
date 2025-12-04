@@ -5,6 +5,7 @@ import {
   getRatingLevelLabel,
   getWellbeingIcon,
 } from "@/utils";
+import Feather from "@react-native-vector-icons/feather";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,9 +18,10 @@ import { Typography } from "../Typography/Typography";
 interface LogCardProps {
   log: TLog;
   onPress: () => void;
+  hasConnectedCBT?: boolean;
 }
 
-export const LogCard = ({ log, onPress }: LogCardProps) => {
+export const LogCard = ({ log, onPress, hasConnectedCBT }: LogCardProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { timestamp, values } = log;
@@ -88,7 +90,16 @@ export const LogCard = ({ log, onPress }: LogCardProps) => {
           }}
         >
           <View style={styles.divider} />
-          <Pill label={formattedTime} />
+          <View style={styles.rightSection}>
+            <Pill label={formattedTime} />
+            {hasConnectedCBT && (
+              <Feather
+                name="link-2"
+                size={theme.layout.size.xxs}
+                color={theme.colors.primary}
+              />
+            )}
+          </View>
         </View>
       </View>
     </Card>
@@ -111,5 +122,9 @@ const createStyles = (theme: TTheme) =>
       width: 1,
       height: theme.layout.size.lg,
       backgroundColor: theme.colors.surfaceVariant,
+    },
+    rightSection: {
+      alignItems: "center",
+      gap: theme.layout.spacing.xxs,
     },
   });

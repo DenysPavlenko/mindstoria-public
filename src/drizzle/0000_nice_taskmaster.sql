@@ -1,3 +1,10 @@
+CREATE TABLE `cbt_logs` (
+	`id` text PRIMARY KEY NOT NULL,
+	`timestamp` text NOT NULL,
+	`values` text NOT NULL,
+	`wellbeingLogId` text
+);
+--> statement-breakpoint
 CREATE TABLE `logs` (
 	`id` text PRIMARY KEY NOT NULL,
 	`timestamp` text NOT NULL,

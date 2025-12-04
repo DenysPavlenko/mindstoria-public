@@ -11,14 +11,11 @@ export const selectLogs = createSelector([selectLogsItems], (logs): TLog[] => {
   return Object.values(logs);
 });
 
-export const selectLogDateAvailability = createSelector(
-  selectLogsItems,
-  (logs) => {
-    const map: Record<string, boolean> = {};
-    Object.values(logs).forEach((log) => {
-      const date = dayjs(log.timestamp).format(CALENDAR_DATE_FORMAT);
-      map[date] = true;
-    });
-    return map;
-  }
-);
+export const selectLogDateAvailability = createSelector(selectLogs, (logs) => {
+  const map: Record<string, boolean> = {};
+  logs.forEach((log) => {
+    const date = dayjs(log.timestamp).format(CALENDAR_DATE_FORMAT);
+    map[date] = true;
+  });
+  return map;
+});

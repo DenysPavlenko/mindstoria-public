@@ -19,6 +19,13 @@ export const logs = sqliteTable("logs", {
   values: text("values", { mode: "json" }).notNull(),
 });
 
+export const cbtLogs = sqliteTable("cbt_logs", {
+  id: text().primaryKey(),
+  timestamp: text().notNull(),
+  values: text("values", { mode: "json" }).notNull(),
+  wellbeingLogId: text(),
+});
+
 export type TSleepLogTableRow = typeof sleepLogs.$inferSelect;
 export type TMedLogTableRow = typeof medLogs.$inferSelect;
 export type TLogTableRow = typeof logs.$inferSelect;

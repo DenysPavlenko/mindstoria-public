@@ -9,13 +9,19 @@ interface RowItemProps {
   log: TLog;
   onPress: (log: TLog) => void;
   onDelete: (log: TLog) => void;
+  hasConnectedCBT?: boolean;
 }
 
 const SNAP_POINTS = [80];
 const OVERSWIPE_DIST = 20;
 const ICON_WIDTH = SNAP_POINTS[0]!;
 
-export const LogListItem = ({ log, onPress, onDelete }: RowItemProps) => {
+export const LogListItem = ({
+  log,
+  onPress,
+  onDelete,
+  hasConnectedCBT,
+}: RowItemProps) => {
   const itemRef = useRef<SwipeableItemImperativeRef>(null);
 
   const closeSwipeable = () => {
@@ -51,6 +57,7 @@ export const LogListItem = ({ log, onPress, onDelete }: RowItemProps) => {
         onPress={() => {
           onPress(log);
         }}
+        hasConnectedCBT={hasConnectedCBT}
       />
     </SwipeableItem>
   );

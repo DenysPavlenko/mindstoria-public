@@ -6,12 +6,12 @@ const IS_PREVIEW = APP_VARIANT === "preview";
 
 const getUniqueIdentifier = () => {
   if (IS_DEV) {
-    return "com.denyspavlenko.mindstoria.dev";
+    return "com.mindstoria.app.dev";
   }
   if (IS_PREVIEW) {
-    return "com.denyspavlenko.mindstoria.preview";
+    return "com.mindstoria.app.preview";
   }
-  return "com.denyspavlenko.mindstoria";
+  return "com.mindstoria.app";
 };
 
 const getAppName = () => {
@@ -54,6 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: getUniqueIdentifier(),
+      blockedPermissions: ["android.permission.READ_PHONE_STATE"],
     },
     plugins: [
       "expo-router",

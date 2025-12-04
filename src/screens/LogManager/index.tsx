@@ -7,9 +7,9 @@ import {
   SafeView,
   TimePickerModal,
 } from "@/components";
-import { useAndroidBackHandler } from "@/hooks";
+import { useAndroidBackHandler, useKeyboard } from "@/hooks";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { addLogThunk, updateLogThunk } from "@/store/slices";
+import { addLogThunk, selectCBTLogs, updateLogThunk } from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
 import { TLogMetric, TLogValue, TLogValues } from "@/types";
 import { generateUniqueId } from "@/utils";
@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import PagerView from "react-native-pager-view";
+import { CBTConnect } from "./components/CBTConnect";
 import { MetricInput, TLogFormValues } from "./components/MetricInput";
 
 interface LogManagerProps {
@@ -32,6 +33,7 @@ const NOW = dayjs().toISOString();
 export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { keyboardHeight } = useKeyboard();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const pageViewRef = useRef<PagerView>(null);
@@ -42,15 +44,23 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     notes: null,
   });
   const logs = useAppSelector((state) => state.logs.items);
+  const cbtLogs = useAppSelector(selectCBTLogs);
   const metrics = useAppSelector((state) => state.logMetrics.items);
   const [currenPage, setCurrenPage] = useState(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [timestamp, setTimestamp] = useState(date || NOW);
+  const [showCBTConnect, setShowCBTConnect] = useState(false);
+  const [savedLogId, setSavedLogId] = useState<string | null>(null);
 
   const currentLog = useMemo(() => {
     return logs[logId || ""] || null;
   }, [logs, logId]);
+
+  const connectedCBTLogId = useMemo(() => {
+    if (!logId) return null;
+    return cbtLogs.find((log) => log.wellbeingLogId === logId)?.id || null;
+  }, [cbtLogs, logId]);
 
   // Create theme-aware styles (memoized for performance)
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -102,12 +112,14 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     []
   );
 
-  const handleSave = () => {
+  const saveLog = () => {
     if (!isValid || values.wellbeing === null) return;
     const logValues: TLogValues = {
       ...values,
       wellbeing: values.wellbeing,
     };
+    const logId = currentLog?.id || generateUniqueId();
+    setSavedLogId(logId);
     if (currentLog) {
       dispatch(
         updateLogThunk({
@@ -119,13 +131,22 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     } else {
       dispatch(
         addLogThunk({
-          id: generateUniqueId(),
+          id: logId,
           values: logValues,
           timestamp,
         })
       );
     }
-    router.back();
+  };
+
+  const handleSave = () => {
+    saveLog();
+    // If we're on the last page, show CBT connect screen
+    if (isLastPage) {
+      setShowCBTConnect(true);
+    } else {
+      router.back();
+    }
   };
 
   const handleExit = useCallback(() => {
@@ -170,6 +191,22 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
       return;
     }
     pageViewRef.current?.setPage(currenPage + 1);
+  };
+
+  const handleCBTConnectClose = () => {
+    setShowCBTConnect(false);
+    router.back();
+  };
+
+  const handleConnectThoughtJournal = () => {
+    router.push({
+      pathname: "/cbt-log-manager",
+      params: {
+        date: timestamp,
+        wellbeingLogId: savedLogId,
+        logId: connectedCBTLogId,
+      },
+    });
   };
 
   const renderMetric = (metric: TLogMetric) => {
@@ -237,51 +274,78 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     );
   };
 
-  return (
-    <SafeView>
-      {renderHeader()}
-      <View style={styles.container}>
-        <PagerView
-          ref={pageViewRef}
-          style={styles.pageView}
-          initialPage={currenPage}
-          onPageScroll={(e) => {
-            const { position, offset } = e.nativeEvent;
-            // Round up if more than halfway to the next page
-            const virtualStep = offset >= 0.4 ? position + 1 : position;
-            // Update only if different from current
-            if (virtualStep !== currenPage) {
-              setCurrenPage(virtualStep);
-            }
-          }}
-          overdrag
-        >
-          {metrics.map(renderMetric)}
-        </PagerView>
-        <View style={[styles.buttons]}>
-          <IconButton
-            icon="chevron-left"
-            disabled={isFirstPage}
-            onPress={handlePrev}
-            variant="text"
-            size="xl"
-          />
-          <View>
-            <IconButton icon="save" disabled={!isValid} onPress={handleSave} />
-          </View>
-          <IconButton
-            icon={isLastPage ? "check" : "chevron-right"}
-            disabled={isLastPage && !isValid}
-            onPress={handleNext}
-            variant="text"
-            size="xl"
-          />
+  const renderButtons = () => {
+    return (
+      <View style={[styles.buttons]}>
+        <IconButton
+          icon="chevron-left"
+          disabled={isFirstPage}
+          onPress={handlePrev}
+          variant="text"
+          size="xl"
+        />
+        <View>
+          <IconButton icon="save" disabled={!isValid} onPress={handleSave} />
         </View>
+        <IconButton
+          icon={isLastPage ? "check" : "chevron-right"}
+          disabled={isLastPage && !isValid}
+          onPress={handleNext}
+          variant="text"
+          size="xl"
+        />
       </View>
-      {renderTimePicker()}
-      {renderExitConfirmation()}
-    </SafeView>
-  );
+    );
+  };
+
+  const renderMainContent = () => {
+    const currentMetric = metrics[currenPage];
+    const shouldAddKeyboardPadding = currentMetric?.type === "notes";
+    return (
+      <SafeView>
+        {renderHeader()}
+        <View
+          style={[
+            styles.container,
+            { paddingBottom: shouldAddKeyboardPadding ? keyboardHeight : 0 },
+          ]}
+        >
+          <PagerView
+            ref={pageViewRef}
+            style={styles.pageView}
+            initialPage={currenPage}
+            onPageScroll={(e) => {
+              const { position, offset } = e.nativeEvent;
+              // Round up if more than halfway to the next page
+              const virtualStep = offset >= 0.4 ? position + 1 : position;
+              // Update only if different from current
+              if (virtualStep !== currenPage) {
+                setCurrenPage(virtualStep);
+              }
+            }}
+            overdrag
+          >
+            {metrics.map(renderMetric)}
+          </PagerView>
+          {renderButtons()}
+        </View>
+        {renderTimePicker()}
+        {renderExitConfirmation()}
+      </SafeView>
+    );
+  };
+
+  const renderCBTConnect = () => {
+    return (
+      <CBTConnect
+        onClose={handleCBTConnectClose}
+        onConnectThoughtJournal={handleConnectThoughtJournal}
+        hasConnectedLog={Boolean(connectedCBTLogId)}
+      />
+    );
+  };
+
+  return showCBTConnect ? renderCBTConnect() : renderMainContent();
 };
 
 const createStyles = (theme: TTheme) =>
@@ -299,13 +363,10 @@ const createStyles = (theme: TTheme) =>
       justifyContent: "flex-end",
     },
     buttons: {
-      bottom: 0,
-      left: 0,
       width: "100%",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       padding: theme.layout.spacing.lg,
-      paddingVertical: theme.layout.spacing.xs,
     },
   });

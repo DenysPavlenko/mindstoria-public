@@ -21,7 +21,6 @@ export const FullScreenInput = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 16,
   },
   inputContainer: {
     flex: 1,

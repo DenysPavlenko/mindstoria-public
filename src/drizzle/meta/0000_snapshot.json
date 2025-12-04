@@ -1,9 +1,47 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dc5a2e02-a62b-4790-beb8-928885f8269c",
+  "id": "439ac4c3-f572-415e-a0df-da90066b6d25",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "cbt_logs": {
+      "name": "cbt_logs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "values": {
+          "name": "values",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "wellbeingLogId": {
+          "name": "wellbeingLogId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "logs": {
       "name": "logs",
       "columns": {

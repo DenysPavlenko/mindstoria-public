@@ -1,24 +1,28 @@
 import { TBackUpData } from "@/types";
 import { db } from "../db";
-import { logs, medLogs, sleepLogs } from "../schema";
+import { cbtLogs, logs, medLogs, sleepLogs } from "../schema";
 
-export const importDataToDb = async (data: TBackUpData) => {
+export const importDataToDb = async (data: Partial<TBackUpData>) => {
   await db.transaction(async (tx) => {
-    // Clear all existing data first
-    await tx.delete(logs);
-    await tx.delete(sleepLogs);
-    await tx.delete(medLogs);
-
-    // Insert logs
-    const logsData = Object.values(data.logs);
-    await tx.insert(logs).values(logsData);
-
-    // Insert sleep logs
-    const sleepLogsData = Object.values(data.sleepLogs);
-    await tx.insert(sleepLogs).values(sleepLogsData);
-
-    // Insert med logs
-    const medLogsData = Object.values(data.medLogs);
-    await tx.insert(medLogs).values(medLogsData);
+    if (data.logs) {
+      await tx.delete(logs);
+      const logsData = Object.values(data.logs);
+      await tx.insert(logs).values(logsData);
+    }
+    if (data.sleepLogs) {
+      await tx.delete(sleepLogs);
+      const sleepLogsData = Object.values(data.sleepLogs);
+      await tx.insert(sleepLogs).values(sleepLogsData);
+    }
+    if (data.medLogs) {
+      await tx.delete(medLogs);
+      const medLogsData = Object.values(data.medLogs);
+      await tx.insert(medLogs).values(medLogsData);
+    }
+    if (data.cbtLogs) {
+      await tx.delete(cbtLogs);
+      const cbtLogsData = Object.values(data.cbtLogs);
+      await tx.insert(cbtLogs).values(cbtLogsData);
+    }
   });
 };

@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { logs, medLogs, sleepLogs } from "../schema";
+import { cbtLogs, logs, medLogs, sleepLogs } from "../schema";
 
 export async function clearDatabase() {
   try {
@@ -7,6 +7,7 @@ export async function clearDatabase() {
       await tx.delete(logs);
       await tx.delete(medLogs);
       await tx.delete(sleepLogs);
+      await tx.delete(cbtLogs);
     });
   } catch {}
 }

@@ -1,4 +1,4 @@
-import { PaywallModal } from "@/components";
+import { PaywallModal, Typography } from "@/components";
 import { db, expoDb } from "@/db";
 import migrations from "@/drizzle/migrations";
 import { initI18n } from "@/i18n";
@@ -32,6 +32,7 @@ import { StatusBar } from "expo-status-bar";
 import i18n from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import { I18nextProvider } from "react-i18next";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Provider } from "react-redux";
@@ -51,7 +52,7 @@ SplashScreen.preventAutoHideAsync();
 
 const AppContent = () => {
   const { theme, isLoading } = useTheme();
-  const { success } = useMigrations(db, migrations);
+  const { error } = useMigrations(db, migrations);
   const [isTransReady, setIsTransReady] = useState(false);
   const isWelcomeShown = useAppSelector(
     (state) => state.settings.isWelcomeShown
@@ -65,8 +66,8 @@ const AppContent = () => {
   useDrizzleStudio(expoDb);
 
   const loaded = useMemo(() => {
-    return !isLoading && isTransReady && success && fontsLoaded;
-  }, [isLoading, isTransReady, success, fontsLoaded]);
+    return !isLoading && isTransReady && fontsLoaded;
+  }, [isLoading, isTransReady, fontsLoaded]);
 
   useEffect(() => {
     initI18n().then(() => setIsTransReady(true));
@@ -94,6 +95,20 @@ const AppContent = () => {
     }),
     [theme]
   );
+
+  // TODO: Better error handling UI
+  if (error) {
+    return (
+      <View>
+        <Typography variant="h4" color="error">
+          Migration Error
+        </Typography>
+        <Typography variant="body">
+          An error occurred during database migrations: {error.message}
+        </Typography>
+      </View>
+    );
+  }
 
   if (!loaded) {
     return null;

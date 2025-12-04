@@ -88,6 +88,7 @@ export const EmotionDefinitionForm = ({
     if (createdByUserCount >= MAX_FREE_CUSTOM_SENTIMENT_DEFINITIONS) {
       checkPremiumFeature(() => {
         dispatch(addEmotionDefinition(newDefinition));
+        navigation.goBack();
       });
     } else {
       dispatch(addEmotionDefinition(newDefinition));

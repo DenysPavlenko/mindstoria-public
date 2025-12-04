@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { createMMKV } from "react-native-mmkv";
 import devToolsEnhancer from "redux-devtools-expo-dev-plugin";
 import { persistReducer, persistStore, Storage } from "redux-persist";
+import cbtLogsReducer from "./slices/cbtLogs/cbtLogsSlice";
 import emotionDefinitionsReducer from "./slices/emotionDefinitions/emotionDefinitionsSlice";
 import impactDefinitionsReducer from "./slices/impactDefinitions/impactDefinitionsSlice";
 import logMetricsReducer from "./slices/logMetrics/logMetricsSlice";
@@ -85,6 +86,7 @@ export const store = configureStore({
     medications: persistedMedicationsReducer,
     sleepLogs: sleepLogsReducer,
     medLogs: medLogsReducer,
+    cbtLogs: cbtLogsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

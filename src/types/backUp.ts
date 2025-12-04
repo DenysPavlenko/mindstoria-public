@@ -1,3 +1,4 @@
+import { TCBTLogs } from "./CBTLog";
 import { TEmotionDefinitions } from "./emotions";
 import { TImpactDefinitions } from "./impacts";
 import { TLogs } from "./log";
@@ -11,4 +12,5 @@ export type TBackUpData = {
   sleepLogs: TSleepLogs;
   medLogs: TMedLogs;
   logs: TLogs;
+  cbtLogs: TCBTLogs;
 };

@@ -38,8 +38,8 @@ export const Placeholder = ({
         <NoData
           width={iconSize * 1.2}
           height={iconSize * 1.2}
-          fill={theme.colors.outline}
-          color={theme.colors.outline}
+          fill={theme.colors.outlineVariant}
+          color={theme.colors.outlineVariant}
         />
       </View>
     );
@@ -48,7 +48,12 @@ export const Placeholder = ({
   const renderTitle = () => {
     if (typeof title === "string") {
       return (
-        <Typography variant="h4" align="center">
+        <Typography
+          variant="h4"
+          fontWeight="regular"
+          align="center"
+          color="outline"
+        >
           {title}
         </Typography>
       );
@@ -59,7 +64,12 @@ export const Placeholder = ({
   const renderContent = () => {
     if (typeof content === "string") {
       return (
-        <Typography align="center" variant="small" style={styles.content}>
+        <Typography
+          align="center"
+          variant="small"
+          color="outline"
+          style={styles.content}
+        >
           {content}
         </Typography>
       );

@@ -3,6 +3,7 @@ import { TColorKeys } from "@/types/common";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   Animated,
+  Platform,
   Pressable,
   Modal as RNModal,
   StyleProp,
@@ -18,7 +19,6 @@ interface ModalProps {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  transparent?: boolean;
   onShow?: () => void;
   closeOnBackdropPress?: boolean;
   animated?: boolean;
@@ -27,11 +27,12 @@ interface ModalProps {
   bgColor?: TColorKeys;
 }
 
+const isAndroid = Platform.OS === "android";
+
 export const Modal: React.FC<ModalProps> = ({
   visible,
   onClose,
   children,
-  transparent = true,
   onShow,
   closeOnBackdropPress = true,
   animated = true,
@@ -71,33 +72,46 @@ export const Modal: React.FC<ModalProps> = ({
     }
   };
 
+  const renderContent = () => {
+    return (
+      <>
+        <Pressable style={styles.backdrop} onPress={handleBackdropPress} />
+        <View style={styles.wrapper}>
+          <Animated.View
+            style={[styles.content, { transform: [{ scale: scaleAnimation }] }]}
+            pointerEvents="box-none"
+          >
+            <Card bgColor={bgColor} style={[styles.card, style, { maxWidth }]}>
+              {children}
+            </Card>
+          </Animated.View>
+        </View>
+      </>
+    );
+  };
+
+  const renderWithGestureHandler = () => {
+    if (isAndroid) {
+      // Fix for Android devices
+      return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {renderContent()}
+        </GestureHandlerRootView>
+      );
+    }
+    return renderContent();
+  };
+
   return (
     <RNModal
       visible={visible}
       animationType="fade"
-      transparent={transparent}
+      transparent
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Pressable style={styles.backdrop} onPress={handleBackdropPress} />
       <KeyboardAwareView style={{ flex: 1 }}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <View style={styles.wrapper}>
-            <Animated.View
-              style={[
-                styles.content,
-                { transform: [{ scale: scaleAnimation }] },
-              ]}
-            >
-              <Card
-                bgColor={bgColor}
-                style={[styles.card, style, { maxWidth }]}
-              >
-                {children}
-              </Card>
-            </Animated.View>
-          </View>
-        </GestureHandlerRootView>
+        {renderWithGestureHandler()}
       </KeyboardAwareView>
     </RNModal>
   );

@@ -16,6 +16,7 @@ export const selectDataToBackUp = createSelector(
       sleepLogs: state.sleepLogs.items,
       medLogs: state.medLogs.items,
       logs: state.logs.items,
+      cbtLogs: state.cbtLogs.items,
     };
   }
 );

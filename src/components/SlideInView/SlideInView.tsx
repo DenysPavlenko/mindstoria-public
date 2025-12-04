@@ -14,7 +14,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Card } from "../Card/Card";
 import { IconButton } from "../IconButton/IconButton";
-import { KeyboardAwareView } from "../KeyboardAwareView/KeyboardAwareView";
 import { Typography } from "../Typography/Typography";
 
 export interface SlideInViewProps {
@@ -116,18 +115,13 @@ export const SlideInView: React.FC<SlideInViewProps> = ({
             {
               maxHeight,
               height: fixedHeight ? maxHeight : undefined,
-              paddingBottom: insets.bottom,
+              paddingBottom: insets.bottom + theme.layout.spacing.lg,
             },
             style,
           ]}
         >
-          <KeyboardAwareView
-            behavior="padding"
-            style={[fixedHeight && { flex: 1 }]}
-          >
-            {renderHeader()}
-            {children}
-          </KeyboardAwareView>
+          {renderHeader()}
+          {children}
         </Card>
       </Animated.View>
     </>

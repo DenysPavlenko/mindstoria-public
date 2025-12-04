@@ -53,7 +53,7 @@ export const Medications = () => {
   const renderPlaceholder = () => {
     return (
       <View style={styles.placeholder}>
-        <Placeholder content={t("medications.no_medications_added_yet")} />
+        <Placeholder title={t("medications.no_medications_added_yet")} />
       </View>
     );
   };

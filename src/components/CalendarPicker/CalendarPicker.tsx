@@ -1,9 +1,3 @@
-import { useAppSelector } from "@/store";
-import {
-  selectLogDateAvailability,
-  selectMedLogDateAvailability,
-  selectSleepLogsGroupedByDate,
-} from "@/store/slices";
 import { useTheme } from "@/theme";
 import { generateDaysForMonth } from "@/utils";
 import { CALENDAR_DATE_FORMAT } from "@/utils/dateConstants";
@@ -20,6 +14,7 @@ interface CalendarPickerProps {
   visible: boolean;
   onClose: () => void;
   onDateChange: (date: Dayjs) => void;
+  getDotsCount: (date: Dayjs) => number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -30,12 +25,10 @@ export const CalendarPicker = ({
   onClose,
   date,
   onDateChange,
+  getDotsCount,
 }: CalendarPickerProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const sleepLogs = useAppSelector(selectSleepLogsGroupedByDate);
-  const medLogsLookup = useAppSelector(selectMedLogDateAvailability);
-  const logsLookup = useAppSelector(selectLogDateAvailability);
   const [innerDate, setInnerDate] = useState(date);
 
   const currentMonthDays = useMemo(() => {
@@ -46,11 +39,7 @@ export const CalendarPicker = ({
     const marks: MarkedDates = {};
     // Mark all days in the current month that have logs
     currentMonthDays.forEach((dayKey) => {
-      const dotsCount = [
-        sleepLogs[dayKey],
-        medLogsLookup[dayKey],
-        logsLookup[dayKey],
-      ].filter(Boolean).length;
+      const dotsCount = getDotsCount(dayjs(dayKey));
       if (dotsCount > 0) {
         marks[dayKey] = {
           marked: true,
@@ -79,14 +68,7 @@ export const CalendarPicker = ({
       selectedTextColor: theme.colors.onPrimary,
     };
     return marks;
-  }, [
-    theme.colors,
-    date,
-    currentMonthDays,
-    sleepLogs,
-    medLogsLookup,
-    logsLookup,
-  ]);
+  }, [currentMonthDays, date, theme.colors, getDotsCount]);
 
   return (
     <SlideInModal

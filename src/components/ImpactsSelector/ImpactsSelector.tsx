@@ -142,7 +142,10 @@ export const ImpactsSelector = ({
           setSelectedType(type);
         }}
         onPlusPress={() => {
-          router.push("/impact-definition-form");
+          router.push({
+            pathname: "/impact-definition-form",
+            params: { type: selectedType || undefined },
+          });
         }}
         style={styles.filterContainer}
         searchPlaceholder={t("impacts.search_impact")}
@@ -206,7 +209,7 @@ export const ImpactsSelector = ({
     return (
       <View style={styles.header}>
         <Typography variant="h3" align="center">
-          {t("impacts.whats_impacting_you_now")}
+          {t("impacts.whats_impacting_you")}
         </Typography>
         <Typography
           variant="small"
@@ -335,7 +338,7 @@ const createStyles = (theme: TTheme) =>
       gap: theme.layout.spacing.sm,
     },
     headerSubtitle: {
-      maxWidth: 300,
+      maxWidth: 250,
     },
     menuTitle: {
       flexDirection: "row",

@@ -148,7 +148,10 @@ export const EmotionsSelector = ({
           setSelectedType(type);
         }}
         onPlusPress={() => {
-          router.push("/emotion-definition-form");
+          router.push({
+            pathname: "/emotion-definition-form",
+            params: { type: selectedType || undefined },
+          });
         }}
         style={{ marginBottom: theme.layout.spacing.lg }}
         searchPlaceholder={t("emotions.search_emotion")}
@@ -224,7 +227,7 @@ export const EmotionsSelector = ({
           align="center"
           style={styles.headerSubtitle}
         >
-          {t("emotions.select_one_or_more_emotions")}
+          {t("emotions.select_the_emotions")}
         </Typography>
       </View>
     );
@@ -336,7 +339,7 @@ const createStyles = (theme: TTheme) =>
       gap: theme.layout.spacing.sm,
     },
     headerSubtitle: {
-      maxWidth: 300,
+      maxWidth: 250,
     },
     menuTitle: {
       flexDirection: "row",
