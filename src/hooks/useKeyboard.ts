@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Keyboard, KeyboardEvent, Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const useKeyboard = () => {
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [rawKeyboardHeight, setRawKeyboardHeight] = useState(0);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const showEvent =
@@ -14,7 +16,7 @@ export const useKeyboard = () => {
     const showSubscription = Keyboard.addListener(
       showEvent,
       (e: KeyboardEvent) => {
-        setKeyboardHeight(e.endCoordinates.height);
+        setRawKeyboardHeight(e.endCoordinates.height);
         setIsKeyboardVisible(true);
       }
     );
@@ -22,7 +24,7 @@ export const useKeyboard = () => {
     const hideSubscription = Keyboard.addListener(
       hideEvent,
       (e: KeyboardEvent) => {
-        setKeyboardHeight(0);
+        setRawKeyboardHeight(0);
         setIsKeyboardVisible(false);
       }
     );
@@ -32,6 +34,12 @@ export const useKeyboard = () => {
       hideSubscription?.remove();
     };
   }, []);
+
+  // Adjust keyboard height for iOS safe area
+  const keyboardHeight =
+    rawKeyboardHeight > 0 && Platform.OS === "ios"
+      ? rawKeyboardHeight - insets.bottom
+      : rawKeyboardHeight;
 
   return {
     keyboardHeight,
