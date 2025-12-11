@@ -67,25 +67,25 @@ export const AddMedicationModal = ({
       <View style={{ gap: theme.layout.spacing.xl }}>
         <View style={{ gap: theme.layout.spacing.sm }}>
           <View>
-            <Label label={t("common.title")} />
+            <Label label={t("common.name")} />
             <Input
-              placeholder={t("common.enter_title")}
+              placeholder={t("common.enter_name")}
               value={title}
               onChangeText={setTitle}
             />
           </View>
           <View>
-            <Label label={t("common.dose")} />
+            <Label label={t("medications.single_dose")} />
             <Input
-              placeholder={t("common.enter_dose")}
+              placeholder={t("medications.enter_dose")}
               value={dose}
               onChangeText={setDose}
             />
           </View>
           <View>
-            <Label label={t("common.units")} />
+            <Label label={t("medications.units")} />
             <Input
-              placeholder={t("common.enter_units")}
+              placeholder={t("medications.enter_units")}
               autoCapitalize="none"
               value={units}
               onChangeText={setUnits}

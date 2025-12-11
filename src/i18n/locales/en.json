@@ -31,12 +31,8 @@
     "entry_count_other": "{{count}} Entries",
     "how_are_you": "How are you",
     "feeling": "feeling",
-    "title": "Title",
-    "enter_title": "Enter title",
-    "dose": "Dose",
-    "enter_dose": "E.g. 10",
-    "units": "Units",
-    "enter_units": "E.g. mg, ml, g, pills...",
+    "name": "Name",
+    "enter_name": "Enter name",
     "import": "Import",
     "something_went_wrong": "Something went wrong",
     "ready_to_finish": "Ready to finish?",
@@ -131,7 +127,11 @@
     "show_meds": "Show Medications",
     "manage_medications": "Manage Medications",
     "add_medication": "Add Medication",
-    "medications_list": "Medications List"
+    "medications_list": "Medications List",
+    "single_dose": "Single dose",
+    "enter_dose": "E.g. 10",
+    "units": "Units",
+    "enter_units": "E.g. mg, ml, g, pills..."
   },
   "statistics": {
     "title": "Statistics"

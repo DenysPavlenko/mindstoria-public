@@ -31,10 +31,9 @@
     "entry_count_other": "{{count}} записи",
     "how_are_you": "Як ти",
     "feeling": "почуваєшся",
-    "title": "Назва",
-    "enter_title": "Введіть назву",
+    "name": "Назва",
+    "enter_name": "Введіть назву",
     "dose": "Доза",
-    "enter_dose": "Напр., 10",
     "units": "Одиниці",
     "enter_units": "Напр., мг, мл, г, таблетки...",
     "import": "Імпорт",
@@ -134,7 +133,11 @@
     "show_meds": "Показати ліки",
     "manage_medications": "Керувати ліками",
     "add_medication": "Додати ліки",
-    "medications_list": "Список ліків"
+    "medications_list": "Список ліків",
+    "single_dose": "Одна доза",
+    "enter_dose": "Напр., 10",
+    "units": "Одиниці",
+    "enter_units": "Напр., мг, мл, г, таблетки..."
   },
 
   "statistics": {
