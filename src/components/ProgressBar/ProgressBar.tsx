@@ -17,7 +17,7 @@ export interface ProgressProps {
 
 export const ProgressBar = ({
   progress,
-  height,
+  height = 8,
   color,
   backgroundColor,
   borderRadius,
@@ -37,8 +37,7 @@ export const ProgressBar = ({
   const bgColor = backgroundColor
     ? theme.colors[backgroundColor]
     : theme.colors.primaryContainer;
-  const progressBarHeight = height ?? 12;
-  const radius = borderRadius ?? progressBarHeight / 2;
+  const radius = borderRadius ?? height / 2;
 
   useEffect(() => {
     if (animated) {
@@ -55,7 +54,7 @@ export const ProgressBar = ({
   const containerStyle = [
     styles.container,
     {
-      height: progressBarHeight,
+      height: height,
       backgroundColor: bgColor,
       borderRadius: radius,
     },
@@ -65,7 +64,7 @@ export const ProgressBar = ({
   const barStyle = [
     styles.progress,
     {
-      height: progressBarHeight,
+      height: height,
       backgroundColor: progressColor,
       borderRadius: radius,
     },

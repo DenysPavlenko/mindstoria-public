@@ -3,8 +3,8 @@ import {
   Header,
   IconButton,
   Pill,
-  ProgressBar,
   SafeView,
+  StepIndicator,
   TimePickerModal,
 } from "@/components";
 import { useAndroidBackHandler, useKeyboard } from "@/hooks";
@@ -198,6 +198,11 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     router.back();
   };
 
+  const handleStepPress = (step: number) => {
+    const targetPage = step - 1; // Convert to 0-based index
+    pageViewRef.current?.setPage(targetPage);
+  };
+
   const handleConnectThoughtJournal = () => {
     router.push({
       pathname: "/cbt-log-manager",
@@ -226,15 +231,18 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     );
   };
 
-  // Custom progress bar
-  const progress = (currenPage + 1) / metrics.length;
-
   const renderHeader = () => {
     return (
       <Header
         onBack={handleExit}
         preventBackNavigation
-        centerContent={<ProgressBar progress={progress} />}
+        centerContent={
+          <StepIndicator
+            currentStep={currenPage + 1}
+            totalSteps={metrics.length}
+            onStepPress={handleStepPress}
+          />
+        }
         rightContent={
           <Pill label={formattedTime} onPress={() => setShowTimePicker(true)} />
         }

@@ -3,8 +3,8 @@ import {
   Header,
   IconButton,
   Pill,
-  ProgressBar,
   SafeView,
+  StepIndicator,
   TimePickerModal,
 } from "@/components";
 import { CBT_LOG_METRICS } from "@/data";
@@ -228,15 +228,23 @@ export const CBTLogManager = ({
     );
   };
 
-  // Custom progress bar
-  const progress = (currenPage + 1) / metrics.length;
+  const handleStepPress = (step: number) => {
+    const targetPage = step - 1; // Convert to 0-based index
+    pageViewRef.current?.setPage(targetPage);
+  };
 
   const renderHeader = () => {
     return (
       <Header
         onBack={handleExit}
         preventBackNavigation
-        centerContent={<ProgressBar progress={progress} />}
+        centerContent={
+          <StepIndicator
+            currentStep={currenPage + 1}
+            totalSteps={metrics.length}
+            onStepPress={handleStepPress}
+          />
+        }
         rightContent={
           <View
             style={{

@@ -52,6 +52,7 @@ export * from "./SlideInModal/SlideInModal";
 export * from "./SlideInView/SlideInView";
 export * from "./Slider/Slider";
 export * from "./StatInfoCard/StatInfoCard";
+export * from "./StepIndicator/StepIndicator";
 export * from "./Switch/Switch";
 export * from "./SwitchSelector/SwitchSelector";
 export * from "./TabBar/TabBar";
