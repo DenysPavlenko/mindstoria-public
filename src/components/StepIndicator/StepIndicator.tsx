@@ -1,13 +1,8 @@
-import { TOUCHABLE_ACTIVE_OPACITY, useTheme } from "@/theme";
+import { useTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import React from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { AnimatedStep } from "./components/AnimatedStep";
 
 export interface StepIndicatorProps {
   currentStep: number;
@@ -45,33 +40,20 @@ export const StepIndicator = ({
   const steps = Array.from({ length: totalSteps }, (_, index) => index + 1);
 
   return (
-    <View style={[styles.container, style]}>
-      {steps.map((step, index) => {
+    <View style={[styles.container, { gap: stepSpacing }, style]}>
+      {steps.map((step) => {
         const isActive = step <= currentStep;
-        const isLastStep = index === totalSteps - 1;
-
-        const stepStyle = [
-          styles.step,
-          {
-            height: height,
-            backgroundColor: isActive ? stepColor : bgColor,
-            borderRadius: radius,
-            marginRight: isLastStep ? 0 : stepSpacing,
-          },
-        ];
-
-        if (onStepPress) {
-          return (
-            <TouchableOpacity
-              key={step}
-              style={stepStyle}
-              onPress={() => onStepPress(step)}
-              activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-            />
-          );
-        }
-
-        return <View key={step} style={stepStyle} />;
+        return (
+          <AnimatedStep
+            key={step}
+            isActive={isActive}
+            stepColor={stepColor}
+            height={height}
+            radius={radius}
+            bgColor={bgColor}
+            onPress={onStepPress ? () => onStepPress(step) : undefined}
+          />
+        );
       })}
     </View>
   );
@@ -81,9 +63,5 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  step: {
-    flex: 1,
-    minWidth: 8,
   },
 });

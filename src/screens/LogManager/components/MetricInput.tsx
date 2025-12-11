@@ -12,9 +12,9 @@ import {
   TLogMetric,
   TLogValue,
 } from "@/types";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 export type TLogFormValues = {
   wellbeing: RatingLevel | null;
@@ -27,6 +27,7 @@ interface MetricInputProps {
   metric: TLogMetric;
   values: TLogFormValues;
   isEditing: boolean;
+  isActive: boolean;
   onChange: (metric: TLogMetric, value: TLogValue) => void;
 }
 
@@ -34,12 +35,21 @@ export const MetricInput = ({
   metric,
   values,
   isEditing,
+  isActive,
   onChange,
 }: MetricInputProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const inputRef = useRef<TextInput>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  // Focus input when page becomes active
+  useEffect(() => {
+    if (isActive && inputRef.current) {
+      inputRef.current?.focus();
+    }
+  }, [isActive, metric.type]);
 
   const handleValueChange = useCallback(
     (val: TLogValue) => {
@@ -83,7 +93,7 @@ export const MetricInput = ({
         return (
           <View style={styles.notesContainer}>
             <FullScreenInput
-              autoFocus
+              ref={inputRef}
               value={values.notes || ""}
               onChangeText={handleValueChange}
               placeholder={t("common.add_note")}

@@ -46,7 +46,8 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   const logs = useAppSelector((state) => state.logs.items);
   const cbtLogs = useAppSelector(selectCBTLogs);
   const metrics = useAppSelector((state) => state.logMetrics.items);
-  const [currenPage, setCurrenPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [timestamp, setTimestamp] = useState(date || NOW);
@@ -77,7 +78,8 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   useEffect(() => {
     if (metricId) {
       const index = metrics.findIndex((metric) => metric.id === metricId);
-      setCurrenPage(index);
+      setCurrentPage(index);
+      setCurrentStep(index);
     }
   }, [metricId, metrics]);
 
@@ -93,8 +95,8 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     return dayjs(timestamp).format("HH:mm");
   }, [timestamp]);
 
-  const isFirstPage = currenPage === 0;
-  const isLastPage = currenPage === metrics.length - 1;
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage === metrics.length - 1;
 
   const isValid = useMemo(() => {
     const mandatoryMetrics = metrics.filter((metric) => metric.isMandatory);
@@ -117,6 +119,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     const logValues: TLogValues = {
       ...values,
       wellbeing: values.wellbeing,
+      notes: values.notes?.trim() || null,
     };
     const logId = currentLog?.id || generateUniqueId();
     setSavedLogId(logId);
@@ -182,7 +185,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
       router.back();
       return;
     }
-    pageViewRef.current?.setPage(currenPage - 1);
+    pageViewRef.current?.setPage(currentPage - 1);
   };
 
   const handleNext = () => {
@@ -190,7 +193,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
       handleSave();
       return;
     }
-    pageViewRef.current?.setPage(currenPage + 1);
+    pageViewRef.current?.setPage(currentPage + 1);
   };
 
   const handleCBTConnectClose = () => {
@@ -214,7 +217,8 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     });
   };
 
-  const renderMetric = (metric: TLogMetric) => {
+  const renderMetric = (metric: TLogMetric, index: number) => {
+    const isActive = index === currentPage;
     return (
       <View
         style={styles.metricInputContainer}
@@ -226,6 +230,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
           values={values}
           isEditing={isEditing}
           onChange={handleValueChange}
+          isActive={isActive}
         />
       </View>
     );
@@ -238,7 +243,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
         preventBackNavigation
         centerContent={
           <StepIndicator
-            currentStep={currenPage + 1}
+            currentStep={currentStep + 1}
             totalSteps={metrics.length}
             onStepPress={handleStepPress}
           />
@@ -307,7 +312,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   };
 
   const renderMainContent = () => {
-    const currentMetric = metrics[currenPage];
+    const currentMetric = metrics[currentPage];
     const shouldAddKeyboardPadding = currentMetric?.type === "notes";
     return (
       <SafeView>
@@ -321,14 +326,19 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
           <PagerView
             ref={pageViewRef}
             style={styles.pageView}
-            initialPage={currenPage}
+            initialPage={currentPage}
+            keyboardDismissMode="none"
+            onPageSelected={(e) => {
+              const newPage = e.nativeEvent.position;
+              setCurrentPage(newPage);
+            }}
             onPageScroll={(e) => {
               const { position, offset } = e.nativeEvent;
               // Round up if more than halfway to the next page
-              const virtualStep = offset >= 0.4 ? position + 1 : position;
-              // Update only if different from current
-              if (virtualStep !== currenPage) {
-                setCurrenPage(virtualStep);
+              const virtualStep = offset >= 0.5 ? position + 1 : position;
+              // Update only if different from currentStep
+              if (virtualStep !== currentStep) {
+                setCurrentStep(virtualStep);
               }
             }}
             overdrag

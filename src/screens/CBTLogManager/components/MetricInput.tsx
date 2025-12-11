@@ -1,11 +1,11 @@
 import {
   CognitiveDistortionSelector,
   EmotionsSelector,
-  FullScreenInput,
   Typography,
 } from "@/components";
 import { TTheme, useTheme } from "@/theme";
 import {
+  RatingLevel,
   TCBTLogMetric,
   TCBTLogValue,
   TCognitiveDistortionLog,
@@ -13,7 +13,10 @@ import {
 } from "@/types";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TextInput, View } from "react-native";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
+import { FullScreenInputWrapper } from "./FullScreenInputWrapper";
+
+const IS_IOS = Platform.OS === "ios";
 
 export type TCBTLogFormValues = {
   situation: string | null;
@@ -28,8 +31,9 @@ interface MetricInputProps {
   metric: TCBTLogMetric;
   values: TCBTLogFormValues;
   isEditing: boolean;
-  isActive?: boolean; // New prop to indicate if this page is active
+  isActive: boolean;
   onChange: (metric: TCBTLogMetric, value: TCBTLogValue) => void;
+  wellbeing: RatingLevel | null;
 }
 
 export const MetricInput = ({
@@ -38,17 +42,20 @@ export const MetricInput = ({
   isEditing,
   isActive = false,
   onChange,
+  wellbeing,
 }: MetricInputProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const inputRef = useRef<TextInput>(null);
-
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  // Focus input when page becomes active
+  // Focus input when page becomes active(Android only)
   useEffect(() => {
-    if (isActive && inputRef.current) {
-      inputRef.current?.focus();
+    if (isActive && inputRef.current && !IS_IOS) {
+      // Delay to ensure input is focused after any transitions
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [isActive]);
 
@@ -59,17 +66,24 @@ export const MetricInput = ({
     [metric, onChange]
   );
 
+  const handleInputWrapperPress = () => {
+    if (IS_IOS) {
+      inputRef.current?.focus();
+    }
+  };
+
   const renderInput = () => {
     switch (metric.type) {
       case "situation":
         return (
           <View style={styles.notesContainer}>
             <Typography variant="h3">{t("cbt.situation")}</Typography>
-            <FullScreenInput
-              autoFocus
+            <FullScreenInputWrapper
               ref={inputRef}
+              autoFocus={IS_IOS}
+              onPress={handleInputWrapperPress}
               value={values.situation || ""}
-              onChangeText={handleValueChange}
+              onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
             />
           </View>
@@ -78,10 +92,11 @@ export const MetricInput = ({
         return (
           <View style={styles.notesContainer}>
             <Typography variant="h3">{t("cbt.automatic_thought")}</Typography>
-            <FullScreenInput
+            <FullScreenInputWrapper
               ref={inputRef}
+              onPress={handleInputWrapperPress}
               value={values.thought || ""}
-              onChangeText={handleValueChange}
+              onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
             />
           </View>
@@ -90,10 +105,11 @@ export const MetricInput = ({
         return (
           <View style={styles.notesContainer}>
             <Typography variant="h3">{t("cbt.behavior")}</Typography>
-            <FullScreenInput
+            <FullScreenInputWrapper
               ref={inputRef}
+              onPress={handleInputWrapperPress}
               value={values.behavior || ""}
-              onChangeText={handleValueChange}
+              onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
             />
           </View>
@@ -102,10 +118,11 @@ export const MetricInput = ({
         return (
           <View style={styles.notesContainer}>
             <Typography variant="h3">{t("cbt.alternative_thought")}</Typography>
-            <FullScreenInput
+            <FullScreenInputWrapper
               ref={inputRef}
+              onPress={handleInputWrapperPress}
               value={values.alternativeThought || ""}
-              onChangeText={handleValueChange}
+              onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
             />
           </View>
@@ -116,7 +133,7 @@ export const MetricInput = ({
             <EmotionsSelector
               emotionLogItems={values.emotions}
               onChange={handleValueChange}
-              wellbeing={null}
+              wellbeing={wellbeing || null}
             />
           </View>
         );
@@ -136,7 +153,7 @@ export const MetricInput = ({
     }
   };
 
-  return renderInput();
+  return <View style={{ flex: 1 }}>{renderInput()}</View>;
 };
 
 const createStyles = (theme: TTheme) =>

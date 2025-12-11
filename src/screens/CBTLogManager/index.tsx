@@ -55,7 +55,8 @@ export const CBTLogManager = ({
   const logs = useAppSelector((state) => state.cbtLogs.items);
   const wellbeingLogs = useAppSelector((state) => state.logs.items);
   const metrics = CBT_LOG_METRICS;
-  const [currenPage, setCurrenPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [timestamp, setTimestamp] = useState(date || NOW);
@@ -95,7 +96,8 @@ export const CBTLogManager = ({
   useEffect(() => {
     if (metricId) {
       const index = metrics.findIndex((metric) => metric.id === metricId);
-      setCurrenPage(index);
+      setCurrentPage(index);
+      setCurrentStep(index);
     }
   }, [metricId, metrics]);
 
@@ -111,8 +113,12 @@ export const CBTLogManager = ({
     return dayjs(timestamp).format("HH:mm");
   }, [timestamp]);
 
-  const isFirstPage = currenPage === 0;
-  const isLastPage = currenPage === metrics.length - 1;
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage === metrics.length - 1;
+
+  const currentMetric = metrics[currentPage];
+  const shouldAddKeyboardPadding = currentMetric?.type !== "emotions";
+  const keyboardOffset = shouldAddKeyboardPadding ? keyboardHeight : 0;
 
   const isValid = useMemo(() => {
     const mandatoryMetrics = metrics.filter((metric) => metric.isMandatory);
@@ -142,7 +148,10 @@ export const CBTLogManager = ({
     if (!isValid || values.situation === null) return;
     const logValues: TCBTLogValues = {
       ...values,
-      situation: values.situation,
+      situation: values.situation.trim(),
+      thought: values.thought?.trim() || null,
+      behavior: values.behavior?.trim() || null,
+      alternativeThought: values.alternativeThought?.trim() || null,
     };
     if (currentLog) {
       dispatch(
@@ -198,7 +207,7 @@ export const CBTLogManager = ({
       router.back();
       return;
     }
-    pageViewRef.current?.setPage(currenPage - 1);
+    pageViewRef.current?.setPage(currentPage - 1);
   };
 
   const handleNext = () => {
@@ -206,14 +215,14 @@ export const CBTLogManager = ({
       handleSave();
       return;
     }
-    pageViewRef.current?.setPage(currenPage + 1);
+    pageViewRef.current?.setPage(currentPage + 1);
   };
 
   const renderMetric = (metric: TCBTLogMetric, index: number) => {
-    const isActive = index === currenPage;
+    const isActive = index === currentPage;
     return (
       <View
-        style={styles.metricInputContainer}
+        style={[styles.metricInputContainer, { paddingBottom: keyboardOffset }]}
         pointerEvents="box-only"
         key={metric.id}
       >
@@ -223,6 +232,7 @@ export const CBTLogManager = ({
           isEditing={isEditing}
           isActive={isActive}
           onChange={handleValueChange}
+          wellbeing={connectedWellbeingLog?.values.wellbeing || null}
         />
       </View>
     );
@@ -240,7 +250,7 @@ export const CBTLogManager = ({
         preventBackNavigation
         centerContent={
           <StepIndicator
-            currentStep={currenPage + 1}
+            currentStep={currentStep + 1}
             totalSteps={metrics.length}
             onStepPress={handleStepPress}
           />
@@ -284,7 +294,7 @@ export const CBTLogManager = ({
   };
 
   const renderInfoModal = () => {
-    const metricType = metrics[currenPage]?.type;
+    const metricType = metrics[currentPage]?.type;
     if (!metricType) return null;
     return (
       <InfoModal
@@ -314,7 +324,12 @@ export const CBTLogManager = ({
 
   const renderButtons = () => {
     return (
-      <View style={styles.buttons}>
+      <View
+        style={[
+          styles.buttons,
+          { transform: [{ translateY: -keyboardOffset }] },
+        ]}
+      >
         <IconButton
           icon="chevron-left"
           disabled={isFirstPage}
@@ -336,30 +351,26 @@ export const CBTLogManager = ({
     );
   };
 
-  const currentMetric = metrics[currenPage];
-  const shouldAddKeyboardPadding = currentMetric?.type !== "emotions";
-
   return (
     <SafeView>
       {renderHeader()}
-      <View
-        style={[
-          styles.container,
-          { paddingBottom: shouldAddKeyboardPadding ? keyboardHeight : 0 },
-        ]}
-      >
+      <View style={[styles.container]}>
         <PagerView
           ref={pageViewRef}
           style={styles.pageView}
-          initialPage={currenPage}
+          initialPage={currentPage}
           keyboardDismissMode="none"
+          onPageSelected={(e) => {
+            const newPage = e.nativeEvent.position;
+            setCurrentPage(newPage);
+          }}
           onPageScroll={(e) => {
             const { position, offset } = e.nativeEvent;
             // Round up if more than halfway to the next page
-            const virtualStep = offset >= 0.4 ? position + 1 : position;
-            // Update only if different from current
-            if (virtualStep !== currenPage) {
-              setCurrenPage(virtualStep);
+            const virtualStep = offset >= 0.5 ? position + 1 : position;
+            // Update only if different from currentStep
+            if (virtualStep !== currentStep) {
+              setCurrentStep(virtualStep);
             }
           }}
           overdrag
