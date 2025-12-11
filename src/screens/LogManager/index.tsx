@@ -28,8 +28,6 @@ interface LogManagerProps {
   metricId?: string;
 }
 
-const NOW = dayjs().toISOString();
-
 export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -50,7 +48,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [timestamp, setTimestamp] = useState(date || NOW);
+  const [timestamp, setTimestamp] = useState(date || dayjs().toISOString());
   const [showCBTConnect, setShowCBTConnect] = useState(false);
   const [savedLogId, setSavedLogId] = useState<string | null>(null);
 
@@ -87,8 +85,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     const d = dayjs(timestamp);
     const hours = d.hour();
     const minutes = d.minute();
-    const seconds = d.second();
-    return { hours, minutes, seconds };
+    return { hours, minutes };
   }, [timestamp]);
 
   const formattedTime = useMemo(() => {
@@ -166,17 +163,9 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     return true;
   });
 
-  const handleTimeConfirm = (
-    hours: number,
-    minutes: number,
-    seconds: number
-  ) => {
+  const handleTimeConfirm = (hours: number, minutes: number) => {
     setShowTimePicker(false);
-    const newTime = dayjs(timestamp)
-      .hour(hours)
-      .minute(minutes)
-      .second(seconds)
-      .toISOString();
+    const newTime = dayjs(timestamp).hour(hours).minute(minutes).toISOString();
     setTimestamp(newTime);
   };
 
@@ -265,7 +254,6 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
         onConfirm={handleTimeConfirm}
         hours={initialTime.hours}
         minutes={initialTime.minutes}
-        seconds={initialTime.seconds}
       />
     );
   };

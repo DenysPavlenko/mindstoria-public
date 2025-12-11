@@ -98,8 +98,8 @@ export const AddModal = ({
     }
   };
 
-  const handleTimePick = (hours: number, minutes: number, seconds: number) => {
-    const d = dayjs(timestamp).hour(hours).minute(minutes).second(seconds);
+  const handleTimePick = (hours: number, minutes: number) => {
+    const d = dayjs(timestamp).hour(hours).minute(minutes);
     setTimestamp(d.toISOString());
     setShowTimePicker(false);
   };
@@ -109,7 +109,6 @@ export const AddModal = ({
       <TimePickerModal
         hours={initialTime.hours}
         minutes={initialTime.minutes}
-        seconds={initialTime.seconds}
         onClose={() => {
           setShowTimePicker(false);
         }}

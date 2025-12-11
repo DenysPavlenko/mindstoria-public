@@ -105,8 +105,7 @@ export const CBTLogManager = ({
     const d = dayjs(timestamp);
     const hours = d.hour();
     const minutes = d.minute();
-    const seconds = d.second();
-    return { hours, minutes, seconds };
+    return { hours, minutes };
   }, [timestamp]);
 
   const formattedTime = useMemo(() => {
@@ -188,17 +187,9 @@ export const CBTLogManager = ({
     return true;
   });
 
-  const handleTimeConfirm = (
-    hours: number,
-    minutes: number,
-    seconds: number
-  ) => {
+  const handleTimeConfirm = (hours: number, minutes: number) => {
     setShowTimePicker(false);
-    const newTime = dayjs(timestamp)
-      .hour(hours)
-      .minute(minutes)
-      .second(seconds)
-      .toISOString();
+    const newTime = dayjs(timestamp).hour(hours).minute(minutes).toISOString();
     setTimestamp(newTime);
   };
 
@@ -288,7 +279,6 @@ export const CBTLogManager = ({
         onConfirm={handleTimeConfirm}
         hours={initialTime.hours}
         minutes={initialTime.minutes}
-        seconds={initialTime.seconds}
       />
     );
   };

@@ -2,37 +2,86 @@ import {
   TAB_BAR_CBT_LOG_BUTTON_PRESS,
   TAB_BAR_LOG_BUTTON_PRESS,
 } from "@/appConstants";
-import { TTheme, useTheme, withAlpha } from "@/theme";
-import { FeatherIconName } from "@react-native-vector-icons/feather";
+import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme, withAlpha } from "@/theme";
+import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useMemo } from "react";
-import { DeviceEventEmitter, StyleSheet, View } from "react-native";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  DeviceEventEmitter,
+  LayoutChangeEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { LinearGradient } from "react-native-linear-gradient";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { IconButton } from "../IconButton/IconButton";
-
-const ICON_NAME: Record<string, FeatherIconName> = {
-  index: "home",
-  "cbt-logs": "file-text",
-  settings: "settings",
-};
+import { Typography } from "../Typography/Typography";
 
 const TAB_BAR_PADDING = 4;
-export const TAB_ITEM_SIZE = 56;
-export const TAB_BAR_HEIGHT = TAB_ITEM_SIZE + TAB_BAR_PADDING * 2;
-const ADD_BUTTON_SIZE = TAB_ITEM_SIZE + TAB_BAR_PADDING;
+const INITIAL_MAX_WIDTH = 400;
+export const TAB_ITEM_HEGHT = 56;
+export const TAB_BAR_HEIGHT = TAB_ITEM_HEGHT + TAB_BAR_PADDING * 2;
+const ADD_BUTTON_SIZE = TAB_ITEM_HEGHT + TAB_BAR_PADDING;
+
+type TTabDataItem = {
+  icon: FeatherIconName;
+  label: string;
+};
+
+const TABS_DATA: Record<string, TTabDataItem> = {
+  index: {
+    icon: "home",
+    label: "common.home",
+  },
+  "cbt-logs": {
+    icon: "book-open",
+    label: "cbt.title",
+  },
+  settings: {
+    icon: "settings",
+    label: "settings.title",
+  },
+};
 
 export const TabBar = ({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) => {
+  const { t } = useTranslation();
   const { theme, isDark } = useTheme();
   const insets = useSafeAreaInsets();
+  const [dimensions, setDimensions] = useState({
+    height: TAB_BAR_HEIGHT,
+    width: INITIAL_MAX_WIDTH,
+  });
 
   const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
   const bottom = insets.bottom + theme.layout.spacing.xs;
+
+  const buttonWidth =
+    (dimensions.width - TAB_BAR_PADDING * 2) / state.routes.length;
+
+  const tabPositionX = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: tabPositionX.value }],
+    };
+  });
+
+  const onTabBarLayout = (event: LayoutChangeEvent) => {
+    const { height, width } = event.nativeEvent.layout;
+    setDimensions({ height, width });
+  };
 
   const showAddButton =
     state.routes[state.index]?.name === "index" ||
@@ -59,11 +108,36 @@ export const TabBar = ({
 
   const renderTabs = () => {
     return (
-      <View style={[styles.tabsContainer, styles.shadow]}>
+      <View
+        onLayout={onTabBarLayout}
+        style={[
+          styles.tabsContainer,
+          styles.shadow,
+          { maxWidth: dimensions.width },
+        ]}
+      >
+        <Animated.View
+          style={[
+            animatedStyle,
+            {
+              position: "absolute",
+              backgroundColor: theme.colors.surfaceVariant,
+              borderRadius: TAB_ITEM_HEGHT / 2,
+              width: buttonWidth,
+              height: TAB_ITEM_HEGHT,
+              left: TAB_BAR_PADDING,
+            },
+          ]}
+        />
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key]!;
+          const tabData = TABS_DATA[route.name];
+          if (!tabData) return null;
           const isFocused = state.index === index;
           const onPress = () => {
+            tabPositionX.value = withSpring(buttonWidth * index, {
+              duration: 300,
+            });
             const event = navigation.emit({
               type: "tabPress",
               target: route.key,
@@ -81,21 +155,29 @@ export const TabBar = ({
             });
           };
           return (
-            <IconButton
+            <TouchableOpacity
               key={route.name}
-              accessibilityState={isFocused ? { selected: true } : {}}
-              size={TAB_ITEM_SIZE}
-              icon={ICON_NAME[route.name] || "circle"}
-              backgroundColor={
-                isFocused ? "primary" : isDark ? "surfaceVariant" : "surface"
-              }
-              iconColor={isFocused ? "onPrimary" : "outline"}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarButtonTestID}
               onPress={onPress}
               onLongPress={onLongPress}
               style={styles.tabItem}
-            />
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarButtonTestID}
+              activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+            >
+              <Feather
+                size={24}
+                name={tabData.icon}
+                color={theme.colors.onSurfaceVariant}
+              />
+              <Typography
+                variant="tiny"
+                align="center"
+                color={"onSurfaceVariant"}
+              >
+                {t(tabData.label)}
+              </Typography>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -105,17 +187,15 @@ export const TabBar = ({
   const renderAddButton = () => {
     if (!showAddButton) return null;
     return (
-      <View style={styles.addButtonContainer}>
-        <IconButton
-          icon="plus"
-          size={ADD_BUTTON_SIZE}
-          backgroundColor={isDark ? "surfaceVariant" : "surface"}
-          iconColor="outline"
-          style={styles.shadow}
-          onPress={handleLogButtonPress}
-          activeOpacity={1}
-        />
-      </View>
+      <IconButton
+        icon="plus"
+        size={ADD_BUTTON_SIZE}
+        backgroundColor="primary"
+        iconColor="onPrimary"
+        style={[styles.shadow, { marginLeft: "auto" }]}
+        onPress={handleLogButtonPress}
+        activeOpacity={1}
+      />
     );
   };
 
@@ -129,7 +209,7 @@ export const TabBar = ({
         colors={[withAlpha(theme.colors.surface, 0.1), theme.colors.surface]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[styles.gradient, { height: TAB_ITEM_SIZE + bottom }]}
+        style={[styles.gradient, { height: TAB_ITEM_HEGHT + bottom }]}
         pointerEvents="none"
       />
     </View>
@@ -149,22 +229,27 @@ const createStyles = (theme: TTheme, isDark: boolean) =>
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      gap: theme.layout.spacing.md,
+      gap: theme.layout.spacing.lg,
       zIndex: 2,
     },
     tabsContainer: {
       backgroundColor: isDark
-        ? theme.colors.surfaceVariant
+        ? theme.colors.surfaceContainerHigh
         : theme.colors.surface,
       flexDirection: "row",
-      alignContent: "center",
-      justifyContent: "center",
+      alignItems: "center",
+      height: TAB_BAR_HEIGHT,
       padding: TAB_BAR_PADDING,
       borderRadius: TAB_BAR_HEIGHT / 2,
+      flex: 1,
     },
-    addButtonContainer: {
-      position: "absolute",
-      right: 0,
+    tabItem: {
+      alignItems: "center",
+      justifyContent: "center",
+      gap: theme.layout.spacing.xxs,
+      height: TAB_ITEM_HEGHT,
+      zIndex: 2,
+      flex: 1,
     },
     shadow: {
       shadowColor: theme.colors.shadow,
@@ -175,9 +260,6 @@ const createStyles = (theme: TTheme, isDark: boolean) =>
       shadowRadius: 20,
       shadowOpacity: 0.25,
       elevation: 4,
-    },
-    tabItem: {
-      zIndex: 2,
     },
     gradient: {
       position: "absolute",

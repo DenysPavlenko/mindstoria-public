@@ -43,7 +43,9 @@
     "log_confirm_delete": "Are you sure you want to delete this log?",
     "maybe_later": "Maybe Later",
     "log": "Log",
-    "thought": "Thought"
+    "thought": "Thought",
+    "choose_time": "Choose Time",
+    "home": "Home"
   },
   "welcome": {
     "title": "Welcome to Mindstoria!",
@@ -281,6 +283,7 @@
     "overwhelm": "Overwhelm"
   },
   "cbt": {
+    "title": "CBT",
     "main_title": "Thoughts Journal",
     "situation": "Situation",
     "situation_info": "Describe what was happening when the thoughts or feelings started. Include the trigger if you can",

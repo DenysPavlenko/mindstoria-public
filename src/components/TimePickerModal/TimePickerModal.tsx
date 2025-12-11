@@ -1,19 +1,20 @@
 import { useTheme } from "@/theme";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions } from "react-native";
-import { LinearGradient } from "react-native-linear-gradient";
-import { TimerPickerModal as RNTimerPickerModal } from "react-native-timer-picker";
+import { View } from "react-native";
 import { Button } from "../Button/Button";
+import { Modal } from "../Modal/Modal";
+import { TimerPicker } from "../TimePicker/TimePicker";
+import { Typography } from "../Typography/Typography";
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const MODAL_WIDTH = 300;
 
 interface TimePickerModalProps {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (hours: number, minutes: number, seconds: number) => void;
+  onConfirm: (hours: number, minutes: number) => void;
   hours: number;
   minutes: number;
-  seconds?: number;
 }
 
 export const TimePickerModal = ({
@@ -22,76 +23,59 @@ export const TimePickerModal = ({
   onConfirm,
   hours,
   minutes,
-  seconds = 0,
 }: TimePickerModalProps) => {
   const { t } = useTranslation();
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
+  const [localHours, setLocalHours] = useState(hours);
+  const [localMinutes, setLocalMinutes] = useState(minutes);
+
+  // Sync local state with props when they change
+  useEffect(() => {
+    setLocalHours(hours);
+    setLocalMinutes(minutes);
+  }, [hours, minutes]);
+
+  const handleConfirm = () => {
+    onConfirm(localHours, localMinutes);
+    onClose();
+  };
+
   return (
-    <RNTimerPickerModal
-      visible={visible}
-      padWithNItems={1}
-      setIsVisible={(visible) => {
-        if (!visible) {
-          onClose();
-        }
-      }}
-      onConfirm={(pickedDuration) => {
-        onConfirm(
-          pickedDuration.hours,
-          pickedDuration.minutes,
-          pickedDuration.seconds
-        );
-      }}
-      onCancel={onClose}
-      hourLabel=":"
-      minuteLabel=":"
-      secondLabel=""
-      closeOnOverlayPress
-      initialValue={{
-        hours,
-        minutes,
-        seconds,
-      }}
-      LinearGradient={LinearGradient}
-      styles={{
-        theme: isDark ? "dark" : "light",
-        backgroundColor: theme.colors.surface,
-        buttonContainer: {
-          paddingHorizontal: theme.layout.spacing.lg,
+    <Modal visible={visible} onClose={onClose} maxWidth={MODAL_WIDTH}>
+      <Typography
+        variant="h4"
+        align="center"
+        style={{ marginBottom: theme.layout.spacing.lg }}
+      >
+        {t("common.choose_time")}
+      </Typography>
+      <TimerPicker
+        hours={localHours}
+        minutes={localMinutes}
+        onChange={(h, min) => {
+          setLocalHours(h);
+          setLocalMinutes(min);
+        }}
+        outerWidth={MODAL_WIDTH}
+      />
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: theme.layout.spacing.lg,
           gap: theme.layout.spacing.sm,
-        },
-        pickerLabel: {
-          marginTop: 0,
-        },
-        pickerContainer: {
-          width: SCREEN_WIDTH - 40 * 2,
-          justifyContent: "center",
-        },
-        pickerItemContainer: {
-          width: 80,
-        },
-        pickerLabelContainer: {
-          right: -20,
-          top: 0,
-          bottom: 6,
-          width: 40,
-          alignItems: "center",
-        },
-      }}
-      modalProps={{
-        overlayOpacity: 0.2,
-      }}
-      cancelButton={
+          justifyContent: "flex-end",
+        }}
+      >
         <Button
           buttonColor="primaryContainer"
           textColor="onPrimaryContainer"
-          style={{ flex: 1 }}
           variant="text"
+          onPress={onClose}
         >
           {t("common.cancel")}
         </Button>
-      }
-      confirmButton={<Button style={{ flex: 1 }}>{t("common.confirm")}</Button>}
-    />
+        <Button onPress={handleConfirm}>{t("common.confirm")}</Button>
+      </View>
+    </Modal>
   );
 };
