@@ -1,3 +1,4 @@
+import { useKeyboard } from "@/hooks";
 import { TTheme, useTheme, withAlpha } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import React, { useEffect, useMemo, useRef } from "react";
@@ -13,7 +14,6 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Card } from "../Card/Card";
-import { KeyboardAwareView } from "../KeyboardAwareView/KeyboardAwareView";
 
 interface ModalProps {
   visible: boolean;
@@ -43,6 +43,7 @@ export const Modal: React.FC<ModalProps> = ({
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const scaleAnimation = useRef(new Animated.Value(0.8)).current;
+  const { keyboardHeight } = useKeyboard();
 
   useEffect(() => {
     if (visible && animated) {
@@ -76,7 +77,7 @@ export const Modal: React.FC<ModalProps> = ({
     return (
       <>
         <Pressable style={styles.backdrop} onPress={handleBackdropPress} />
-        <View style={styles.wrapper}>
+        <View style={[styles.wrapper, { paddingBottom: keyboardHeight }]}>
           <Animated.View
             style={[styles.content, { transform: [{ scale: scaleAnimation }] }]}
             pointerEvents="box-none"
@@ -110,9 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <KeyboardAwareView style={{ flex: 1 }}>
-        {renderWithGestureHandler()}
-      </KeyboardAwareView>
+      {renderWithGestureHandler()}
     </RNModal>
   );
 };
