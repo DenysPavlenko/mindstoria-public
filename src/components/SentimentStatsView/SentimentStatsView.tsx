@@ -50,9 +50,9 @@ export const SentimentStatsView = ({
 
   const handleShowMore = () => {
     if (category === "emotion") {
-      router.push("/emotions-stats");
+      router.navigate("/emotions-stats");
     } else if (category === "impact") {
-      router.push("/impacts-stats");
+      router.navigate("/impacts-stats");
     }
   };
 

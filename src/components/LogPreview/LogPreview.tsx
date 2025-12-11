@@ -43,7 +43,7 @@ export const LogPreview = ({
 
   const handleEdit = (metricId?: string) => {
     onClose();
-    router.push({
+    router.navigate({
       pathname: "/log-manager",
       params: {
         logId: log.id,

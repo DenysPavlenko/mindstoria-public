@@ -52,7 +52,7 @@ export const LogsList = ({ date, onCardPress }: LogsListProps) => {
     const subscription = DeviceEventEmitter.addListener(
       TAB_BAR_CBT_LOG_BUTTON_PRESS,
       () => {
-        router.push({
+        router.navigate({
           pathname: "/cbt-log-manager",
           params: { date: date.toISOString() },
         });

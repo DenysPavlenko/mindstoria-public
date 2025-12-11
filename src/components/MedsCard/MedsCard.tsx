@@ -39,7 +39,7 @@ export const MedsCard = ({ date }: MedsCardProps) => {
   const hasData = data.length > 0;
 
   const handlePress = () => {
-    router.push({
+    router.navigate({
       pathname: "/med-logs",
       params: { date: date.toISOString() },
     });

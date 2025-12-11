@@ -121,7 +121,7 @@ export const EmotionsSelector = ({
   };
 
   const handleEmotionEdit = (definitionId: string) => {
-    router.push({
+    router.navigate({
       pathname: "/emotion-definition-form",
       params: { definitionId },
     });
@@ -148,7 +148,7 @@ export const EmotionsSelector = ({
           setSelectedType(type);
         }}
         onPlusPress={() => {
-          router.push({
+          router.navigate({
             pathname: "/emotion-definition-form",
             params: { type: selectedType || undefined },
           });
@@ -199,7 +199,7 @@ export const EmotionsSelector = ({
             icon="plus"
             style={styles.emotionItem}
             onPress={() => {
-              router.push({
+              router.navigate({
                 pathname: "/emotion-definition-form",
                 params: {
                   prefillName: searchQuery,

@@ -58,7 +58,7 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
     const subscription = DeviceEventEmitter.addListener(
       TAB_BAR_LOG_BUTTON_PRESS,
       () => {
-        router.push({
+        router.navigate({
           pathname: "/log-manager",
           params: { date: date.toISOString() },
         });

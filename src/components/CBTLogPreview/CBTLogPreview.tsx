@@ -38,7 +38,7 @@ export const CBTLogPreview = ({ log, onClose }: CBTLogPreviewProps) => {
 
   const handleEdit = () => {
     onClose();
-    router.push({
+    router.navigate({
       pathname: "/cbt-log-manager",
       params: { logId: log.id },
     });

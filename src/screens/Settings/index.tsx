@@ -181,7 +181,7 @@ export const Settings = () => {
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={() => {
-          router.push("/dev-screen");
+          router.navigate("/dev-screen");
         }}
       >
         <View style={styles.settingTitle}>

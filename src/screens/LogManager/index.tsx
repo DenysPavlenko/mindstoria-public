@@ -204,7 +204,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   };
 
   const handleConnectThoughtJournal = () => {
-    router.push({
+    router.navigate({
       pathname: "/cbt-log-manager",
       params: {
         date: timestamp,

@@ -115,7 +115,7 @@ export const ImpactsSelector = ({
   };
 
   const handleImpactEdit = (definitionId: string) => {
-    router.push({
+    router.navigate({
       pathname: "/impact-definition-form",
       params: { definitionId },
     });
@@ -142,7 +142,7 @@ export const ImpactsSelector = ({
           setSelectedType(type);
         }}
         onPlusPress={() => {
-          router.push({
+          router.navigate({
             pathname: "/impact-definition-form",
             params: { type: selectedType || undefined },
           });
@@ -189,7 +189,7 @@ export const ImpactsSelector = ({
             icon="plus"
             style={styles.impactItem}
             onPress={() => {
-              router.push({
+              router.navigate({
                 pathname: "/impact-definition-form",
                 params: {
                   prefillName: searchQuery,

@@ -98,7 +98,7 @@ export const Home = () => {
           <IconButton
             icon="bar-chart-2"
             size="md"
-            onPress={() => router.push("/statistics")}
+            onPress={() => router.navigate("/statistics")}
           />
         }
       />
