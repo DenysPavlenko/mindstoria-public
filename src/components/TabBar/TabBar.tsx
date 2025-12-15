@@ -28,7 +28,7 @@ const TAB_BAR_PADDING = 4;
 const INITIAL_MAX_WIDTH = 400;
 export const TAB_ITEM_HEGHT = 56;
 export const TAB_BAR_HEIGHT = TAB_ITEM_HEGHT + TAB_BAR_PADDING * 2;
-const ADD_BUTTON_SIZE = TAB_ITEM_HEGHT + TAB_BAR_PADDING;
+const ADD_BUTTON_SIZE = TAB_BAR_HEIGHT;
 
 type TTabDataItem = {
   icon: FeatherIconName;
