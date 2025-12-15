@@ -136,7 +136,8 @@ export const TabBar = ({
           const isFocused = state.index === index;
           const onPress = () => {
             tabPositionX.value = withSpring(buttonWidth * index, {
-              duration: 300,
+              damping: 70,
+              stiffness: 900,
             });
             const event = navigation.emit({
               type: "tabPress",

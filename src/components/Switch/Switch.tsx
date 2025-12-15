@@ -34,7 +34,8 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
       transform: [
         {
           translateX: withSpring(switchTranslate.value, {
-            duration: 300,
+            damping: 70,
+            stiffness: 900,
           }),
         },
       ],
