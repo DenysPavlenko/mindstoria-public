@@ -42,7 +42,7 @@ const TABS_DATA: Record<string, TTabDataItem> = {
   },
   "cbt-logs": {
     icon: "book-open",
-    label: "cbt.title",
+    label: "common.thoughts",
   },
   settings: {
     icon: "settings",

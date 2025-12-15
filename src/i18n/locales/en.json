@@ -45,7 +45,8 @@
     "log": "Log",
     "thought": "Thought",
     "choose_time": "Choose Time",
-    "home": "Home"
+    "home": "Home",
+    "thoughts": "Thoughts"
   },
   "welcome": {
     "title": "Welcome to Mindstoria!",
@@ -283,7 +284,6 @@
     "overwhelm": "Overwhelm"
   },
   "cbt": {
-    "title": "CBT",
     "main_title": "Thoughts Journal",
     "situation": "Situation",
     "situation_info": "Describe what was happening when the thoughts or feelings started. Include the trigger if you can",
