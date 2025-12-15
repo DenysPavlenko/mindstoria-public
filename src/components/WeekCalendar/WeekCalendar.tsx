@@ -14,6 +14,7 @@ import { IconButton } from "../IconButton/IconButton";
 import { Typography } from "../Typography/Typography";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
+const MAX_WIDTH = Math.min(SCREEN_WIDTH, 500);
 
 interface WeekCalendarProps {
   date: Dayjs;
@@ -21,7 +22,7 @@ interface WeekCalendarProps {
   style?: StyleProp<ViewStyle>;
   getDotsCount: (date: Dayjs) => number;
 }
-const ICON_SIZE = SCREEN_WIDTH / 8;
+const ICON_SIZE = MAX_WIDTH / 8;
 
 export const WeekCalendar = ({
   style,
@@ -114,6 +115,9 @@ const createStyles = (theme: TTheme) =>
     dayItemsContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
+      maxWidth: MAX_WIDTH,
+      width: "100%",
+      alignSelf: "center",
     },
     dayItemContent: {
       position: "absolute",
