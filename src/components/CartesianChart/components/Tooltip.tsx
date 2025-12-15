@@ -22,6 +22,7 @@ interface ActiveIndicatorProps {
   backgroundColor: string;
   topOffset?: number;
   showLine?: boolean;
+  isYearly?: boolean;
   showBottomText?: boolean; // Make bottom text (Y value) optional
   chartBounds: {
     left: number;
@@ -41,6 +42,7 @@ export const Tooltip = ({
   bottom,
   textColor,
   lineColor,
+  isYearly,
   indicatorColor,
   backgroundColor,
   showBottomText = true,
@@ -77,8 +79,8 @@ export const Tooltip = ({
     if (typeof activeXValue.value === "string") {
       const date = new Date(activeXValue.value);
       const formatter = new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
+        month: isYearly ? "long" : "short",
+        day: isYearly ? undefined : "numeric",
       });
       return formatter.format(date);
     }

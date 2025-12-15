@@ -94,6 +94,7 @@ export const CartesianChart = ({
             indicatorColor={theme.colors.primary}
             topOffset={18}
             chartBounds={chartBounds}
+            isYearly={period === "year"}
           />
         );
       }}
