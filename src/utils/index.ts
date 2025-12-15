@@ -8,5 +8,6 @@ export * from "./jsonExport";
 export * from "./jsonImport";
 export * from "./logs";
 export * from "./medications";
+export * from "./sentiments";
 export * from "./sleepLogs";
 export * from "./time";

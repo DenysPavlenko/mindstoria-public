@@ -162,6 +162,11 @@ export const EmotionDefinitionForm = ({
         keyExtractor={(item) => item}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => {
+          const positiveBg = theme.colors.rating["400"];
+          const negativeBg = theme.colors.rating["50"];
+          const selectedBg =
+            emotionType === "positive" ? positiveBg : negativeBg;
+          const defaultBg = theme.colors.surface;
           return (
             <View key={item} style={styles.pickerIcon}>
               <IconButton
@@ -174,10 +179,7 @@ export const EmotionDefinitionForm = ({
                 radius="lg"
                 iconColor={icon === item ? "surface" : "onSurface"}
                 style={{
-                  backgroundColor:
-                    icon === item
-                      ? theme.colors.sentiment[emotionType][400]
-                      : theme.colors.surface,
+                  backgroundColor: icon === item ? selectedBg : defaultBg,
                 }}
                 onPress={() => setIcon(item)}
               />

@@ -9,11 +9,10 @@ import {
   TCognitiveDistortionLog,
   TEmotionLog,
 } from "@/types";
-import { getCBTTitle, getSentimentColor } from "@/utils";
+import { getCBTTitle } from "@/utils";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Badge } from "../Badge/Badge";
 import { Card } from "../Card/Card";
 import { Chip } from "../Chip/Chip";
 import { Typography } from "../Typography/Typography";
@@ -51,26 +50,13 @@ export const CBTLogPreviewContent = ({ log }: CBTLogPreviewContentProps) => {
           {items.map(({ id, definitionId, level }) => {
             const definition = emotionDefinitionsItems[definitionId];
             if (!definition) return null;
-            const color = getSentimentColor(definition.type, level, theme);
             return (
               <Chip
                 key={id}
                 bgColor="surface"
                 customContent={<Typography>{definition.icon}</Typography>}
                 disabled={definition.isArchived}
-                label={
-                  <View style={styles.chipLabel}>
-                    <Typography variant="smallBold">
-                      {t(definition.name)}
-                    </Typography>
-                    <Badge
-                      absolute={false}
-                      size={20}
-                      value={level}
-                      style={{ backgroundColor: color }}
-                    />
-                  </View>
-                }
+                label={t(definition.name)}
               />
             );
           })}

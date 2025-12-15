@@ -162,6 +162,11 @@ export const ImpactDefinitionForm = ({
         keyExtractor={(item) => item}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => {
+          const positiveBg = theme.colors.rating["400"];
+          const negativeBg = theme.colors.rating["50"];
+          const selectedBg =
+            impactType === "positive" ? positiveBg : negativeBg;
+          const defaultBg = theme.colors.surface;
           return (
             <View key={item} style={styles.pickerIcon}>
               <IconButton
@@ -170,10 +175,7 @@ export const ImpactDefinitionForm = ({
                 radius="lg"
                 iconColor={icon === item ? "surface" : "onSurface"}
                 style={{
-                  backgroundColor:
-                    icon === item
-                      ? theme.colors.sentiment[impactType][400]
-                      : theme.colors.surface,
+                  backgroundColor: icon === item ? selectedBg : defaultBg,
                 }}
                 onPress={() => setIcon(item)}
               />

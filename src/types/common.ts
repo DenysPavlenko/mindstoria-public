@@ -1,10 +1,7 @@
 import { TTheme } from "@/theme";
 
 // Exclude 'impact' from color keys since it's an object, not a color string
-export type TColorKeys = Exclude<
-  keyof TTheme["colors"],
-  "sentiment" | "rating"
->;
+export type TColorKeys = Exclude<keyof TTheme["colors"], "rating">;
 
 export type TTimePeriod = "week" | "month" | "year";
 
@@ -36,7 +33,6 @@ export type TSentimentStatsItem<TIcon = string> = {
   name: string;
   type: TSentimentType;
   icon: TIcon;
-  avg: number;
   count: number;
   isArchived?: boolean;
 };

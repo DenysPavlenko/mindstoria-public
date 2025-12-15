@@ -4,7 +4,6 @@ import {
   TEmotionDefinitions,
   TEmotionLog,
   TEmotionStatsItem,
-  TSortBy,
 } from "@/types";
 import { groupBy } from "lodash";
 
@@ -16,7 +15,6 @@ export const getEmotions = (logs: TEmotionLog[], defs: TEmotionDefinitions) => {
       emotions.push({
         id: log.id,
         definitionId: log.definitionId,
-        level: log.level,
         name: definition.name,
         type: definition.type,
         icon: definition.icon,
@@ -27,21 +25,15 @@ export const getEmotions = (logs: TEmotionLog[], defs: TEmotionDefinitions) => {
   return emotions;
 };
 
-export const getEmotionsStats = (
-  emotions: TEmotion[],
-  sortBy: TSortBy
-): TEmotionStatsItem[] => {
+export const getEmotionsStats = (emotions: TEmotion[]): TEmotionStatsItem[] => {
   const groupedEmotions = groupBy(emotions, "definitionId");
   return Object.entries(groupedEmotions)
     .map(([id, items]) => {
-      const avg = items.reduce((sum, i) => sum + i.level, 0) / items.length;
       const { name, icon, type, isArchived } = items[0]!;
-      return { id, name, icon, type, avg, count: items.length, isArchived };
+      return { id, name, icon, type, isArchived, count: items.length };
     })
     .sort((a, b) => {
-      return sortBy === "count"
-        ? b.count - a.count || b.avg - a.avg // desc by count, tiebreak by avg
-        : b.avg - a.avg || b.count - a.count; // desc by avg, tiebreak by count
+      return b.count - a.count;
     });
 };
 

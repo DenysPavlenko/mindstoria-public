@@ -6,20 +6,19 @@ import {
   RatingLevel,
   TEmotionDefinition,
   TEmotionLog,
-  TSentimentLevel,
   TSentimentType,
 } from "@/types";
-import { generateUniqueId, getSentimentColor } from "@/utils";
+import { generateUniqueId } from "@/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button } from "../Button/Button";
 import { ConfirmationDialog } from "../ConfirmationDialog/ConfirmationDialog";
 import { IconBox } from "../IconBox/IconBox";
-import { SelectableIconButton } from "../SelectableIconButton/SelectableIconButton";
 import { SentimentFilter } from "../SentimentFilter/SentimentFilter";
-import { SentimentSlider } from "../SentimentSlider/SentimentSlider";
+import { SentimentIconButton } from "../SentimentIconButton/SentimentIconButton";
+import { SentimentList } from "../SentimentList/SentimentList";
 import { SlideInModal } from "../SlideInModal/SlideInModal";
 import { Typography } from "../Typography/Typography";
 
@@ -41,8 +40,6 @@ export const EmotionsSelector = ({
   const emotionDefinitions = useTranslatedEmotionDefinitions({ sorted: true });
   const [selectedType, setSelectedType] = useState<TSentimentType | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedEmotion, setSelectedEmotion] =
-    useState<TEmotionDefinition | null>(null);
   const [selectedDefinition, setSelectedDefinition] =
     useState<TEmotionDefinition | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -95,29 +92,20 @@ export const EmotionsSelector = ({
     onChange(filteredItems);
   };
 
+  const addEmotionLog = (defId: string) => {
+    const newLog: TEmotionLog = { id: generateUniqueId(), definitionId: defId };
+    onChange([...emotionLogItems, newLog]);
+  };
+
   const handleEmotionPress = (
     item: TEmotionDefinition,
     isSelected: boolean
   ) => {
     if (isSelected) {
       removeEmotionLog(item.id);
-      setSelectedEmotion(null);
     } else {
-      setSelectedEmotion(item);
+      addEmotionLog(item.id);
     }
-  };
-
-  const handleSave = (level: TSentimentLevel) => {
-    if (selectedEmotion === null) return;
-    onChange([
-      ...emotionLogItems,
-      {
-        id: generateUniqueId(),
-        definitionId: selectedEmotion.id,
-        level,
-      },
-    ]);
-    setSelectedEmotion(null);
   };
 
   const handleEmotionEdit = (definitionId: string) => {
@@ -144,9 +132,7 @@ export const EmotionsSelector = ({
         query={searchQuery}
         onSearch={setSearchQuery}
         selectedType={selectedType}
-        onTypeChange={(type) => {
-          setSelectedType(type);
-        }}
+        onTypeChange={setSelectedType}
         onPlusPress={() => {
           router.navigate({
             pathname: "/emotion-definition-form",
@@ -159,58 +145,43 @@ export const EmotionsSelector = ({
     );
   };
 
-  const renderEmotionItem = ({ item }: { item: TEmotionDefinition }) => {
+  const renderItem = ({ item }: { item: TEmotionDefinition }) => {
     const emotionLog = emotionLogsMap[item.id];
     const isSelected = Boolean(emotionLog);
-    const color = emotionLog
-      ? getSentimentColor(item.type, emotionLog.level, theme)
-      : undefined;
     return (
-      <SelectableIconButton
+      <SentimentIconButton
         title={item.name}
-        customContent={
-          <Typography style={{ fontSize: 24, lineHeight: 30 }}>
-            {item.icon}
-          </Typography>
-        }
+        icon={item.icon}
+        category="emotion"
+        type={item.type}
         isSelected={isSelected}
-        level={emotionLog?.level}
         isArchived={item.isArchived}
-        levelColor={color}
         onPress={() => handleEmotionPress(item, isSelected)}
         onLongPress={() => {
           setSelectedDefinition(item);
           setShowMenu(true);
         }}
-        style={styles.emotionItem}
       />
     );
   };
 
   const renderList = () => {
     return (
-      <FlatList
-        numColumns={3}
+      <SentimentList
         data={filteredDefinitions}
-        contentContainerStyle={[styles.listContent]}
-        ListEmptyComponent={
-          <SelectableIconButton
-            title={`${t("common:add")} "${searchQuery}"`}
-            icon="plus"
-            style={styles.emotionItem}
-            onPress={() => {
-              router.navigate({
-                pathname: "/emotion-definition-form",
-                params: {
-                  prefillName: searchQuery,
-                  type: selectedType || undefined,
-                },
-              });
-            }}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-        renderItem={renderEmotionItem}
+        renderItem={renderItem}
+        searchQuery={searchQuery}
+        keyExtractor={(item) => item.id}
+        onAddPress={() => {
+          router.navigate({
+            pathname: "/emotion-definition-form",
+            params: {
+              prefillName: searchQuery,
+              type: selectedType || undefined,
+            },
+          });
+        }}
+        style={styles.listContent}
       />
     );
   };
@@ -230,20 +201,6 @@ export const EmotionsSelector = ({
           {t("emotions.select_the_emotions")}
         </Typography>
       </View>
-    );
-  };
-
-  const renderSentimentSlider = () => {
-    if (!selectedEmotion) return null;
-    return (
-      <SentimentSlider
-        type={selectedEmotion.type}
-        name={selectedEmotion.name}
-        onClose={() => {
-          setSelectedEmotion(null);
-        }}
-        onSave={handleSave}
-      />
     );
   };
 
@@ -311,7 +268,6 @@ export const EmotionsSelector = ({
       {renderHeader()}
       {renderFilter()}
       {renderList()}
-      {renderSentimentSlider()}
       {renderEmotionMenu()}
       {renderConfirmDelete()}
     </View>
@@ -326,12 +282,6 @@ const createStyles = (theme: TTheme) =>
     },
     listContent: {
       paddingBottom: theme.layout.spacing.lg,
-    },
-    emotionItem: {
-      width: `${100 / 3}%`,
-      paddingHorizontal: theme.layout.spacing.xs,
-      paddingTop: theme.layout.spacing.md,
-      paddingBottom: theme.layout.spacing.sm,
     },
     header: {
       marginBottom: theme.layout.spacing.xl,

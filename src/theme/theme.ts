@@ -94,22 +94,6 @@ export interface TColorsTheme {
     300: string;
     400: string;
   };
-  sentiment: {
-    negative: {
-      50: string;
-      100: string;
-      200: string;
-      300: string;
-      400: string;
-    };
-    positive: {
-      50: string;
-      100: string;
-      200: string;
-      300: string;
-      400: string;
-    };
-  };
 }
 
 const size = {
@@ -213,22 +197,6 @@ export const lightTheme: TTheme = {
       300: withAlpha("#7CB342", 0.8),
       400: withAlpha("#388E3C", 0.8),
     },
-    sentiment: {
-      negative: {
-        50: "#FFDAD6",
-        100: "#FFB4AB",
-        200: "#EF9A9A",
-        300: "#E57373",
-        400: "#BA1A1A",
-      },
-      positive: {
-        50: "#C8E6C9",
-        100: "#A5D6A7",
-        200: "#81C784",
-        300: "#66BB6A",
-        400: "#388E3C",
-      },
-    },
   },
   layout: {
     size,
@@ -296,22 +264,6 @@ export const darkTheme: TTheme = {
       200: "#FFD54F",
       300: "#AED581",
       400: "#81C784",
-    },
-    sentiment: {
-      negative: {
-        50: "#FFDAD6",
-        100: "#FFB4AB",
-        200: "#F28B82",
-        300: "#E57373",
-        400: "#93000A",
-      },
-      positive: {
-        50: "#C8E6C9",
-        100: "#A5D6A7",
-        200: "#81C784",
-        300: "#66BB6A",
-        400: "#2E7D32",
-      },
     },
   },
   layout: {

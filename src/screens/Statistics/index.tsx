@@ -9,7 +9,7 @@ import {
 } from "@/components";
 import { useAppSelector } from "@/store";
 import { TTheme, useTheme } from "@/theme";
-import { TSortBy, TTimePeriod } from "@/types";
+import { TTimePeriod } from "@/types";
 import {
   filterDataByTimePeriod,
   getEmotions,
@@ -42,8 +42,6 @@ export const Statistics = () => {
   const emotionDefsItems = useAppSelector(
     (state) => state.emotionDefinitions.items
   );
-  const [impactsSortBy, setImpactsSortBy] = useState<TSortBy>("count");
-  const [emotionsSortBy, setEmotionsSortBy] = useState<TSortBy>("count");
   const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
   const [currentDate, setCurrentDate] = useState(dayjs());
 
@@ -101,16 +99,16 @@ export const Statistics = () => {
       (log) => log.values.impacts || []
     );
     const impacts = getImpacts(impactLogItems, impactDefsItems);
-    return getImpactsStats(impacts, impactsSortBy);
-  }, [filteredLogItems, impactDefsItems, impactsSortBy]);
+    return getImpactsStats(impacts);
+  }, [filteredLogItems, impactDefsItems]);
 
   const emotionsStatsData = useMemo(() => {
     const emotionLogItems = filteredLogItems.flatMap(
       (log) => log.values.emotions || []
     );
     const emotions = getEmotions(emotionLogItems, emotionDefsItems);
-    return getEmotionsStats(emotions, emotionsSortBy);
-  }, [filteredLogItems, emotionDefsItems, emotionsSortBy]);
+    return getEmotionsStats(emotions);
+  }, [filteredLogItems, emotionDefsItems]);
 
   const paddingBottom = useMemo(() => {
     return insets.bottom + TAB_BAR_HEIGHT + theme.layout.spacing.lg;
@@ -161,30 +159,22 @@ export const Statistics = () => {
   const renderImpactsStats = useCallback(() => {
     return (
       <SentimentStatsView
-        title={t("impacts.title")}
+        title={t("impacts.impacts_count")}
         data={impactsStatsData}
-        sortBy={impactsSortBy}
-        onSortPress={() =>
-          setImpactsSortBy((prev) => (prev === "count" ? "avg" : "count"))
-        }
         category="impact"
       />
     );
-  }, [impactsSortBy, impactsStatsData, t]);
+  }, [impactsStatsData, t]);
 
   const renderEmotionsStats = useCallback(() => {
     return (
       <SentimentStatsView
-        title={t("emotions.title")}
+        title={t("emotions.emotions_count")}
         data={emotionsStatsData}
-        sortBy={emotionsSortBy}
-        onSortPress={() =>
-          setEmotionsSortBy((prev) => (prev === "count" ? "avg" : "count"))
-        }
         category="emotion"
       />
     );
-  }, [emotionsSortBy, emotionsStatsData, t]);
+  }, [emotionsStatsData, t]);
 
   const listData = useMemo(() => {
     return [

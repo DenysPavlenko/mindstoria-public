@@ -1,10 +1,5 @@
 import { TTheme } from "@/theme";
-import {
-  RatingLevel,
-  TSentimentLevel,
-  TSentimentType,
-  TTimePeriod,
-} from "@/types";
+import { RatingLevel, TTimePeriod } from "@/types";
 import dayjs from "dayjs";
 import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
@@ -48,15 +43,6 @@ export function filterDataByTimePeriod<T>(
     );
   });
 }
-
-export const getSentimentColor = (
-  type: TSentimentType,
-  level: TSentimentLevel,
-  theme: TTheme
-): string => {
-  const scaleMap = { 1: "50", 2: "100", 3: "200", 4: "300", 5: "400" } as const;
-  return theme.colors.sentiment[type][scaleMap[level]];
-};
 
 export const getErrorMessage = (
   error: unknown,

@@ -93,7 +93,8 @@
     "select_one_or_more_impacts": "Оберіть один або кілька факторів, які впливають на ваше самопочуття",
     "impacts_statistics": "Статистика впливів",
     "positive_impacts": "Позитивні впливи",
-    "negative_impacts": "Негативні впливи"
+    "negative_impacts": "Негативні впливи",
+    "impacts_count": "Кількість впливів"
   },
 
   "emotions": {
@@ -111,7 +112,8 @@
     "duplicate_emotion_name": "Емоція з такою назвою вже існує",
     "positive_emotions": "Позитивні емоції",
     "negative_emotions": "Негативні емоції",
-    "emotions_statistics": "Статистика емоцій"
+    "emotions_statistics": "Статистика емоцій",
+    "emotions_count": "Кількість емоцій"
   },
 
   "sentiments": {

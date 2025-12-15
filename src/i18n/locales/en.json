@@ -91,7 +91,8 @@
     "select_one_or_more_impacts": "Choose the things that are influencing your feelings",
     "impacts_statistics": "Impacts Statistics",
     "positive_impacts": "Positive Impacts",
-    "negative_impacts": "Negative Impacts"
+    "negative_impacts": "Negative Impacts",
+    "impacts_count": "Impacts Count"
   },
   "emotions": {
     "title": "Emotions",
@@ -108,7 +109,8 @@
     "duplicate_emotion_name": "An emotion with this name already exists",
     "positive_emotions": "Positive Emotions",
     "negative_emotions": "Negative Emotions",
-    "emotions_statistics": "Emotions Statistics"
+    "emotions_statistics": "Emotions Statistics",
+    "emotions_count": "Emotions Count"
   },
   "sentiments": {
     "all": "All",

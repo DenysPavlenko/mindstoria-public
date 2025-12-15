@@ -2,20 +2,21 @@ import {
   Card,
   Header,
   Placeholder,
-  SentimentProgressItem,
+  SentimentIconButton,
   SentimentStatsFilter,
   StatInfoCard,
   TimePeriodSelect,
 } from "@/components";
+import { SentimentList } from "@/components/SentimentList/SentimentList";
 import { useAppSelector } from "@/store";
 import { TTheme, useTheme } from "@/theme";
-import { TLog, TSentimentType, TSortBy, TTimePeriod } from "@/types";
+import { TEmotionStatsItem, TLog, TSentimentType, TTimePeriod } from "@/types";
 import { filterDataByTimePeriod, getEmotions, getEmotionsStats } from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const EmotionsStats = () => {
@@ -28,7 +29,6 @@ export const EmotionsStats = () => {
     (state) => state.emotionDefinitions.items
   );
   const cachedLogs = useRef<TLog[] | null>(null);
-  const [emotionsSortBy, setEmotionsSortBy] = useState<TSortBy>("count");
   const [emotionsType, setEmotionsType] = useState<TSentimentType | null>(null);
   const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,8 +55,8 @@ export const EmotionsStats = () => {
       (log) => log.values.emotions || []
     );
     const emotions = getEmotions(emotionLogItems, emotionDefsItems);
-    return getEmotionsStats(emotions, emotionsSortBy);
-  }, [filteredLogItems, emotionDefsItems, emotionsSortBy]);
+    return getEmotionsStats(emotions);
+  }, [filteredLogItems, emotionDefsItems]);
 
   const positiveData = useMemo(() => {
     return emotionsStatsData.filter((item) => item.type === "positive");
@@ -105,43 +105,36 @@ export const EmotionsStats = () => {
       <SentimentStatsFilter
         type={emotionsType}
         onTypeChange={setEmotionsType}
-        sortBy={emotionsSortBy}
         searchPlaceholder={t("emotions.search_emotion")}
-        onSortPress={() =>
-          setEmotionsSortBy((prev) => (prev === "count" ? "avg" : "count"))
-        }
         query={searchQuery}
         onSearch={setSearchQuery}
       />
     );
   };
 
+  const renderItem = ({ item }: { item: TEmotionStatsItem }) => {
+    return (
+      <SentimentIconButton
+        title={t(item.name)}
+        icon={item.icon}
+        isArchived={item.isArchived}
+        category="emotion"
+        counter={item.count}
+        type={item.type}
+      />
+    );
+  };
+
   const renderList = () => {
     return (
-      <FlatList
+      <SentimentList
         data={dataToRender}
-        showsVerticalScrollIndicator={false}
+        renderItem={renderItem}
         ListEmptyComponent={renderPlaceholder}
-        contentContainerStyle={{
-          gap: theme.layout.spacing.sm,
+        keyExtractor={(item) => item.id}
+        style={{
           paddingBottom,
           flexGrow: dataToRender.length === 0 ? 1 : 0,
-        }}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const roundedAvg = Math.round(item.avg);
-          return (
-            <SentimentProgressItem
-              key={item.id}
-              level={roundedAvg}
-              name={t(item.name)}
-              category="emotion"
-              icon={item.icon}
-              count={item.count}
-              type={item.type}
-              isArchived={item.isArchived}
-            />
-          );
         }}
       />
     );

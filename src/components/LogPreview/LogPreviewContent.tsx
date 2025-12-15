@@ -14,7 +14,6 @@ import { isEmpty } from "lodash";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Badge } from "../Badge/Badge";
 import { Card } from "../Card/Card";
 import { Chip } from "../Chip/Chip";
 import { Typography } from "../Typography/Typography";
@@ -46,7 +45,6 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
     isEmotion: boolean = false
   ) => {
     if (items.length === 0) return null;
-
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View
@@ -57,40 +55,22 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
             paddingHorizontal: theme.layout.spacing.lg,
           }}
         >
-          {items.map(({ id, definitionId, level }) => {
+          {items.map(({ id, definitionId }) => {
             const definition = definitions[definitionId];
             if (!definition) return null;
-            const color = getSentimentColor(definition.type, level, theme);
-
+            const color = getSentimentColor(definition.type, theme);
             const chipIconProp = isEmotion
               ? { customContent: <Typography>{definition.icon}</Typography> }
               : { icon: (definition as TImpactDefinition).icon };
-
             return (
               <Chip
                 key={id}
-                bgColor="surface"
                 {...chipIconProp}
+                bgColor="surface"
+                iconColor="error"
+                iconStyle={{ color }}
                 disabled={definition.isArchived}
-                label={
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: theme.layout.spacing.xs,
-                    }}
-                  >
-                    <Typography variant="smallBold">
-                      {t(definition.name)}
-                    </Typography>
-                    <Badge
-                      absolute={false}
-                      size={20}
-                      value={level}
-                      style={{ backgroundColor: color }}
-                    />
-                  </View>
-                }
+                label={t(definition.name)}
               />
             );
           })}

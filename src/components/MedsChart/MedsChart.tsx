@@ -2,9 +2,9 @@ import PillIcon from "@/assets/feather/pill.svg";
 import { useAppSelector } from "@/store";
 import { TTheme, useTheme } from "@/theme";
 import { TChartDataPoint, TTimePeriod } from "@/types";
-import { CALENDAR_DATE_FORMAT, generatePeriodDatesForCharts } from "@/utils";
+import { generatePeriodDatesForCharts } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -60,7 +60,7 @@ export const MedsChart = ({
     const map = new Map<string, number | null>();
     if (!selectedMedId) return map;
     data[selectedMedId]?.forEach((d) => {
-      map.set(dayjs(d.date).format(CALENDAR_DATE_FORMAT), d.value);
+      map.set(d.date, d.value);
     });
     return map;
   }, [data, selectedMedId]);

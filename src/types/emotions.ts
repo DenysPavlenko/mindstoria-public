@@ -14,7 +14,7 @@ export type TEmotionDefinitions = Record<string, TEmotionDefinition>;
 export type TEmotionLog = {
   id: string;
   definitionId: string;
-  level: TSentimentLevel;
+  level?: TSentimentLevel;
 };
 
 export type TEmotion = TEmotionLog & {

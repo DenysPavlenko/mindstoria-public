@@ -2,20 +2,21 @@ import {
   Card,
   Header,
   Placeholder,
-  SentimentProgressItem,
+  SentimentIconButton,
   SentimentStatsFilter,
   StatInfoCard,
   TimePeriodSelect,
 } from "@/components";
+import { SentimentList } from "@/components/SentimentList/SentimentList";
 import { useAppSelector } from "@/store";
 import { TTheme, useTheme } from "@/theme";
-import { TLog, TSentimentType, TSortBy, TTimePeriod } from "@/types";
+import { TImpactStatsItem, TLog, TSentimentType, TTimePeriod } from "@/types";
 import { filterDataByTimePeriod, getImpacts, getImpactsStats } from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const ImpactsStats = () => {
@@ -28,7 +29,6 @@ export const ImpactsStats = () => {
     (state) => state.impactDefinitions.items
   );
   const cachedLogs = useRef<TLog[] | null>(null);
-  const [impactsSortBy, setImpactsSortBy] = useState<TSortBy>("count");
   const [impactsType, setImpactsType] = useState<TSentimentType | null>(null);
   const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,8 +55,8 @@ export const ImpactsStats = () => {
       (log) => log.values.impacts || []
     );
     const impacts = getImpacts(impactLogItems, impactDefsItems);
-    return getImpactsStats(impacts, impactsSortBy);
-  }, [filteredLogItems, impactDefsItems, impactsSortBy]);
+    return getImpactsStats(impacts);
+  }, [filteredLogItems, impactDefsItems]);
 
   const positiveData = useMemo(() => {
     return impactsStatsData.filter((item) => item.type === "positive");
@@ -105,43 +105,36 @@ export const ImpactsStats = () => {
       <SentimentStatsFilter
         type={impactsType}
         onTypeChange={setImpactsType}
-        sortBy={impactsSortBy}
         searchPlaceholder={t("impacts.search_impact")}
-        onSortPress={() =>
-          setImpactsSortBy((prev) => (prev === "count" ? "avg" : "count"))
-        }
         query={searchQuery}
         onSearch={setSearchQuery}
       />
     );
   };
 
+  const renderItem = ({ item }: { item: TImpactStatsItem }) => {
+    return (
+      <SentimentIconButton
+        title={t(item.name)}
+        icon={item.icon}
+        isArchived={item.isArchived}
+        counter={item.count}
+        category="impact"
+        type={item.type}
+      />
+    );
+  };
+
   const renderList = () => {
     return (
-      <FlatList
+      <SentimentList
         data={dataToRender}
-        showsVerticalScrollIndicator={false}
+        renderItem={renderItem}
         ListEmptyComponent={renderPlaceholder}
-        contentContainerStyle={{
-          gap: theme.layout.spacing.sm,
+        keyExtractor={(item) => item.id}
+        style={{
           paddingBottom,
           flexGrow: dataToRender.length === 0 ? 1 : 0,
-        }}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const roundedAvg = Math.round(item.avg);
-          return (
-            <SentimentProgressItem
-              key={item.id}
-              level={roundedAvg}
-              name={t(item.name)}
-              category="impact"
-              icon={item.icon}
-              count={item.count}
-              type={item.type}
-              isArchived={item.isArchived}
-            />
-          );
         }}
       />
     );

@@ -6,20 +6,19 @@ import {
   RatingLevel,
   TImpactDefinition,
   TImpactLog,
-  TSentimentLevel,
   TSentimentType,
 } from "@/types";
-import { generateUniqueId, getSentimentColor } from "@/utils";
+import { generateUniqueId } from "@/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button } from "../Button/Button";
 import { ConfirmationDialog } from "../ConfirmationDialog/ConfirmationDialog";
 import { IconBox } from "../IconBox/IconBox";
-import { SelectableIconButton } from "../SelectableIconButton/SelectableIconButton";
 import { SentimentFilter } from "../SentimentFilter/SentimentFilter";
-import { SentimentSlider } from "../SentimentSlider/SentimentSlider";
+import { SentimentIconButton } from "../SentimentIconButton/SentimentIconButton";
+import { SentimentList } from "../SentimentList/SentimentList";
 import { SlideInModal } from "../SlideInModal/SlideInModal";
 import { Typography } from "../Typography/Typography";
 
@@ -41,8 +40,6 @@ export const ImpactsSelector = ({
   const impactDefinitions = useTranslatedImpactDefinitions({ sorted: true });
   const [selectedType, setSelectedType] = useState<TSentimentType | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedImpact, setSelectedImpact] =
-    useState<TImpactDefinition | null>(null);
   const [selectedDefinition, setSelectedDefinition] =
     useState<TImpactDefinition | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -92,26 +89,17 @@ export const ImpactsSelector = ({
     onChange(impactLogItems.filter((impact) => impact.definitionId !== defId));
   };
 
+  const addImpactLog = (defId: string) => {
+    const newLog: TImpactLog = { id: generateUniqueId(), definitionId: defId };
+    onChange([...impactLogItems, newLog]);
+  };
+
   const handleImpactPress = (item: TImpactDefinition, isSelected: boolean) => {
     if (isSelected) {
       removeImpactLog(item.id);
-      setSelectedImpact(null);
     } else {
-      setSelectedImpact(item);
+      addImpactLog(item.id);
     }
-  };
-
-  const handleSave = (level: TSentimentLevel) => {
-    if (selectedImpact === null) return;
-    onChange([
-      ...impactLogItems,
-      {
-        id: generateUniqueId(),
-        definitionId: selectedImpact.id,
-        level,
-      },
-    ]);
-    setSelectedImpact(null);
   };
 
   const handleImpactEdit = (definitionId: string) => {
@@ -153,54 +141,43 @@ export const ImpactsSelector = ({
     );
   };
 
-  const renderImpactItem = ({ item }: { item: TImpactDefinition }) => {
+  const renderItem = ({ item }: { item: TImpactDefinition }) => {
     const impactLog = impactLogsMap[item.id];
     const isSelected = Boolean(impactLog);
-    const color = impactLog
-      ? getSentimentColor(item.type, impactLog.level, theme)
-      : undefined;
     return (
-      <SelectableIconButton
+      <SentimentIconButton
         title={item.name}
         icon={item.icon}
+        category="impact"
         isSelected={isSelected}
         isArchived={item.isArchived}
-        level={impactLog?.level}
-        levelColor={color}
         onPress={() => handleImpactPress(item, isSelected)}
         onLongPress={() => {
           setSelectedDefinition(item);
           setShowMenu(true);
         }}
-        style={styles.impactItem}
+        type={item.type}
       />
     );
   };
 
   const renderList = () => {
     return (
-      <FlatList
-        numColumns={3}
+      <SentimentList
         data={filteredDefinitions}
-        contentContainerStyle={[styles.listContent]}
-        ListEmptyComponent={
-          <SelectableIconButton
-            title={`${t("common:add")} "${searchQuery}"`}
-            icon="plus"
-            style={styles.impactItem}
-            onPress={() => {
-              router.navigate({
-                pathname: "/impact-definition-form",
-                params: {
-                  prefillName: searchQuery,
-                  type: selectedType || undefined,
-                },
-              });
-            }}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-        renderItem={renderImpactItem}
+        renderItem={renderItem}
+        searchQuery={searchQuery}
+        onAddPress={() => {
+          router.navigate({
+            pathname: "/impact-definition-form",
+            params: {
+              prefillName: searchQuery,
+              type: selectedType || undefined,
+            },
+          });
+        }}
+        keyExtractor={(item) => item.id}
+        style={styles.listContent}
       />
     );
   };
@@ -220,20 +197,6 @@ export const ImpactsSelector = ({
           {t("impacts.select_one_or_more_impacts")}
         </Typography>
       </View>
-    );
-  };
-
-  const renderRatingSlider = () => {
-    if (!selectedImpact) return null;
-    return (
-      <SentimentSlider
-        type={selectedImpact.type}
-        name={selectedImpact.name}
-        onClose={() => {
-          setSelectedImpact(null);
-        }}
-        onSave={handleSave}
-      />
     );
   };
 
@@ -298,7 +261,6 @@ export const ImpactsSelector = ({
       {renderHeader()}
       {renderFilter()}
       {renderList()}
-      {renderRatingSlider()}
       {renderImpactMenu()}
       {renderConfirmDelete()}
     </View>
@@ -314,23 +276,8 @@ const createStyles = (theme: TTheme) =>
     filterContainer: {
       marginBottom: theme.layout.spacing.lg,
     },
-    filterInputContainer: {
-      flexDirection: "row",
-      gap: theme.layout.spacing.sm,
-      alignItems: "center",
-      marginBottom: theme.layout.spacing.md,
-    },
-    searchInput: {
-      flex: 1,
-    },
     listContent: {
       paddingBottom: theme.layout.spacing.lg,
-    },
-    impactItem: {
-      width: `${100 / 3}%`,
-      paddingHorizontal: theme.layout.spacing.xs,
-      paddingTop: theme.layout.spacing.md,
-      paddingBottom: theme.layout.spacing.sm,
     },
     header: {
       marginBottom: theme.layout.spacing.xl,

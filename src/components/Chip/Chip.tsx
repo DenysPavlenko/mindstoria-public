@@ -21,8 +21,10 @@ interface ChipProps {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  iconStyle?: StyleProp<TextStyle>;
   bgColor?: TColorKeys;
   textColor?: TColorKeys;
+  iconColor?: TColorKeys;
   selectedBgColor?: TColorKeys;
   testID?: string;
 }
@@ -40,6 +42,8 @@ export const Chip = ({
   bgColor = "surfaceVariant",
   selectedBgColor = "primary",
   textColor = "onSurfaceVariant",
+  iconColor = "primary",
+  iconStyle,
   minHeight = "sm",
 }: ChipProps) => {
   const { theme } = useTheme();
@@ -78,12 +82,14 @@ export const Chip = ({
 
   const renderIcon = () => {
     if (customContent) return customContent;
+    const color = selected ? theme.colors.onPrimary : theme.colors[iconColor];
     if (icon) {
       return (
         <Feather
           name={icon}
           size={theme.layout.size.xxs}
-          color={selected ? theme.colors.onPrimary : theme.colors.primary}
+          color={color}
+          style={iconStyle}
         />
       );
     }

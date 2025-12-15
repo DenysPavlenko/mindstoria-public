@@ -1,10 +1,12 @@
 import { TTheme, useTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
+import { ReactNode } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Typography } from "../Typography/Typography";
 
 interface BadgeProps {
-  value: string | number;
+  value?: string | number;
+  customValue?: ReactNode;
   size?: keyof TTheme["layout"]["size"] | number;
   bgColor?: TColorKeys;
   textColor?: TColorKeys;
@@ -20,6 +22,7 @@ interface BadgeProps {
 
 export const Badge = ({
   value,
+  customValue,
   size = "xs",
   bgColor = "primary",
   absolute = true,
@@ -32,21 +35,27 @@ export const Badge = ({
   const badgeSize = typeof size === "number" ? size : theme.layout.size[size];
 
   const containerStyle: ViewStyle = {
-    width: badgeSize,
+    minWidth: badgeSize,
     height: badgeSize,
     position: absolute ? "absolute" : "relative",
     backgroundColor: theme.colors[bgColor],
+    paddingHorizontal: theme.layout.spacing.xs,
     borderRadius: badgeSize / 2,
     justifyContent: "center",
     alignItems: "center",
     ...position,
   };
 
-  return (
-    <View style={[containerStyle, style]}>
+  const renderValue = () => {
+    if (customValue) {
+      return customValue;
+    }
+    return (
       <Typography variant="tinyBold" color={textColor} align="center">
         {value}
       </Typography>
-    </View>
-  );
+    );
+  };
+
+  return <View style={[containerStyle, style]}>{renderValue()}</View>;
 };

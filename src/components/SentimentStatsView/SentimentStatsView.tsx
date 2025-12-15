@@ -4,7 +4,6 @@ import {
   TImpactStatsItem,
   TSentimentCategory,
   TSentimentType,
-  TSortBy,
 } from "@/types";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -13,26 +12,23 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button } from "../Button/Button";
 import { Card } from "../Card/Card";
 import { Placeholder } from "../Placeholder/Placeholder";
-import { SentimentProgressItem } from "../SentimentProgressItem/SentimentProgressItem";
+import { SentimentIconButton } from "../SentimentIconButton/SentimentIconButton";
+import { SentimentList } from "../SentimentList/SentimentList";
 import { SentimentStatsFilter } from "../SentimentStatsFilter/SentimentStatsFilter";
 import { Typography } from "../Typography/Typography";
 
 interface SentimentStatsViewProps {
   title: string;
   data: (TImpactStatsItem | TEmotionStatsItem)[];
-  sortBy: TSortBy;
-  onSortPress?: () => void;
   style?: StyleProp<ViewStyle>;
   category: TSentimentCategory;
 }
 
-const MAX_VISIBLE_ITEMS = 5;
+const MAX_VISIBLE_ITEMS = 6;
 
 export const SentimentStatsView = ({
   title,
   data,
-  sortBy,
-  onSortPress,
   style,
   category,
 }: SentimentStatsViewProps) => {
@@ -64,28 +60,31 @@ export const SentimentStatsView = ({
     );
   };
 
-  const renderList = () => {
-    if (dataToRender.length === 0) {
-      return renderPlaceholder();
-    }
+  const renderItem = ({
+    item,
+  }: {
+    item: TImpactStatsItem | TEmotionStatsItem;
+  }) => {
     return (
-      <View style={styles.listContainer}>
-        {dataToRender.slice(0, MAX_VISIBLE_ITEMS).map((item) => {
-          const roundedAvg = Math.round(item.avg);
-          return (
-            <SentimentProgressItem
-              key={item.id}
-              level={roundedAvg}
-              name={t(item.name)}
-              category={category}
-              icon={item.icon}
-              count={item.count}
-              type={item.type}
-              isArchived={item.isArchived}
-            />
-          );
-        })}
-      </View>
+      <SentimentIconButton
+        title={t(item.name)}
+        category={category}
+        icon={item.icon}
+        isArchived={item.isArchived}
+        counter={item.count}
+        type={item.type}
+      />
+    );
+  };
+
+  const renderList = () => {
+    return (
+      <SentimentList
+        data={dataToRender.slice(0, MAX_VISIBLE_ITEMS)}
+        renderItem={renderItem}
+        ListEmptyComponent={renderPlaceholder}
+        keyExtractor={(item) => item.id}
+      />
     );
   };
 
@@ -105,8 +104,6 @@ export const SentimentStatsView = ({
       <SentimentStatsFilter
         type={type}
         onTypeChange={setType}
-        sortBy={sortBy}
-        onSortPress={onSortPress}
         style={styles.filter}
         hideSearch
       />
@@ -142,9 +139,6 @@ const createStyles = (theme: TTheme) => {
     showMoreButton: {
       paddingTop: theme.layout.spacing.md,
       alignItems: "flex-start",
-    },
-    listContainer: {
-      gap: theme.layout.spacing.sm,
     },
     itemContainer: {
       flex: 1,

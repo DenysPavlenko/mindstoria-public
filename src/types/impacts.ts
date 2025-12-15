@@ -15,7 +15,7 @@ export type TImpactDefinitions = Record<string, TImpactDefinition>;
 export type TImpactLog = {
   id: string;
   definitionId: string;
-  level: TSentimentLevel;
+  level?: TSentimentLevel;
 };
 
 export type TImpact = TImpactLog & {
