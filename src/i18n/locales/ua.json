@@ -94,7 +94,7 @@
     "impacts_statistics": "Статистика впливів",
     "positive_impacts": "Позитивні впливи",
     "negative_impacts": "Негативні впливи",
-    "impacts_count": "Кількість впливів"
+    "impacts_count": "Лічильник впливів"
   },
 
   "emotions": {
@@ -113,7 +113,7 @@
     "positive_emotions": "Позитивні емоції",
     "negative_emotions": "Негативні емоції",
     "emotions_statistics": "Статистика емоцій",
-    "emotions_count": "Кількість емоцій"
+    "emotions_count": "Лічильник емоцій"
   },
 
   "sentiments": {
