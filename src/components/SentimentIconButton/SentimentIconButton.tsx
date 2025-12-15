@@ -100,9 +100,11 @@ export const SentimentIconButton = ({
           {renderSelectedBadge()}
           {renderCounterBadge()}
         </View>
-        <Typography variant="smallBold" numberOfLines={1}>
-          {title}
-        </Typography>
+        <View style={{ width: "100%" }}>
+          <Typography variant="smallBold" align="center">
+            {title}
+          </Typography>
+        </View>
       </>
     );
   };
