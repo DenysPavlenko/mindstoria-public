@@ -19,6 +19,7 @@
     "build:android:prod:local": "eas build --platform android --local --profile production",
     "build:ios:dev": "eas build --platform ios --profile development",
     "build:ios:prev": "eas build --platform ios --profile preview",
+    "build:ios:prod:local": "eas build --platform ios --local --profile production",
     "build:ios:prod": "eas build --platform ios",
     "update:prev": "eas update --environment preview --branch preview --message \"$npm_config_message\"",
     "update:prod": "eas update --environment production --branch production --message \"$npm_config_message\""
