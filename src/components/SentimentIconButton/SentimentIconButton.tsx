@@ -101,7 +101,7 @@ export const SentimentIconButton = ({
           {renderCounterBadge()}
         </View>
         <View style={{ width: "100%" }}>
-          <Typography variant="smallBold" align="center">
+          <Typography variant="smallBold" align="center" numberOfLines={2}>
             {title}
           </Typography>
         </View>
