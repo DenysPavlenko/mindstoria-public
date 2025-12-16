@@ -115,7 +115,6 @@ const createStyles = (theme: TTheme) =>
     dayItemsContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
-      maxWidth: MAX_WIDTH,
       width: "100%",
       alignSelf: "center",
     },

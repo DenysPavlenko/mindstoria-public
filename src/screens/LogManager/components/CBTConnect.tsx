@@ -86,6 +86,7 @@ const createStyles = (theme: TTheme) =>
     },
     textContainer: {
       gap: theme.layout.spacing.sm,
+      maxWidth: 500,
     },
     title: {
       textAlign: "center",

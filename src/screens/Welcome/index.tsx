@@ -66,7 +66,7 @@ export const Welcome = () => {
         >
           {t("welcome.subtitle")}
         </Typography>
-        <Typography variant="body" align="center">
+        <Typography variant="body" align="center" style={{ maxWidth: 500 }}>
           {t("welcome.description")}
         </Typography>
       </View>
@@ -77,7 +77,7 @@ export const Welcome = () => {
           marginBottom: theme.layout.spacing.lg,
         }}
       >
-        Get Started
+        {t("welcome.get_started")}
       </Button>
     </SafeView>
   );

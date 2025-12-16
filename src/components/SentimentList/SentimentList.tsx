@@ -2,6 +2,7 @@ import { TTheme, useTheme } from "@/theme";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Dimensions,
   FlatList,
   ListRenderItem,
   StyleProp,
@@ -10,6 +11,9 @@ import {
   ViewStyle,
 } from "react-native";
 import { SentimentIconButton } from "../SentimentIconButton/SentimentIconButton";
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const NUM_COLUMNS = SCREEN_WIDTH > 500 ? 4 : 3;
 
 interface SentimentListProps<T> {
   data: T[];
@@ -53,7 +57,7 @@ export const SentimentList = <T,>({
   return (
     <FlatList
       data={data}
-      numColumns={3}
+      numColumns={NUM_COLUMNS}
       contentContainerStyle={style}
       keyExtractor={keyExtractor}
       ListEmptyComponent={renderListEmpty()}
@@ -68,7 +72,7 @@ export const SentimentList = <T,>({
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     item: {
-      width: `${100 / 3}%`,
+      width: `${100 / NUM_COLUMNS}%`,
       paddingHorizontal: theme.layout.spacing.xs,
       paddingTop: theme.layout.spacing.md,
       paddingBottom: theme.layout.spacing.sm,
