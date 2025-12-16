@@ -1,4 +1,5 @@
 import {
+  Button,
   ConfirmationDialog,
   Header,
   IconButton,
@@ -324,18 +325,18 @@ export const CBTLogManager = ({
           icon="chevron-left"
           disabled={isFirstPage}
           onPress={handlePrev}
-          variant="text"
-          size="xl"
+          size="lg"
         />
-        <View>
-          <IconButton icon="save" disabled={!isValid} onPress={handleSave} />
+        <View style={{ minWidth: 140 }}>
+          <Button disabled={!isValid} onPress={handleSave} fullWidth>
+            {t("common.save")}
+          </Button>
         </View>
         <IconButton
           icon={isLastPage ? "check" : "chevron-right"}
           disabled={isLastPage && !isValid}
           onPress={handleNext}
-          variant="text"
-          size="xl"
+          size="lg"
         />
       </View>
     );
