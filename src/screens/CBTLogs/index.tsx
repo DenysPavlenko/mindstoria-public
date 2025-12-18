@@ -12,6 +12,7 @@ import { TTheme, useTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import { CALENDAR_DATE_FORMAT } from "@/utils/dateConstants";
 import dayjs, { Dayjs } from "dayjs";
+import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
@@ -19,6 +20,7 @@ import { LogsList } from "./components/LogsList";
 
 export const CBTLogs = () => {
   const { theme } = useTheme();
+  const router = useRouter();
   const { t, i18n } = useTranslation();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [showCalendarPicker, setShowCalendarPicker] = useState(false);
@@ -57,6 +59,15 @@ export const CBTLogs = () => {
             />
             <Typography variant="h4">{title}</Typography>
           </View>
+        }
+        rightContent={
+          <IconButton
+            icon="info"
+            size="md"
+            onPress={() => {
+              router.navigate("/cbt-info");
+            }}
+          />
         }
       />
     );
