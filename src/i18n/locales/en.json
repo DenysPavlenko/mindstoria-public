@@ -46,7 +46,9 @@
     "thought": "Thought",
     "choose_time": "Choose Time",
     "home": "Home",
-    "thoughts": "Thoughts"
+    "thoughts": "Thoughts",
+    "mo": "mo",
+    "yr": "yr"
   },
   "welcome": {
     "title": "Welcome to Mindstoria!",
@@ -169,7 +171,10 @@
     "more_to_come_desc": "Stay tuned for more exciting features and improvements in the future",
     "subscribe": "Subscribe",
     "restore": "Already subscribed? Restore Purchase",
-    "no_purchases_to_restore": "No purchases to restore"
+    "no_purchases_to_restore": "No purchases to restore",
+    "reaccuring_billing": "Recurring billing. Cancel anytime",
+    "lifetime_access": "Pay once. Unlimited forever",
+    "by_subscribing": "By subscribing you will unlock:"
   },
   "positive_emotions": {
     "joy": "Joy",

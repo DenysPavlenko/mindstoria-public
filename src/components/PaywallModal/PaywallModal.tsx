@@ -191,6 +191,48 @@ export const PaywallModal = () => {
     setIsPurchasing(false);
   };
 
+  const renderSelectedPackageInfo = () => {
+    if (!selectedPackage) return null;
+    if (selectedPackage.packageType === PACKAGE_TYPE.LIFETIME) {
+      return (
+        <Typography variant="small" align="center" style={{ marginTop: 8 }}>
+          {t("paywall.lifetime_access")}
+        </Typography>
+      );
+    }
+    if (
+      selectedPackage.packageType === PACKAGE_TYPE.MONTHLY ||
+      selectedPackage.packageType === PACKAGE_TYPE.ANNUAL
+    ) {
+      return (
+        <Typography variant="small" align="center" style={{ marginTop: 8 }}>
+          {t("paywall.reaccuring_billing")}
+        </Typography>
+      );
+    }
+
+    return null;
+  };
+
+  const renderPrice = (pkg: PurchasesPackage, isSelected: boolean) => {
+    const { product } = pkg;
+    let suffix = "";
+    if (pkg.packageType === PACKAGE_TYPE.MONTHLY) {
+      suffix = `/${t("common.mo")}`;
+    } else if (pkg.packageType === PACKAGE_TYPE.ANNUAL) {
+      suffix = `/${t("common.yr")}`;
+    }
+    return (
+      <Typography
+        variant="bodyBold"
+        color={isSelected ? "onPrimaryContainer" : "onSurface"}
+      >
+        {product.priceString}
+        {suffix}
+      </Typography>
+    );
+  };
+
   const renderHeader = () => {
     return (
       <View style={styles.header}>
@@ -198,10 +240,11 @@ export const PaywallModal = () => {
           {packages.map((pkg, index) => {
             const { product } = pkg;
             const discountInfo = getDiscountInfo(pkg);
+            const isSelected = selectedPackage?.identifier === pkg.identifier;
             return (
               <SelectableItem
                 key={index}
-                isSelected={selectedPackage?.identifier === pkg.identifier}
+                isSelected={isSelected}
                 onPress={() => setSelectedPackage(pkg)}
                 style={[
                   styles.planItem,
@@ -214,7 +257,12 @@ export const PaywallModal = () => {
               >
                 <View style={styles.planInfo}>
                   <View style={styles.planHeader}>
-                    <Typography variant="h5">{product.title}</Typography>
+                    <Typography
+                      variant="h5"
+                      color={isSelected ? "onPrimaryContainer" : "onSurface"}
+                    >
+                      {product.title}
+                    </Typography>
                   </View>
                   {/* {product.description && (
                     <Typography variant="small" color="outline">
@@ -237,16 +285,20 @@ export const PaywallModal = () => {
                       </Typography>
                     </View>
                   ) : (
-                    <Typography variant="h4">{product.priceString}</Typography>
+                    renderPrice(pkg, isSelected)
                   )}
                 </View>
               </SelectableItem>
             );
           })}
         </View>
+        {renderSelectedPackageInfo()}
         <Button variant="text" textColor="primary" onPress={restorePurchases}>
           {t("paywall.restore")}
         </Button>
+        <Typography variant="smallBold">
+          By subscribing you will unlock:
+        </Typography>
       </View>
     );
   };
@@ -260,9 +312,16 @@ export const PaywallModal = () => {
             radius="lg"
             onPress={handleBackdoorIconPress}
             activeOpacity={1}
+            backgroundColor="primaryContainer"
+            iconColor="onPrimaryContainer"
           />
         ) : (
-          <IconBox icon={item.icon} radius="lg" />
+          <IconBox
+            icon={item.icon}
+            radius="lg"
+            backgroundColor="primaryContainer"
+            iconColor="onPrimaryContainer"
+          />
         )}
         <View style={styles.benefitInfo}>
           <Typography variant="h5">{item.title}</Typography>
@@ -381,7 +440,6 @@ const createStyles = (theme: TTheme) =>
     },
     header: {
       gap: theme.layout.spacing.sm,
-      marginBottom: theme.layout.spacing.lg,
     },
     plansContainer: {
       gap: theme.layout.spacing.sm,
