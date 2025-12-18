@@ -14,6 +14,7 @@ import { addLogThunk, selectCBTLogs, updateLogThunk } from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
 import { TLogMetric, TLogValue, TLogValues } from "@/types";
 import { generateUniqueId } from "@/utils";
+import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -31,6 +32,7 @@ interface LogManagerProps {
 
 export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
   const { keyboardHeight } = useKeyboard();
   const { theme } = useTheme();
@@ -160,8 +162,10 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
   }, [isValid, router]);
 
   useAndroidBackHandler(() => {
-    handleExit();
-    return true;
+    if (isFocused) {
+      handleExit();
+      return true;
+    }
   });
 
   const handleTimeConfirm = (hours: number, minutes: number) => {

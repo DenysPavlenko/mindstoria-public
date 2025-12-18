@@ -15,6 +15,7 @@ import { addCBTLogThunk, updateCBTLogThunk } from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
 import { TCBTLogMetric, TCBTLogValue, TCBTLogValues } from "@/types";
 import { generateUniqueId } from "@/utils";
+import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -40,6 +41,7 @@ export const CBTLogManager = ({
   wellbeingLogId,
 }: CBTLogManagerProps) => {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -184,8 +186,10 @@ export const CBTLogManager = ({
   }, [isValid, router]);
 
   useAndroidBackHandler(() => {
-    handleExit();
-    return true;
+    if (isFocused) {
+      handleExit();
+      return true;
+    }
   });
 
   const handleTimeConfirm = (hours: number, minutes: number) => {
