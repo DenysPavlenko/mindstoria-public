@@ -147,6 +147,8 @@
     "language": "Language",
     "import_data": "Import Data",
     "export_data": "Export Data",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
     "import_data_warning": "Importing data will overwrite your current data. Are you sure you want to proceed?"
   },
   "paywall": {

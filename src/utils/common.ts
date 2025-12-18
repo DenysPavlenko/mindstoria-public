@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
 import { TFunction } from "i18next";
+import { Linking } from "react-native";
 import { getPeriodStartDate } from "./time";
 
 export const getAppVariant = (): "development" | "preview" | "production" => {
@@ -50,4 +51,11 @@ export const getErrorMessage = (
 ) => {
   const message = error instanceof Error ? error.message : fallback;
   return !message || !message.trim() ? fallback : message;
+};
+
+export const openLink = async (url: string) => {
+  const supported = await Linking.canOpenURL(url);
+  if (supported) {
+    await Linking.openURL(url);
+  }
 };

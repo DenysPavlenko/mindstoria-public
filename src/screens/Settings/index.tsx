@@ -1,3 +1,4 @@
+import { EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
 import {
   Card,
   ConfirmationDialog,
@@ -24,13 +25,16 @@ import {
   getAppVariant,
   hasBackUpData,
   importDataAsJSON,
+  openLink,
 } from "@/utils";
 import Feather from "@react-native-vector-icons/feather";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { LanguageList, TLanguageListItem } from "./components/LanguageList";
+
+const IS_IOS = Platform.OS === "ios";
 
 const TITLE_MAP = {
   en: "English",
@@ -68,13 +72,13 @@ export const Settings = () => {
     return hasBackUpData(backUpData);
   }, [backUpData]);
 
-  const handleDataImportPress = useCallback(() => {
+  const handleDataImportPress = () => {
     checkPremiumFeature(async () => {
       setShowImportConfirmation(true);
     });
-  }, [checkPremiumFeature]);
+  };
 
-  const handleDataImport = useCallback(async () => {
+  const handleDataImport = async () => {
     try {
       const data = await importDataAsJSON();
       if (data) {
@@ -86,9 +90,9 @@ export const Settings = () => {
         error instanceof Error ? error.message : t("common.import_failure");
       snackbar.error(message);
     }
-  }, [dispatch, snackbar, t]);
+  };
 
-  const handleDataExport = useCallback(async () => {
+  const handleDataExport = async () => {
     if (!hasData) return;
     checkPremiumFeature(async () => {
       try {
@@ -99,9 +103,9 @@ export const Settings = () => {
         snackbar.error(message);
       }
     });
-  }, [hasData, checkPremiumFeature, backUpData, snackbar, t]);
+  };
 
-  const renderThemeSetting = useCallback(() => {
+  const renderThemeSetting = () => {
     return (
       <View style={styles.settingItem}>
         <View style={styles.settingTitle}>
@@ -113,9 +117,9 @@ export const Settings = () => {
         </View>
       </View>
     );
-  }, [styles, t, isDark, toggleTheme, theme]);
+  };
 
-  const renderLanguageSetting = useCallback(() => {
+  const renderLanguageSetting = () => {
     return (
       <TouchableOpacity
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
@@ -133,9 +137,9 @@ export const Settings = () => {
         </Typography>
       </TouchableOpacity>
     );
-  }, [styles, currentLanguage, t, theme]);
+  };
 
-  const renderImportSetting = useCallback(() => {
+  const renderImportSetting = () => {
     return (
       <TouchableOpacity
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
@@ -154,9 +158,9 @@ export const Settings = () => {
         </View>
       </TouchableOpacity>
     );
-  }, [styles, t, theme, handleDataImportPress]);
+  };
 
-  const renderExportSetting = useCallback(() => {
+  const renderExportSetting = () => {
     return (
       <TouchableOpacity
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
@@ -172,9 +176,49 @@ export const Settings = () => {
         </View>
       </TouchableOpacity>
     );
-  }, [styles, handleDataExport, t, hasData, theme]);
+  };
 
-  const renderDevScreenButton = useCallback(() => {
+  const renderPrivacyPolicy = () => {
+    if (!showDevScreen) return null;
+    return (
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={styles.settingItem}
+        onPress={() => {
+          openLink(PRIVACY_POLICY_URL);
+        }}
+      >
+        <View style={styles.settingTitle}>
+          <Feather name="lock" size={20} color={theme.colors.onBackground} />
+          <Typography variant="bodyBold" style={styles.settingTitle}>
+            {t("settings.privacy_policy")}
+          </Typography>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderTermsOfService = () => {
+    if (!showDevScreen || !IS_IOS) return null;
+    return (
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={styles.settingItem}
+        onPress={() => {
+          openLink(EULA_URL);
+        }}
+      >
+        <View style={styles.settingTitle}>
+          <Feather name="file-text" size={20} />
+          <Typography variant="bodyBold" style={styles.settingTitle}>
+            {t("settings.terms_of_service")}
+          </Typography>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderDevScreenButton = () => {
     if (!showDevScreen) return null;
     return (
       <TouchableOpacity
@@ -196,7 +240,7 @@ export const Settings = () => {
         </View>
       </TouchableOpacity>
     );
-  }, [styles, router, theme, showDevScreen]);
+  };
 
   const renderList = () => (
     <Card>
@@ -204,6 +248,8 @@ export const Settings = () => {
       {renderLanguageSetting()}
       {renderImportSetting()}
       {renderExportSetting()}
+      {renderPrivacyPolicy()}
+      {renderTermsOfService()}
       {renderDevScreenButton()}
     </Card>
   );
