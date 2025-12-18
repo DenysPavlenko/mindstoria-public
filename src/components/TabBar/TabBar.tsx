@@ -169,12 +169,12 @@ export const TabBar = ({
               <Feather
                 size={24}
                 name={tabData.icon}
-                color={theme.colors.onSurfaceVariant}
+                color={isFocused ? theme.colors.primary : theme.colors.outline}
               />
               <Typography
                 variant="tiny"
                 align="center"
-                color={"onSurfaceVariant"}
+                color={isFocused ? "primary" : "outline"}
               >
                 {t(tabData.label)}
               </Typography>
