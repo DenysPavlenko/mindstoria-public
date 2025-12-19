@@ -86,13 +86,22 @@ export const getMedicationsChartData = (
       }
       medsByDate[date].push(med);
     });
-    // Calculate average dosage per date
+    // Calculate dosage per date/period
     Object.entries(medsByDate).forEach(([date, meds]) => {
-      const avg = meds.reduce((acc, med) => acc + med.dosage, 0) / meds.length;
+      let value: number;
+
+      if (period === "year") {
+        // For yearly view (monthly aggregation), calculate average dose per month
+        value = meds.reduce((acc, med) => acc + med.dosage, 0) / meds.length;
+      } else {
+        // For week/month periods, calculate total daily dose
+        value = meds.reduce((acc, med) => acc + med.dosage, 0);
+      }
+
       if (!result[medId]) {
         result[medId] = [];
       }
-      result[medId].push({ date, value: avg });
+      result[medId].push({ date, value });
     });
   });
 
