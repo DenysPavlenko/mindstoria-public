@@ -1,12 +1,18 @@
-import { ENTITLEMENT_ID } from "@/appConstants";
+import { ENTITLEMENT_ID, EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
 import { useRevenueCat } from "@/services";
 import { useTheme } from "@/theme";
-import { TTheme } from "@/theme/theme";
-import { getErrorMessage } from "@/utils";
+import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme/theme";
+import { getErrorMessage, openLink } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, View } from "react-native";
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Purchases, {
   PACKAGE_TYPE,
   PurchasesPackage,
@@ -24,6 +30,8 @@ type TBenefit = {
   title: string;
   description: string;
 };
+
+const IS_IOS = Platform.OS === "ios";
 
 const getDiscountInfo = (pkg: PurchasesPackage) => {
   const { product } = pkg;
@@ -297,7 +305,7 @@ export const PaywallModal = () => {
           {t("paywall.restore")}
         </Button>
         <Typography variant="smallBold">
-          By subscribing you will unlock:
+          {t("paywall.by_subscribing")}:
         </Typography>
       </View>
     );
@@ -359,13 +367,40 @@ export const PaywallModal = () => {
     );
   };
 
-  const renderSubscribeButton = () => {
+  const renderFooter = () => {
     return (
       <View style={styles.footerContainer}>
         {renderLocalError()}
         <Button isLoading={isPurchasing} onPress={handlePurchase}>
           {t("paywall.subscribe")}
         </Button>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: theme.layout.spacing.lg,
+            marginTop: theme.layout.spacing.md,
+          }}
+        >
+          <TouchableOpacity
+            activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+            onPress={() => {
+              openLink(PRIVACY_POLICY_URL);
+            }}
+          >
+            <Typography variant="tinyBold">{t("common.privacy")}</Typography>
+          </TouchableOpacity>
+          {IS_IOS && (
+            <TouchableOpacity
+              activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+              onPress={() => {
+                openLink(EULA_URL);
+              }}
+            >
+              <Typography variant="tinyBold">{t("common.terms")}</Typography>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     );
   };
@@ -396,7 +431,7 @@ export const PaywallModal = () => {
     return (
       <>
         {renderList()}
-        {renderSubscribeButton()}
+        {renderFooter()}
       </>
     );
   };

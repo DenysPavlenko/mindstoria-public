@@ -218,7 +218,7 @@ export const Settings = () => {
   };
 
   const renderTermsOfService = () => {
-    if (!showDevScreen || !IS_IOS) return null;
+    if (!IS_IOS) return null;
     return (
       <TouchableOpacity
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
