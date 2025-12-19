@@ -48,7 +48,8 @@
     "home": "Home",
     "thoughts": "Thoughts",
     "mo": "mo",
-    "yr": "yr"
+    "yr": "yr",
+    "enable": "Enable"
   },
   "welcome": {
     "title": "Welcome to Mindstoria!",
@@ -175,6 +176,14 @@
     "reaccuring_billing": "Recurring billing. Cancel anytime",
     "lifetime_access": "Pay once. Unlimited forever",
     "by_subscribing": "By subscribing you will unlock:"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "days_of_week": "Days of the week",
+    "notification_times": "Notification times",
+    "enable_notifications": "Enable Notifications",
+    "notifications_description": "Regular reminders help you stay consistent and mindful.",
+    "notification_body": "Take a moment to check in with yourself"
   },
   "positive_emotions": {
     "joy": "Joy",

@@ -1,6 +1,6 @@
 import { TTheme, useTheme } from "@/theme";
 import React, { useEffect, useMemo } from "react";
-import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,15 +18,18 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
 
   // value for Switch Animation
   const switchTranslate = useSharedValue(0);
+  const progress = useSharedValue(0);
 
   // useEffect for change the switchTranslate Value
   useEffect(() => {
     if (value) {
       switchTranslate.value = 22;
+      progress.value = 1;
     } else {
       switchTranslate.value = 4;
+      progress.value = 0;
     }
-  }, [value, switchTranslate]);
+  }, [value, switchTranslate, progress]);
 
   // Circle Animation
   const customSpringStyles = useAnimatedStyle(() => {
@@ -44,9 +47,18 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
 
   return (
     <TouchableWithoutFeedback onPress={onChange}>
-      <View style={[styles.container]}>
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            backgroundColor: value
+              ? theme.colors.primary
+              : theme.colors.surfaceVariant,
+          },
+        ]}
+      >
         <Animated.View style={[styles.circle, customSpringStyles]} />
-      </View>
+      </Animated.View>
     </TouchableWithoutFeedback>
   );
 };
@@ -58,14 +70,13 @@ const createStyles = (theme: TTheme) =>
       height: 28,
       borderRadius: 28 / 2,
       justifyContent: "center",
-      backgroundColor: theme.colors.primaryContainer,
     },
     circle: {
       width: 24,
       height: 24,
       borderRadius: 24 / 2,
-      backgroundColor: theme.colors.onPrimaryContainer,
       shadowColor: "black",
+      backgroundColor: theme.colors.surface,
       shadowOffset: {
         width: 0,
         height: 2,

@@ -136,6 +136,7 @@ const createStyles = (theme: TTheme) =>
       padding: theme.layout.spacing.xl,
     },
     card: {
+      position: "relative",
       marginHorizontal: "auto",
       paddingVertical: theme.layout.spacing.xl,
       width: "100%",

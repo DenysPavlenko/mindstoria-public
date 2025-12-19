@@ -10,6 +10,7 @@ export * from "./ImpactsStats";
 export * from "./LogManager";
 export * from "./Medications";
 export * from "./MedLogs";
+export * from "./Notifications";
 export * from "./Settings";
 export * from "./Statistics";
 export * from "./Welcome";

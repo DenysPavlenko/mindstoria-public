@@ -93,6 +93,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           },
         },
       ],
+      [
+        "expo-notifications",
+        {
+          icon: "./src/assets/images/icon.png",
+          color: "#ffffff",
+          defaultChannel: "default",
+        },
+      ],
       "expo-localization",
       "expo-web-browser",
     ],

@@ -1,3 +1,4 @@
+export const APP_NAME = "Mindstoria";
 export const APP_LANGUAGE_KEY = "appLanguage";
 export const THEME_STORAGE_KEY = "appTheme";
 export const BACKDOOR_STORAGE_KEY = "backdoorKey";

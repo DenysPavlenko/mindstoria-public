@@ -1,4 +1,9 @@
-import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
+import {
+  DISABLED_ALPHA,
+  TOUCHABLE_ACTIVE_OPACITY,
+  TTheme,
+  useTheme,
+} from "@/theme";
 import { TColorKeys } from "@/types/common";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
@@ -18,6 +23,7 @@ interface PillProps {
   textColor?: TColorKeys;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 }
 
 export const Pill = ({
@@ -26,6 +32,7 @@ export const Pill = ({
   onPress,
   bgColor = "surfaceVariant",
   textColor = "onSurfaceVariant",
+  disabled,
   style,
 }: PillProps) => {
   const { theme } = useTheme();
@@ -54,6 +61,7 @@ export const Pill = ({
         style={[
           styles.container,
           { backgroundColor: theme.colors[bgColor] },
+          disabled && { opacity: DISABLED_ALPHA },
           style,
         ]}
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
@@ -68,6 +76,7 @@ export const Pill = ({
       style={[
         styles.container,
         { backgroundColor: theme.colors[bgColor] },
+        disabled && { opacity: DISABLED_ALPHA },
         style,
       ]}
     >

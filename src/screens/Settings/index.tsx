@@ -139,6 +139,25 @@ export const Settings = () => {
     );
   };
 
+  const renderNotifications = () => {
+    return (
+      <TouchableOpacity
+        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+        style={styles.settingItem}
+        onPress={() => {
+          router.navigate("/notifications");
+        }}
+      >
+        <View style={styles.settingTitle}>
+          <Feather name="bell" size={20} color={theme.colors.onBackground} />
+          <Typography variant="bodyBold" style={styles.settingTitle}>
+            {t("notifications.title")}
+          </Typography>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   const renderImportSetting = () => {
     return (
       <TouchableOpacity
@@ -246,6 +265,7 @@ export const Settings = () => {
     <Card>
       {renderThemeSetting()}
       {renderLanguageSetting()}
+      {renderNotifications()}
       {renderImportSetting()}
       {renderExportSetting()}
       {renderPrivacyPolicy()}
@@ -348,5 +368,3 @@ const createStyles = (theme: TTheme) =>
       overflow: "hidden",
     },
   });
-
-export default Settings;

@@ -5,4 +5,5 @@ export * from "./emotions";
 export * from "./impacts";
 export * from "./log";
 export * from "./medications";
+export * from "./notifications";
 export * from "./sleep";

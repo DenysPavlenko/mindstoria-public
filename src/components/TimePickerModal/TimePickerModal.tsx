@@ -13,6 +13,7 @@ interface TimePickerModalProps {
   visible: boolean;
   onClose: () => void;
   onConfirm: (hours: number, minutes: number) => void;
+  onDelete?: () => void;
   hours: number;
   minutes: number;
 }
@@ -21,6 +22,7 @@ export const TimePickerModal = ({
   visible,
   onClose,
   onConfirm,
+  onDelete,
   hours,
   minutes,
 }: TimePickerModalProps) => {
@@ -37,7 +39,21 @@ export const TimePickerModal = ({
 
   const handleConfirm = () => {
     onConfirm(localHours, localMinutes);
-    onClose();
+  };
+
+  const renderFirstButton = () => {
+    if (onDelete) {
+      return (
+        <Button textColor="onErrorContainer" variant="text" onPress={onDelete}>
+          {t("common.delete")}
+        </Button>
+      );
+    }
+    return (
+      <Button textColor="onPrimaryContainer" variant="text" onPress={onClose}>
+        {t("common.cancel")}
+      </Button>
+    );
   };
 
   return (
@@ -66,14 +82,7 @@ export const TimePickerModal = ({
           justifyContent: "flex-end",
         }}
       >
-        <Button
-          buttonColor="primaryContainer"
-          textColor="onPrimaryContainer"
-          variant="text"
-          onPress={onClose}
-        >
-          {t("common.cancel")}
-        </Button>
+        {renderFirstButton()}
         <Button onPress={handleConfirm}>{t("common.confirm")}</Button>
       </View>
     </Modal>
