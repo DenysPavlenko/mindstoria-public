@@ -1,3 +1,5 @@
+import { TNotificationSettings } from "./types";
+
 export const APP_NAME = "Mindstoria";
 export const APP_LANGUAGE_KEY = "appLanguage";
 export const THEME_STORAGE_KEY = "appTheme";
@@ -23,3 +25,9 @@ export const PRIVACY_POLICY_URL =
   "https://denyspavlenko.github.io/mindstoria-policy";
 export const EULA_URL =
   "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
+
+export const NOTIFICATION_SETTINGS: TNotificationSettings = {
+  enabled: true,
+  selectedDays: [0, 1, 2, 3, 4, 5, 6], // Monday to Sunday by default
+  times: ["09:00", "21:00"], // Default times
+};

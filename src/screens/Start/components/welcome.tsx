@@ -3,18 +3,21 @@ import { Button, SafeView, Typography } from "@/components";
 import { useAppDispatch } from "@/store";
 import { setWelcomeShown } from "@/store/slices/settings/settingsSlice";
 import { useTheme } from "@/theme";
-import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
-export const Welcome = () => {
+interface WelcomeProps {
+  onNext?: () => void;
+}
+
+export const Welcome = ({ onNext }: WelcomeProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { theme } = useTheme();
 
   const handleGetStarted = () => {
     dispatch(setWelcomeShown());
-    router.replace("/(tabs)");
+    onNext?.();
   };
 
   const iconSize = 240;
@@ -66,7 +69,7 @@ export const Welcome = () => {
         >
           {t("welcome.subtitle")}
         </Typography>
-        <Typography variant="body" align="center" style={{ maxWidth: 500 }}>
+        <Typography variant="body" align="center" style={{ maxWidth: 350 }}>
           {t("welcome.description")}
         </Typography>
       </View>

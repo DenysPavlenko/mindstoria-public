@@ -1,20 +1,19 @@
+import { NOTIFICATION_SETTINGS } from "@/appConstants";
 import { TNotificationSettings } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TSettingsState {
   showMedications: boolean;
   isWelcomeShown: boolean;
+  isNotificationsSetupShown: boolean;
   notifications: TNotificationSettings;
 }
 
 const initialState: TSettingsState = {
   showMedications: true,
   isWelcomeShown: false,
-  notifications: {
-    enabled: false,
-    selectedDays: [0, 1, 2, 3, 4, 5], // Monday to Saturday by default
-    times: ["09:00", "21:00"], // Default times
-  },
+  isNotificationsSetupShown: false,
+  notifications: { ...NOTIFICATION_SETTINGS },
 };
 
 export const settingsSlice = createSlice({
@@ -26,6 +25,9 @@ export const settingsSlice = createSlice({
     },
     setWelcomeShown: (state) => {
       state.isWelcomeShown = true;
+    },
+    setNotificationsSetupShown: (state) => {
+      state.isNotificationsSetupShown = true;
     },
     // Notification actions
     toggleNotifications: (state) => {
@@ -65,6 +67,7 @@ export const settingsSlice = createSlice({
 export const {
   toggleShowMedications,
   setWelcomeShown,
+  setNotificationsSetupShown,
   toggleNotifications,
   disableNotifications,
   enableNotifications,

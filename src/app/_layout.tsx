@@ -6,6 +6,7 @@ import { persistor, store, useAppSelector } from "@/store";
 import { MenuProvider } from "react-native-popup-menu";
 
 import { RevenueCatProvider } from "@/services";
+import { selectStartScreenShow } from "@/store/slices";
 import { ThemeProvider, useTheme } from "@/theme";
 import {
   Nunito_400Regular,
@@ -65,9 +66,7 @@ const AppContent = () => {
   const { theme, isLoading } = useTheme();
   const { error } = useMigrations(db, migrations);
   const [isTransReady, setIsTransReady] = useState(false);
-  const isWelcomeShown = useAppSelector(
-    (state) => state.settings.isWelcomeShown
-  );
+  const showStartScreen = useAppSelector(selectStartScreenShow);
   let [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_600SemiBold,
@@ -137,11 +136,11 @@ const AppContent = () => {
                 headerShown: false,
               }}
             >
-              <Stack.Protected guard={!isWelcomeShown}>
+              <Stack.Protected guard={showStartScreen}>
                 <Stack.Screen name="welcome" />
               </Stack.Protected>
 
-              <Stack.Protected guard={isWelcomeShown}>
+              <Stack.Protected guard={!showStartScreen}>
                 <Stack.Screen name="(tabs)" />
               </Stack.Protected>
             </Stack>

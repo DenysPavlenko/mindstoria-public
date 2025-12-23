@@ -12,5 +12,5 @@ export * from "./Medications";
 export * from "./MedLogs";
 export * from "./Notifications";
 export * from "./Settings";
+export * from "./Start";
 export * from "./Statistics";
-export * from "./Welcome";

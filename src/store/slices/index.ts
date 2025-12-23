@@ -15,6 +15,7 @@ export * from "./medications/medicationsSlice";
 export * from "./medLogs/medLogsSelectors";
 export * from "./medLogs/medLogsSlice";
 export * from "./medLogs/medLogsThunks";
+export * from "./settings/settingsSelectors";
 export * from "./settings/settingsSlice";
 export * from "./sleepLogs/sleepLogsSelectors";
 export * from "./sleepLogs/sleepLogsSlice";
