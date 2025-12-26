@@ -10,6 +10,7 @@ interface FullScreenInputWrapperProps {
   autoFocus?: boolean;
   onChangeText: (text: string) => void;
   placeholder: string;
+  isKeyboardVisible: boolean;
 }
 
 export const FullScreenInputWrapper = ({
@@ -19,6 +20,7 @@ export const FullScreenInputWrapper = ({
   value,
   placeholder,
   autoFocus,
+  isKeyboardVisible,
 }: FullScreenInputWrapperProps) => {
   const renderInput = () => {
     return (
@@ -27,7 +29,7 @@ export const FullScreenInputWrapper = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        pointerEvents={IS_IOS ? "none" : "auto"}
+        pointerEvents={IS_IOS ? (isKeyboardVisible ? "auto" : "none") : "auto"}
         autoFocus={autoFocus}
       />
     );

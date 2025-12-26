@@ -32,6 +32,7 @@ interface MetricInputProps {
   values: TCBTLogFormValues;
   isEditing: boolean;
   isActive: boolean;
+  isKeyboardVisible: boolean;
   onChange: (metric: TCBTLogMetric, value: TCBTLogValue) => void;
   wellbeing: RatingLevel | null;
 }
@@ -43,6 +44,7 @@ export const MetricInput = ({
   isActive = false,
   onChange,
   wellbeing,
+  isKeyboardVisible,
 }: MetricInputProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -85,6 +87,7 @@ export const MetricInput = ({
               value={values.situation || ""}
               onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
+              isKeyboardVisible={isKeyboardVisible}
             />
           </View>
         );
@@ -98,6 +101,7 @@ export const MetricInput = ({
               value={values.thought || ""}
               onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
+              isKeyboardVisible={isKeyboardVisible}
             />
           </View>
         );
@@ -111,6 +115,7 @@ export const MetricInput = ({
               value={values.behavior || ""}
               onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
+              isKeyboardVisible={isKeyboardVisible}
             />
           </View>
         );
@@ -124,6 +129,7 @@ export const MetricInput = ({
               value={values.alternativeThought || ""}
               onChangeText={(text) => handleValueChange(text)}
               placeholder={t("common.start_typing")}
+              isKeyboardVisible={isKeyboardVisible}
             />
           </View>
         );

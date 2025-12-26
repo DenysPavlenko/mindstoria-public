@@ -45,7 +45,7 @@ export const CBTLogManager = ({
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { keyboardHeight } = useKeyboard();
+  const { keyboardHeight, isKeyboardVisible } = useKeyboard();
   const pageViewRef = useRef<PagerView>(null);
   const [values, setValues] = useState<TCBTLogFormValues>({
     situation: null,
@@ -229,6 +229,7 @@ export const CBTLogManager = ({
           isActive={isActive}
           onChange={handleValueChange}
           wellbeing={connectedWellbeingLog?.values.wellbeing || null}
+          isKeyboardVisible={isKeyboardVisible}
         />
       </View>
     );
@@ -354,7 +355,6 @@ export const CBTLogManager = ({
           ref={pageViewRef}
           style={styles.pageView}
           initialPage={currentPage}
-          keyboardDismissMode="none"
           onPageSelected={(e) => {
             const newPage = e.nativeEvent.position;
             setCurrentPage(newPage);
