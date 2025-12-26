@@ -137,7 +137,7 @@ const AppContent = () => {
               }}
             >
               <Stack.Protected guard={showStartScreen}>
-                <Stack.Screen name="welcome" />
+                <Stack.Screen name="start" />
               </Stack.Protected>
 
               <Stack.Protected guard={!showStartScreen}>
