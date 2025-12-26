@@ -2,6 +2,7 @@ import { EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
 import {
   Card,
   ConfirmationDialog,
+  CustomPressable,
   Header,
   Modal,
   SafeView,
@@ -31,7 +32,7 @@ import Feather from "@react-native-vector-icons/feather";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { LanguageList, TLanguageListItem } from "./components/LanguageList";
 
 const IS_IOS = Platform.OS === "ios";
@@ -121,10 +122,11 @@ export const Settings = () => {
 
   const renderLanguageSetting = () => {
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={() => setShowLanguageModal(true)}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather name="globe" size={20} color={theme.colors.onBackground} />
@@ -135,18 +137,19 @@ export const Settings = () => {
         <Typography variant="body" style={styles.settingTitle}>
           {TITLE_MAP[currentLanguage as keyof typeof TITLE_MAP]}
         </Typography>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 
   const renderNotifications = () => {
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={() => {
           router.navigate("/notifications");
         }}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather name="bell" size={20} color={theme.colors.onBackground} />
@@ -154,16 +157,17 @@ export const Settings = () => {
             {t("notifications.title")}
           </Typography>
         </View>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 
   const renderImportSetting = () => {
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={handleDataImportPress}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather
@@ -175,17 +179,18 @@ export const Settings = () => {
             {t("settings.import_data")}
           </Typography>
         </View>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 
   const renderExportSetting = () => {
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={[styles.settingItem, !hasData && { opacity: DISABLED_ALPHA }]}
         onPress={handleDataExport}
         disabled={!hasData}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather name="upload" size={20} color={theme.colors.onBackground} />
@@ -193,19 +198,20 @@ export const Settings = () => {
             {t("settings.export_data")}
           </Typography>
         </View>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 
   const renderPrivacyPolicy = () => {
     if (!showDevScreen) return null;
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={() => {
           openLink(PRIVACY_POLICY_URL);
         }}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather name="lock" size={20} color={theme.colors.onBackground} />
@@ -213,19 +219,20 @@ export const Settings = () => {
             {t("settings.privacy_policy")}
           </Typography>
         </View>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 
   const renderTermsOfService = () => {
     if (!IS_IOS) return null;
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={() => {
           openLink(EULA_URL);
         }}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather name="file-text" size={20} />
@@ -233,19 +240,20 @@ export const Settings = () => {
             {t("settings.terms_of_service")}
           </Typography>
         </View>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 
   const renderDevScreenButton = () => {
     if (!showDevScreen) return null;
     return (
-      <TouchableOpacity
+      <CustomPressable
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
         style={styles.settingItem}
         onPress={() => {
           router.navigate("/dev-screen");
         }}
+        withHaptics={false}
       >
         <View style={styles.settingTitle}>
           <Feather name="settings" size={20} color={theme.colors.error} />
@@ -257,7 +265,7 @@ export const Settings = () => {
             Developer screen
           </Typography>
         </View>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   };
 

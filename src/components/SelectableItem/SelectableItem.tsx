@@ -1,6 +1,7 @@
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
 import { useMemo } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 
 interface SelectableItemProps {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ export const SelectableItem = ({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <TouchableOpacity
+    <CustomPressable
       onPress={onPress}
       style={[
         styles.container,
@@ -33,7 +34,7 @@ export const SelectableItem = ({
       activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
     >
       {children}
-    </TouchableOpacity>
+    </CustomPressable>
   );
 };
 

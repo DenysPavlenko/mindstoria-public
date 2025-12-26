@@ -1,6 +1,7 @@
+import { CustomPressable } from "@/components/CustomPressable/CustomPressable";
 import { TOUCHABLE_ACTIVE_OPACITY } from "@/theme";
 import React, { useEffect } from "react";
-import { TouchableOpacity, View, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -59,13 +60,13 @@ export const AnimatedStep = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity
+      <CustomPressable
         style={containerStyle}
         onPress={onPress}
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
       >
         <Animated.View style={[animatedStepStyle, animatedStyle]} />
-      </TouchableOpacity>
+      </CustomPressable>
     );
   }
 

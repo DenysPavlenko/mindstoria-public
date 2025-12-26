@@ -65,6 +65,16 @@ export const typography = {
     fontSize: 12,
     lineHeight: lineHeight(12, 1.33),
   },
+  extraTiny: {
+    fontFamily: fonts.regular,
+    fontSize: 10,
+    lineHeight: lineHeight(10, 1.33),
+  },
+  extraTinyBold: {
+    fontFamily: fonts.semibold,
+    fontSize: 10,
+    lineHeight: lineHeight(10, 1.33),
+  },
   buttonText: {
     fontFamily: fonts.semibold,
     fontSize: 16,

@@ -99,6 +99,7 @@ export const Home = () => {
             icon="bar-chart-2"
             size="md"
             onPress={() => router.navigate("/statistics")}
+            withHaptics={false}
           />
         }
       />

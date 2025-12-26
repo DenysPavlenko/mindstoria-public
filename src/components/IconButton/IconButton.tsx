@@ -1,12 +1,15 @@
 import { DISABLED_ALPHA, TOUCHABLE_ACTIVE_OPACITY } from "@/theme";
 import React from "react";
-import { TouchableOpacity, TouchableOpacityProps } from "react-native";
+import {
+  CustomPressable,
+  CustomPressableProps,
+} from "../CustomPressable/CustomPressable";
 import { IconBox, IconBoxProps } from "../IconBox/IconBox";
 
 export interface IconButtonProps
   extends IconBoxProps,
-    Omit<TouchableOpacityProps, "style"> {
-  containerStyle?: TouchableOpacityProps["style"];
+    Omit<CustomPressableProps, "style"> {
+  containerStyle?: CustomPressableProps["style"];
 }
 
 export const IconButton: React.FC<IconButtonProps> = ({
@@ -27,7 +30,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   ...touchableProps
 }) => {
   return (
-    <TouchableOpacity
+    <CustomPressable
       style={[{ opacity: disabled ? DISABLED_ALPHA : 1 }, containerStyle]}
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
@@ -49,6 +52,6 @@ export const IconButton: React.FC<IconButtonProps> = ({
         autoSize={autoSize}
         style={style}
       />
-    </TouchableOpacity>
+    </CustomPressable>
   );
 };

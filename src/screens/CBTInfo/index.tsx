@@ -75,7 +75,7 @@ export const CBTInfo = () => {
               <Typography fontWeight="bold">
                 {t("cbt.cognitive_distortions")}
               </Typography>{" "}
-              –{t("cbt.step_5_cognitive_distortions")}
+              – {t("cbt.step_5_cognitive_distortions")}
             </Typography>
             <Typography>
               6.{" "}
@@ -88,11 +88,11 @@ export const CBTInfo = () => {
           <Typography style={{ marginBottom: theme.layout.spacing.xl }}>
             {t("cbt.awareness_goal")}
           </Typography>
-          <Typography style={{ marginBottom: theme.layout.spacing.lg }}>
-            <Typography fontWeight="bold">
-              {t("cbt.gentle_reminder")} -
-            </Typography>{" "}
-            {t("cbt.reminder_text")}
+          <Typography
+            variant="smallBold"
+            style={{ marginBottom: theme.layout.spacing.lg }}
+          >
+            * {t("cbt.reminder_text")}
           </Typography>
         </ScrollView>
       </View>

@@ -1,5 +1,5 @@
-import { FullScreenInput } from "@/components";
-import { Platform, TextInput, TouchableOpacity } from "react-native";
+import { CustomPressable, FullScreenInput } from "@/components";
+import { Platform, TextInput } from "react-native";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -38,9 +38,14 @@ export const FullScreenInputWrapper = ({
   // Workaround for iOS to prevent keyboard issues with FullScreenInput
   if (IS_IOS) {
     return (
-      <TouchableOpacity style={{ flex: 1 }} onPress={onPress} activeOpacity={1}>
+      <CustomPressable
+        style={{ flex: 1 }}
+        onPress={onPress}
+        activeOpacity={1}
+        withHaptics={false}
+      >
         {renderInput()}
-      </TouchableOpacity>
+      </CustomPressable>
     );
   }
 

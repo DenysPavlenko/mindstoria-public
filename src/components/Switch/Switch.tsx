@@ -1,11 +1,12 @@
 import { TTheme, useTheme } from "@/theme";
 import React, { useEffect, useMemo } from "react";
-import { StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { StyleSheet } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 
 interface SwitchProps {
   value: boolean;
@@ -46,7 +47,7 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
   });
 
   return (
-    <TouchableWithoutFeedback onPress={onChange}>
+    <CustomPressable onPress={onChange}>
       <Animated.View
         style={[
           styles.container,
@@ -59,7 +60,7 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
       >
         <Animated.View style={[styles.circle, customSpringStyles]} />
       </Animated.View>
-    </TouchableWithoutFeedback>
+    </CustomPressable>
   );
 };
 

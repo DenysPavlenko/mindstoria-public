@@ -7,13 +7,8 @@ import {
 import { TColorKeys } from "@/types/common";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { Typography } from "../Typography/Typography";
 
 interface PillProps {
@@ -56,7 +51,7 @@ export const Pill = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity
+      <CustomPressable
         onPress={onPress}
         style={[
           styles.container,
@@ -67,7 +62,7 @@ export const Pill = ({
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
       >
         {content}
-      </TouchableOpacity>
+      </CustomPressable>
     );
   }
 

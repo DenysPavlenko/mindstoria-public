@@ -67,6 +67,7 @@ export const CBTLogs = () => {
             onPress={() => {
               router.navigate("/cbt-info");
             }}
+            withHaptics={false}
           />
         }
       />

@@ -1,13 +1,8 @@
 import { TTheme, useTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import React, { ReactNode, useMemo } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { Typography } from "../Typography/Typography";
 
 interface Option<T extends string | number> {
@@ -45,7 +40,7 @@ export function SwitchSelector<T extends string | number>({
       {options.map((option) => {
         const isSelected = option.value === selectedValue;
         return (
-          <TouchableOpacity
+          <CustomPressable
             key={option.value}
             onPress={() => onChange(option.value)}
             style={[
@@ -54,6 +49,7 @@ export function SwitchSelector<T extends string | number>({
                 { backgroundColor: theme.colors[selectedBgColor] },
               ],
             ]}
+            withHaptics={false}
           >
             <Typography
               variant="smallBold"
@@ -62,7 +58,7 @@ export function SwitchSelector<T extends string | number>({
             >
               {option.label}
             </Typography>
-          </TouchableOpacity>
+          </CustomPressable>
         );
       })}
     </View>

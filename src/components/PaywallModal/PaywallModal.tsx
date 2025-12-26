@@ -6,18 +6,13 @@ import { getErrorMessage, openLink } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FlatList,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Platform, StyleSheet, View } from "react-native";
 import Purchases, {
   PACKAGE_TYPE,
   PurchasesPackage,
 } from "react-native-purchases";
 import { Button } from "../Button/Button";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { IconBox } from "../IconBox/IconBox";
 import { IconButton } from "../IconButton/IconButton";
 import { SelectableItem } from "../SelectableItem/SelectableItem";
@@ -382,23 +377,23 @@ export const PaywallModal = () => {
             marginTop: theme.layout.spacing.md,
           }}
         >
-          <TouchableOpacity
+          <CustomPressable
             activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
             onPress={() => {
               openLink(PRIVACY_POLICY_URL);
             }}
           >
             <Typography variant="tinyBold">{t("common.privacy")}</Typography>
-          </TouchableOpacity>
+          </CustomPressable>
           {IS_IOS && (
-            <TouchableOpacity
+            <CustomPressable
               activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
               onPress={() => {
                 openLink(EULA_URL);
               }}
             >
               <Typography variant="tinyBold">{t("common.terms")}</Typography>
-            </TouchableOpacity>
+            </CustomPressable>
           )}
         </View>
       </View>

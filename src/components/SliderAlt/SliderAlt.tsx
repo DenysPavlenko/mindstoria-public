@@ -1,5 +1,6 @@
 import { TTheme, useTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
+import * as Haptics from "expo-haptics";
 import { useCallback, useState } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Slider as RNSlider } from "react-native-awesome-slider";
@@ -129,7 +130,10 @@ export const SliderAlt: React.FC<SliderAltProps> = ({
         renderContainer={renderContainer}
         renderThumb={renderThumb}
         renderBubble={() => null}
-        hapticMode="both"
+        hapticMode="step"
+        onHapticFeedback={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }}
         renderMark={() => null}
         forceSnapToStep
         onValueChange={handleValueChange}

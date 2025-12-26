@@ -178,6 +178,7 @@ export const ImpactDefinitionForm = ({
                   backgroundColor: icon === item ? selectedBg : defaultBg,
                 }}
                 onPress={() => setIcon(item)}
+                withHaptics={false}
               />
             </View>
           );

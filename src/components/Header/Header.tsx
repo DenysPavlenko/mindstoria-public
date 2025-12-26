@@ -60,6 +60,7 @@ export const Header = ({
           onPress={handleBack}
           iconScale={0.5}
           size="md"
+          withHaptics={false}
         />
       </View>
     );

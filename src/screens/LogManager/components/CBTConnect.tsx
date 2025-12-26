@@ -64,7 +64,7 @@ export const CBTConnect = ({
             ? t("cbt.edit_thought_journal")
             : t("cbt.connect_thought_journal")}
         </Button>
-        <Button onPress={onClose} variant="text">
+        <Button onPress={onClose} variant="text" withHaptics={false}>
           {hasConnectedLog ? t("common.cancel") : t("common.maybe_later")}
         </Button>
       </View>

@@ -4,6 +4,7 @@ import {
   Card,
   Checkbox,
   ConfirmationDialog,
+  CustomPressable,
   Header,
   IconButton,
   Placeholder,
@@ -21,7 +22,7 @@ import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
 import { TMedication } from "@/types/medications";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
 export const Medications = () => {
   const { t } = useTranslation();
@@ -61,11 +62,12 @@ export const Medications = () => {
   const renderItem = ({ item }: { item: TMedication }) => {
     return (
       <Card noVerticalPadding>
-        <TouchableOpacity
+        <CustomPressable
           key={item.id}
           activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
           style={styles.itemContainer}
           onPress={() => setItemToEdit(item)}
+          withHaptics={false}
         >
           <Checkbox
             size="md"
@@ -87,7 +89,7 @@ export const Medications = () => {
               setItemToArchive(item);
             }}
           />
-        </TouchableOpacity>
+        </CustomPressable>
       </Card>
     );
   };

@@ -8,14 +8,9 @@ import { TSentimentCategory, TSentimentType } from "@/types";
 import { getSentimentColor } from "@/utils";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Badge } from "../Badge/Badge";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { IconBox } from "../IconBox/IconBox";
 import { Typography } from "../Typography/Typography";
 
@@ -111,7 +106,7 @@ export const SentimentIconButton = ({
 
   if (onPress || onLongPress) {
     return (
-      <TouchableOpacity
+      <CustomPressable
         style={[
           styles.impactItem,
           { opacity: isArchived ? DISABLED_ALPHA : 1 },
@@ -123,7 +118,7 @@ export const SentimentIconButton = ({
         disabled={isArchived}
       >
         {renderContent()}
-      </TouchableOpacity>
+      </CustomPressable>
     );
   }
 

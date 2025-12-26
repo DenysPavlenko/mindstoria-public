@@ -1,30 +1,19 @@
-import {
-  DISABLED_ALPHA,
-  TOUCHABLE_ACTIVE_OPACITY,
-  TTheme,
-  useTheme,
-} from "@/theme";
+import { DISABLED_ALPHA, TTheme, useTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import { useMemo } from "react";
+import { ActivityIndicator, StyleSheet, ViewStyle } from "react-native";
 import {
-  ActivityIndicator,
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  ViewStyle,
-} from "react-native";
+  CustomPressable,
+  CustomPressableProps,
+} from "../CustomPressable/CustomPressable";
 import { Typography } from "../Typography/Typography";
 
-export interface ButtonProps {
-  children: React.ReactNode;
-  onPress?: () => void;
+export interface ButtonProps extends CustomPressableProps {
   variant?: "contained" | "text";
-  disabled?: boolean;
   fullWidth?: boolean;
   buttonColor?: TColorKeys;
   textColor?: TColorKeys;
   autoSize?: boolean;
-  style?: StyleProp<ViewStyle>;
   isLoading?: boolean;
 }
 
@@ -39,6 +28,7 @@ export const Button = ({
   autoSize,
   style,
   isLoading,
+  ...restProps
 }: ButtonProps) => {
   const { theme } = useTheme();
 
@@ -89,14 +79,14 @@ export const Button = ({
   };
 
   return (
-    <TouchableOpacity
-      onPress={disabled ? undefined : onPress}
+    <CustomPressable
+      onPress={onPress}
       disabled={disabled}
       style={[buttonStyle, style]}
-      activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
+      {...restProps}
     >
       {renderContent()}
-    </TouchableOpacity>
+    </CustomPressable>
   );
 };
 

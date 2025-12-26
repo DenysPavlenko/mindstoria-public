@@ -6,12 +6,12 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
-  TouchableOpacity,
   UIManager,
   ViewStyle,
 } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useSwipeableItemParams } from "react-native-swipeable-item";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -58,13 +58,13 @@ export const UnderlayButton = ({
         style,
       ]}
     >
-      <TouchableOpacity
+      <CustomPressable
         style={[styles.actionButton, { width }]}
         onPress={onPress}
         activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
       >
         <Feather name={iconName} size={24} color={theme.colors[iconColor]} />
-      </TouchableOpacity>
+      </CustomPressable>
     </Animated.View>
   );
 };

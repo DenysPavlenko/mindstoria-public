@@ -1,12 +1,8 @@
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
 import { Feather } from "@expo/vector-icons";
 import { useMemo } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 
 export interface CheckboxProps {
   checked: boolean;
@@ -60,7 +56,7 @@ export const Checkbox = ({
   };
 
   return (
-    <TouchableOpacity
+    <CustomPressable
       style={[styles.container, containerStyle, style]}
       onPress={handlePress}
       disabled={disabled}
@@ -73,7 +69,7 @@ export const Checkbox = ({
           color={theme.colors.onPrimary}
         />
       )}
-    </TouchableOpacity>
+    </CustomPressable>
   );
 };
 

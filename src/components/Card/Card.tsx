@@ -4,11 +4,11 @@ import { useMemo } from "react";
 import {
   StyleProp,
   StyleSheet,
-  TouchableOpacity,
   TouchableOpacityProps,
   View,
   ViewStyle,
 } from "react-native";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 
 interface CardProps extends TouchableOpacityProps {
   children: React.ReactNode;
@@ -20,6 +20,7 @@ interface CardProps extends TouchableOpacityProps {
   noPadding?: boolean;
   noHorizontalPadding?: boolean;
   noVerticalPadding?: boolean;
+  withHaptics?: boolean;
 }
 
 export const Card = ({
@@ -32,6 +33,7 @@ export const Card = ({
   noHorizontalPadding = false,
   noVerticalPadding = false,
   bgColor = "surfaceContainer",
+  withHaptics = false,
   ...restProps
 }: CardProps) => {
   const { theme } = useTheme();
@@ -50,21 +52,20 @@ export const Card = ({
     };
   };
 
-  const Component = onPress || onLongPress ? TouchableOpacity : View;
+  const Component = onPress || onLongPress ? CustomPressable : View;
 
   return (
     <Component
-      style={StyleSheet.compose(
-        [
-          styles.card,
-          getPaddingStyle(),
-          { backgroundColor: theme.colors[bgColor] },
-        ],
-        style
-      )}
+      style={[
+        styles.card,
+        getPaddingStyle(),
+        { backgroundColor: theme.colors[bgColor] },
+        style,
+      ]}
       onPress={onPress}
       onLongPress={onLongPress}
       activeOpacity={1}
+      withHaptics={withHaptics}
       {...restProps}
     >
       {children}

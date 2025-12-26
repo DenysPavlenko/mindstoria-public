@@ -2,13 +2,8 @@ import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import React, { ReactNode, useMemo } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  TouchableOpacity,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
+import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { Typography } from "../Typography/Typography";
 
 interface ChipProps {
@@ -97,7 +92,7 @@ export const Chip = ({
   };
 
   return (
-    <TouchableOpacity
+    <CustomPressable
       style={[
         styles.chip,
         getVariantStyle(),
@@ -111,7 +106,7 @@ export const Chip = ({
     >
       {renderIcon()}
       {renderLabel()}
-    </TouchableOpacity>
+    </CustomPressable>
   );
 };
 

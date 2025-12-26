@@ -1,7 +1,7 @@
-import { Typography } from "@/components";
+import { CustomPressable, Typography } from "@/components";
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
 import { useMemo } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 
 export type TLanguageListItem = {
   code: string;
@@ -21,7 +21,7 @@ export const LanguageList = ({ languages, onSelect }: LanguageListProps) => {
   return languages.map((lang, index) => {
     const isLastItem = index === languages.length - 1;
     return (
-      <TouchableOpacity
+      <CustomPressable
         key={lang.code}
         style={[styles.item, isLastItem && styles.itemLast]}
         onPress={() => onSelect(lang.code)}
@@ -30,7 +30,7 @@ export const LanguageList = ({ languages, onSelect }: LanguageListProps) => {
         <Typography variant="body" style={styles.title}>
           {lang.label}
         </Typography>
-      </TouchableOpacity>
+      </CustomPressable>
     );
   });
 };
