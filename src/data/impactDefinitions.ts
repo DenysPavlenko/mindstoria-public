@@ -306,13 +306,6 @@ export const negativeImpacts: TImpactDefinition[] = [
     isUserCreated: false,
   },
   {
-    id: "tech_issues",
-    name: "negative_impacts.tech_issues",
-    type: "negative",
-    icon: "cpu",
-    isUserCreated: false,
-  },
-  {
     id: "disappointment",
     name: "negative_impacts.disappointment",
     type: "negative",

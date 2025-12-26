@@ -8,7 +8,7 @@ interface ImpactDefinitionsState {
   version: number;
 }
 
-const IMPACT_DEFINITIONS_VERSION = 1;
+const IMPACT_DEFINITIONS_VERSION = 2;
 
 const initialState: ImpactDefinitionsState = {
   items: {
