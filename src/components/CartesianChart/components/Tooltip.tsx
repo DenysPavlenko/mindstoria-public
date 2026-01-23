@@ -69,6 +69,9 @@ export const Tooltip = ({
     if (typeof activeValue.value === "number") {
       const value = activeValue.value;
       if (isNaN(value)) return "N/A";
+      if (isYearly) {
+        return `Avg: ${value}`;
+      }
       return String(value);
     }
     return "N/A";
