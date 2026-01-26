@@ -24,6 +24,7 @@ export * from "./ImpactsSelector/ImpactsSelector";
 export * from "./InfoCard/InfoCard";
 export * from "./InfoText/InfoText";
 export * from "./Input/Input";
+export * from "./ListItem/ListItem";
 export * from "./LogCard/LogCard";
 export * from "./LogPreview/LogPreview";
 export * from "./MedicationManager/MedicationManager";
