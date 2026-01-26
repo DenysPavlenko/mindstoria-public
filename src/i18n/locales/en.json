@@ -52,7 +52,10 @@
     "enable": "Enable",
     "terms": "Terms",
     "privacy": "Privacy",
-    "skip": "Skip"
+    "skip": "Skip",
+    "export_csv": "Export as CSV",
+    "list": "List",
+    "calendar": "Calendar"
   },
   "welcome": {
     "title": "Welcome to Mindstoria!",
@@ -306,9 +309,9 @@
   },
   "cbt": {
     "main_title": "Thoughts Journal",
-    "about_title": "About CBT",
     "why_this_matters": "Why this matters",
     "what_is_cbt": "What is CBT?",
+    "screen_view": "CBT screen view",
     "cbt_definition": "Cognitive Behavioral Therapy (CBT) is a proven therapeutic approach that explores the connections between our thoughts, feelings, and behaviors.",
     "about_description": "Our thoughts strongly influence how we feel and how we act — often automatically and without us noticing. This exercise helps you pause when you notice difficult thoughts, look at a situation more clearly, and respond with intention instead of habit.",
     "about_example": "For example, noticing \"I always mess things up\" and asking \"Is this thought helping me right now?\"",

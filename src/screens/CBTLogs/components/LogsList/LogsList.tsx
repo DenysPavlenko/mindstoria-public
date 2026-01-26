@@ -4,26 +4,27 @@ import {
   ConfirmationDialog,
   Placeholder,
   TAB_BAR_HEIGHT,
-  Typography,
 } from "@/components";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { removeCBTLogThunk, selectCBTLogs } from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
-import { TCBTLog } from "@/types";
-import dayjs, { Dayjs } from "dayjs";
+import { TCBTLog, TCBTScreenView } from "@/types";
+import { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DeviceEventEmitter, FlatList, StyleSheet, View } from "react-native";
+import { DeviceEventEmitter, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LogListItem } from "./LogListItem";
+import { LogsFlatList } from "./LogsFlatList";
+import { LogsSectionList } from "./LogsSectionList";
 
 interface LogsListProps {
-  date: Dayjs;
+  date?: Dayjs;
   onCardPress: (log: TCBTLog) => void;
+  viewType: TCBTScreenView;
 }
 
-export const LogsList = ({ date, onCardPress }: LogsListProps) => {
+export const LogsList = ({ date, onCardPress, viewType }: LogsListProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -33,16 +34,6 @@ export const LogsList = ({ date, onCardPress }: LogsListProps) => {
   const [logToDelete, setLogToDelete] = useState<TCBTLog | null>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
-
-  const todayLogs = useMemo(() => {
-    return logs.filter((log) => dayjs(log.timestamp).isSame(date, "day"));
-  }, [logs, date]);
-
-  const sortedLogs = useMemo(() => {
-    return todayLogs.slice().sort((a, b) => {
-      return dayjs(a.timestamp).diff(dayjs(b.timestamp));
-    });
-  }, [todayLogs]);
 
   const paddingBottom = useMemo(() => {
     return insets.bottom + TAB_BAR_HEIGHT + theme.layout.spacing.lg;
@@ -54,9 +45,9 @@ export const LogsList = ({ date, onCardPress }: LogsListProps) => {
       () => {
         router.navigate({
           pathname: "/cbt-log-manager",
-          params: { date: date.toISOString() },
+          params: { date: date?.toISOString() },
         });
-      }
+      },
     );
     return () => subscription.remove();
   }, [router, date]);
@@ -64,15 +55,6 @@ export const LogsList = ({ date, onCardPress }: LogsListProps) => {
   const handleDeleteLog = (log: TCBTLog) => {
     dispatch(removeCBTLogThunk(log));
     setLogToDelete(null);
-  };
-
-  const renderHeader = () => {
-    if (sortedLogs.length === 0) return null;
-    return (
-      <View style={styles.header}>
-        <Typography variant="h4">{t("cbt.main_title")}</Typography>
-      </View>
-    );
   };
 
   const renderConfirmDelete = () => {
@@ -96,30 +78,35 @@ export const LogsList = ({ date, onCardPress }: LogsListProps) => {
     );
   };
 
-  const renderList = () => {
+  const renderFlatList = () => {
+    if (!date) return null;
     return (
-      <FlatList
-        data={sortedLogs}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={[styles.logsList, { paddingBottom }]}
-        ListEmptyComponent={renderPlaceholder()}
-        renderItem={({ item }) => (
-          <LogListItem
-            key={item.id}
-            log={item}
-            onPress={onCardPress}
-            onDelete={setLogToDelete}
-          />
-        )}
-        showsVerticalScrollIndicator={false}
+      <LogsFlatList
+        logs={logs}
+        date={date}
+        onCardPress={onCardPress}
+        onDelete={setLogToDelete}
+        placeholder={renderPlaceholder()}
+        paddingBottom={paddingBottom}
+      />
+    );
+  };
+
+  const renderSectionList = () => {
+    return (
+      <LogsSectionList
+        logs={logs}
+        onCardPress={onCardPress}
+        onDelete={setLogToDelete}
+        placeholder={renderPlaceholder()}
+        paddingBottom={paddingBottom}
       />
     );
   };
 
   return (
     <Card style={styles.container} noPadding>
-      {renderHeader()}
-      {renderList()}
+      {viewType === "calendar" ? renderFlatList() : renderSectionList()}
       {renderConfirmDelete()}
     </Card>
   );

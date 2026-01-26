@@ -4,7 +4,7 @@ import {
   CALENDAR_DATE_FORMAT,
   MONTH_DAY_FORMAT,
   YEAR_MONTH_FORMAT,
-} from "./dateConstants";
+} from "./date";
 
 /**
  * Calculate the start date for a given time period
@@ -57,7 +57,7 @@ export function formatPeriodRange(period: TTimePeriod, endDate: Dayjs): string {
 export function generatePeriodDates(
   period: TTimePeriod,
   endDate: Dayjs,
-  format?: string
+  format?: string,
 ): string[] {
   const startDate = getPeriodStartDate(period, endDate);
   const dates: string[] = [];
@@ -81,7 +81,7 @@ export function generatePeriodDates(
  */
 export function generatePeriodDatesForCharts(
   period: TTimePeriod,
-  endDate: Dayjs
+  endDate: Dayjs,
 ): string[] {
   if (period === "week") {
     return generatePeriodDates("week", endDate, CALENDAR_DATE_FORMAT);

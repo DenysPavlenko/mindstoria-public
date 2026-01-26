@@ -1,10 +1,11 @@
 import { NOTIFICATION_SETTINGS } from "@/appConstants";
-import { TNotificationSettings } from "@/types";
+import { TCBTScreenView, TNotificationSettings } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TSettingsState {
   showMedications: boolean;
   isWelcomeShown: boolean;
+  cbtScreenView: TCBTScreenView;
   isNotificationsSetupShown: boolean;
   notifications: TNotificationSettings;
 }
@@ -13,6 +14,7 @@ const initialState: TSettingsState = {
   showMedications: true,
   isWelcomeShown: false,
   isNotificationsSetupShown: false,
+  cbtScreenView: "calendar",
   notifications: { ...NOTIFICATION_SETTINGS },
 };
 
@@ -28,6 +30,10 @@ export const settingsSlice = createSlice({
     },
     setNotificationsSetupShown: (state) => {
       state.isNotificationsSetupShown = true;
+    },
+    // CBT Screen View
+    setCbtScreenView: (state, action: PayloadAction<"list" | "calendar">) => {
+      state.cbtScreenView = action.payload;
     },
     // Notification actions
     toggleNotifications: (state) => {
@@ -58,7 +64,7 @@ export const settingsSlice = createSlice({
     removeNotificationTime: (state, action: PayloadAction<string>) => {
       const time = action.payload;
       state.notifications.times = state.notifications.times.filter(
-        (t) => t !== time
+        (t) => t !== time,
       );
     },
   },
@@ -66,6 +72,7 @@ export const settingsSlice = createSlice({
 
 export const {
   toggleShowMedications,
+  setCbtScreenView,
   setWelcomeShown,
   setNotificationsSetupShown,
   toggleNotifications,

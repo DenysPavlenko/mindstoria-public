@@ -11,7 +11,7 @@ export const selectCBTLogs = createSelector(
   [selectCBTLogsItems],
   (logs): TCBTLog[] => {
     return Object.values(logs);
-  }
+  },
 );
 
 // Selector to get CBT connections map for wellbeing logs
@@ -25,7 +25,7 @@ export const selectCBTConnectionsMap = createSelector(
       }
     });
     return connectionsMap;
-  }
+  },
 );
 
 export const selectCBTLogDateAvailability = createSelector(
@@ -37,5 +37,5 @@ export const selectCBTLogDateAvailability = createSelector(
       map[date] = true;
     });
     return map;
-  }
+  },
 );

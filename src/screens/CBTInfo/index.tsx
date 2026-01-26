@@ -10,7 +10,7 @@ export const CBTInfo = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const renderHeader = () => {
-    return <Header title={t("cbt.about_title")} />;
+    return <Header />;
   };
 
   return (

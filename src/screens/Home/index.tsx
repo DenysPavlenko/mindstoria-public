@@ -19,7 +19,7 @@ import {
 } from "@/store/slices";
 import { TTheme, useTheme } from "@/theme";
 import { TLog } from "@/types";
-import { CALENDAR_DATE_FORMAT } from "@/utils/dateConstants";
+import { CALENDAR_DATE_FORMAT, getRelativeDayTitle } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -59,10 +59,7 @@ export const Home = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const title = useMemo(() => {
-    if (selectedDate.isSame(dayjs(), "day")) return t("common.today");
-    if (selectedDate.isSame(dayjs().subtract(1, "day"), "day"))
-      return t("common.yesterday");
-    return selectedDate.locale(i18n.language).format("MMMM D");
+    return getRelativeDayTitle(selectedDate, t, i18n.language);
   }, [selectedDate, t, i18n.language]);
 
   const getDotsCount = (date: Dayjs) => {

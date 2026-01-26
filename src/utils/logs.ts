@@ -5,7 +5,7 @@ import Smiley2 from "../assets/icons/smiley-2.svg";
 import Smiley3 from "../assets/icons/smiley-3.svg";
 import Smiley4 from "../assets/icons/smiley-4.svg";
 import Smiley5 from "../assets/icons/smiley-5.svg";
-import { CALENDAR_DATE_FORMAT, YEAR_MONTH_FORMAT } from "./dateConstants";
+import { CALENDAR_DATE_FORMAT, YEAR_MONTH_FORMAT } from "./date";
 
 export const WELLBEING_ICONS = [Smiley1, Smiley2, Smiley3, Smiley4, Smiley5];
 
@@ -15,7 +15,7 @@ export const getWellbeingIcon = (level: RatingLevel) => {
 
 export const getWellbeingChartDataMap = (
   logs: TLog[],
-  period: TTimePeriod
+  period: TTimePeriod,
 ): TChartDataMap => {
   const data: Record<string, RatingLevel | null> = {};
   const dateFormat =

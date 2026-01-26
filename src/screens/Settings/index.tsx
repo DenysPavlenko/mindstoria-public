@@ -4,6 +4,7 @@ import {
   ConfirmationDialog,
   CustomPressable,
   Header,
+  ListItem,
   Modal,
   SafeView,
   Switch,
@@ -24,6 +25,7 @@ import {
 import {
   exportDataAsJSON,
   getAppVariant,
+  getErrorMessage,
   hasBackUpData,
   importDataAsJSON,
   openLink,
@@ -33,7 +35,6 @@ import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
-import { LanguageList, TLanguageListItem } from "./components/LanguageList";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -62,7 +63,7 @@ export const Settings = () => {
   const showDevScreen =
     appVariant === "development" || appVariant === "preview";
 
-  const languages: TLanguageListItem[] = useMemo(() => {
+  const languages = useMemo(() => {
     return languageResources.map((code) => ({
       code,
       label: TITLE_MAP[code as keyof typeof TITLE_MAP] || code.toUpperCase(),
@@ -87,8 +88,7 @@ export const Settings = () => {
         snackbar.success(t("common.import_success"));
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("common.import_failure");
+      const message = getErrorMessage(error, t("common.import_failure"));
       snackbar.error(message);
     }
   };
@@ -99,8 +99,7 @@ export const Settings = () => {
       try {
         await exportDataAsJSON(backUpData);
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : t("common.export_failure");
+        const message = getErrorMessage(error, t("common.export_failure"));
         snackbar.error(message);
       }
     });
@@ -289,13 +288,20 @@ export const Settings = () => {
         onClose={() => setShowLanguageModal(false)}
         style={{ paddingVertical: theme.layout.spacing.sm }}
       >
-        <LanguageList
-          languages={languages}
-          onSelect={(code) => {
-            setAppLanguage(code);
-            setShowLanguageModal(false);
-          }}
-        />
+        {languages.map((lang, index) => {
+          const isLast = index === languages.length - 1;
+          return (
+            <ListItem
+              key={lang.code}
+              isLast={isLast}
+              onPress={() => {
+                setAppLanguage(lang.code);
+                setShowLanguageModal(false);
+              }}
+              title={lang.label}
+            />
+          );
+        })}
       </Modal>
     );
   };

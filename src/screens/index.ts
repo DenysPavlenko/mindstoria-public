@@ -1,6 +1,7 @@
 export * from "./CBTInfo";
 export * from "./CBTLogManager";
 export * from "./CBTLogs";
+export * from "./CBTSettings";
 export * from "./DevScreen";
 export * from "./EmotionDefinitionForm";
 export * from "./EmotionsStats";

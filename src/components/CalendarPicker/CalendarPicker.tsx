@@ -1,6 +1,5 @@
 import { useTheme } from "@/theme";
-import { generateDaysForMonth } from "@/utils";
-import { CALENDAR_DATE_FORMAT } from "@/utils/dateConstants";
+import { CALENDAR_DATE_FORMAT, generateDaysForMonth } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";

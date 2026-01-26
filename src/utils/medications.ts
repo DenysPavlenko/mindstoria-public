@@ -6,11 +6,11 @@ import {
   TTimePeriod,
 } from "@/types";
 import dayjs from "dayjs";
-import { CALENDAR_DATE_FORMAT, YEAR_MONTH_FORMAT } from "./dateConstants";
+import { CALENDAR_DATE_FORMAT, YEAR_MONTH_FORMAT } from "./date";
 
 export const getGroupedTakenMedications = (
   logs: TMedLog[],
-  medications: TMedications
+  medications: TMedications,
 ) => {
   const grouped = new Map<string, TTakenMedication>();
   logs.forEach((log) => {
@@ -37,7 +37,7 @@ export const getGroupedTakenMedications = (
 
 export const getTakenMedications = (
   logs: TMedLog[],
-  medications: TMedications
+  medications: TMedications,
 ) => {
   const meds: TTakenMedication[] = [];
   logs.forEach((log) => {
@@ -59,7 +59,7 @@ export const getTakenMedications = (
 
 export const getMedicationsChartData = (
   medications: TTakenMedication[],
-  period: TTimePeriod
+  period: TTimePeriod,
 ) => {
   // Group by medication medId
   const medsById: Record<string, TTakenMedication[]> = {};

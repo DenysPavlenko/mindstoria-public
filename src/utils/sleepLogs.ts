@@ -1,10 +1,10 @@
 import { TChartDataMap, TSleepLog, TTimePeriod } from "@/types";
 import dayjs from "dayjs";
-import { CALENDAR_DATE_FORMAT, YEAR_MONTH_FORMAT } from "./dateConstants";
+import { CALENDAR_DATE_FORMAT, YEAR_MONTH_FORMAT } from "./date";
 
 export const getSleepLogChartDataMap = (
   sleepLogs: TSleepLog[],
-  period: TTimePeriod
+  period: TTimePeriod,
 ): TChartDataMap => {
   const data: TChartDataMap["data"] = {};
 
