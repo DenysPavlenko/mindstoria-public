@@ -141,7 +141,6 @@ export const TabBar = ({
               accessibilityLabel={options.tabBarAccessibilityLabel}
               testID={options.tabBarButtonTestID}
               activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-              withHaptics={false}
             >
               <Feather
                 size={24}
