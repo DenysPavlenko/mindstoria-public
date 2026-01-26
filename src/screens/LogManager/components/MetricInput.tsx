@@ -29,18 +29,20 @@ interface MetricInputProps {
   isEditing: boolean;
   isActive: boolean;
   onChange: (metric: TLogMetric, value: TLogValue) => void;
+  onNext: () => void;
 }
 
 export const MetricInput = ({
   metric,
   values,
-  isEditing,
   isActive,
   onChange,
+  onNext,
 }: MetricInputProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const inputRef = useRef<TextInput>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -54,9 +56,24 @@ export const MetricInput = ({
   const handleValueChange = useCallback(
     (val: TLogValue) => {
       onChange(metric, val);
+      if (metric.type === "wellbeing") {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(onNext, 700);
+      }
     },
-    [metric, onChange]
+    [metric, onChange, onNext],
   );
+
+  // Cleanup timeout on unmount or when dependencies change
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const renderInput = () => {
     switch (metric.type) {

@@ -111,7 +111,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
         [metric.id]: value,
       }));
     },
-    []
+    [],
   );
 
   const saveLog = () => {
@@ -129,7 +129,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
           ...currentLog,
           values: logValues,
           timestamp,
-        })
+        }),
       );
     } else {
       dispatch(
@@ -137,7 +137,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
           id: logId,
           values: logValues,
           timestamp,
-        })
+        }),
       );
     }
   };
@@ -225,6 +225,7 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
           isEditing={isEditing}
           onChange={handleValueChange}
           isActive={isActive}
+          onNext={handleNext}
         />
       </View>
     );
