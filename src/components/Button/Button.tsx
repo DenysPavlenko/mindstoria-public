@@ -1,5 +1,5 @@
 import { DISABLED_ALPHA, TTheme, useTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKeys, TSizeKeys } from "@/types/common";
 import { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, ViewStyle } from "react-native";
 import {
@@ -15,6 +15,7 @@ export interface ButtonProps extends CustomPressableProps {
   textColor?: TColorKeys;
   autoSize?: boolean;
   isLoading?: boolean;
+  minHeight?: TSizeKeys | number;
 }
 
 export const Button = ({
@@ -28,6 +29,7 @@ export const Button = ({
   autoSize,
   style,
   isLoading,
+  minHeight = "lg",
   ...restProps
 }: ButtonProps) => {
   const { theme } = useTheme();
@@ -50,13 +52,15 @@ export const Button = ({
       break;
   }
 
+  const minHeightValue =
+    typeof minHeight === "number" ? minHeight : theme.layout.size[minHeight];
+
   const buttonStyle: ViewStyle = {
     ...styles.button,
     backgroundColor,
     borderColor,
     width: fullWidth ? "100%" : "auto",
-    minHeight: autoSize ? "auto" : theme.layout.size.lg,
-    paddingVertical: autoSize ? 0 : theme.layout.spacing.sm,
+    minHeight: minHeightValue,
     paddingHorizontal: autoSize ? 0 : theme.layout.spacing.lg,
     ...(disabled && { opacity: DISABLED_ALPHA }),
   };

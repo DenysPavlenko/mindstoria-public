@@ -2,12 +2,12 @@ import { EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
 import {
   Card,
   ConfirmationDialog,
-  CustomPressable,
   Header,
   ListItem,
   Modal,
-  SafeView,
+  SettingsItem,
   Switch,
+  TAB_BAR_HEIGHT,
   Typography,
 } from "@/components";
 import { useThemedSnackbar } from "@/hooks";
@@ -16,13 +16,10 @@ import { useRevenueCat } from "@/services";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { importDataThunk } from "@/store/slices";
 import { selectDataToBackUp } from "@/store/slices/backUpData/backUpDataSelectors";
+import { TTheme, useTheme } from "@/theme";
 import {
-  DISABLED_ALPHA,
-  TOUCHABLE_ACTIVE_OPACITY,
-  TTheme,
-  useTheme,
-} from "@/theme";
-import {
+  buildFeedbackUrl,
+  buildRateAppUrl,
   exportDataAsJSON,
   getAppVariant,
   getErrorMessage,
@@ -30,11 +27,11 @@ import {
   importDataAsJSON,
   openLink,
 } from "@/utils";
-import Feather from "@react-native-vector-icons/feather";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -47,12 +44,18 @@ export const Settings = () => {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { theme, isDark, toggleTheme } = useTheme();
+  const insets = useSafeAreaInsets();
   const snackbar = useThemedSnackbar();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const { checkPremiumFeature } = useRevenueCat();
+  const { subscriptionActive, setShowPaywall, checkPremiumFeature } =
+    useRevenueCat();
   const dispatch = useAppDispatch();
   const backUpData = useAppSelector(selectDataToBackUp);
   const [showImportConfirmation, setShowImportConfirmation] = useState(false);
+
+  const paddingBottom = useMemo(() => {
+    return insets.bottom + TAB_BAR_HEIGHT + theme.layout.spacing.lg;
+  }, [insets.bottom, theme.layout.spacing.lg]);
 
   const currentLanguage = i18n.language;
   const languageResources = Object.keys(i18n.store.data);
@@ -105,181 +108,158 @@ export const Settings = () => {
     });
   };
 
+  const handleSendFeedback = async () => {
+    try {
+      const feedbackUrl = await buildFeedbackUrl(t);
+      await openLink(feedbackUrl);
+    } catch (error) {
+      const message = getErrorMessage(error, t("common.something_went_wrong"));
+      snackbar.error(message);
+    }
+  };
+
+  const handleRateApp = async () => {
+    try {
+      const url = buildRateAppUrl();
+      await openLink(url);
+    } catch (error) {
+      const message = getErrorMessage(error, t("common.something_went_wrong"));
+      snackbar.error(message);
+    }
+  };
+
+  const renderPremium = () => {
+    if (subscriptionActive) return null;
+    return (
+      <Card>
+        <SettingsItem
+          icon="star"
+          title={t("paywall.subscribe_to_premium")}
+          onPress={() => setShowPaywall(true)}
+        />
+      </Card>
+    );
+  };
+
   const renderThemeSetting = () => {
     return (
-      <View style={styles.settingItem}>
-        <View style={styles.settingTitle}>
-          <Feather name="moon" size={20} color={theme.colors.onBackground} />
-          <Typography variant="bodyBold">{t("settings.dark_theme")}</Typography>
-        </View>
-        <View style={styles.settingAction}>
-          <Switch value={isDark} onChange={toggleTheme} />
-        </View>
-      </View>
+      <SettingsItem
+        icon="moon"
+        title={t("settings.dark_theme")}
+        action={<Switch value={isDark} onChange={toggleTheme} />}
+      />
     );
   };
 
   const renderLanguageSetting = () => {
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={styles.settingItem}
+      <SettingsItem
+        icon="globe"
+        title={t("settings.language")}
         onPress={() => setShowLanguageModal(true)}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather name="globe" size={20} color={theme.colors.onBackground} />
-          <Typography variant="bodyBold" style={styles.settingTitle}>
-            {t("settings.language")}
+        action={
+          <Typography variant="body" style={styles.settingTitle}>
+            {TITLE_MAP[currentLanguage as keyof typeof TITLE_MAP]}
           </Typography>
-        </View>
-        <Typography variant="body" style={styles.settingTitle}>
-          {TITLE_MAP[currentLanguage as keyof typeof TITLE_MAP]}
-        </Typography>
-      </CustomPressable>
+        }
+      />
     );
   };
 
   const renderNotifications = () => {
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={styles.settingItem}
+      <SettingsItem
+        icon="bell"
+        title={t("notifications.title")}
         onPress={() => {
           router.navigate("/notifications");
         }}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather name="bell" size={20} color={theme.colors.onBackground} />
-          <Typography variant="bodyBold" style={styles.settingTitle}>
-            {t("notifications.title")}
-          </Typography>
-        </View>
-      </CustomPressable>
+      />
     );
   };
 
   const renderImportSetting = () => {
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={styles.settingItem}
+      <SettingsItem
+        icon="download"
+        title={t("settings.import_data")}
         onPress={handleDataImportPress}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather
-            name="download"
-            size={20}
-            color={theme.colors.onBackground}
-          />
-          <Typography variant="bodyBold" style={styles.settingTitle}>
-            {t("settings.import_data")}
-          </Typography>
-        </View>
-      </CustomPressable>
+      />
     );
   };
 
   const renderExportSetting = () => {
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={[styles.settingItem, !hasData && { opacity: DISABLED_ALPHA }]}
+      <SettingsItem
+        icon="upload"
+        title={t("settings.export_data")}
         onPress={handleDataExport}
-        disabled={!hasData}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather name="upload" size={20} color={theme.colors.onBackground} />
-          <Typography variant="bodyBold" style={styles.settingTitle}>
-            {t("settings.export_data")}
-          </Typography>
-        </View>
-      </CustomPressable>
+      />
+    );
+  };
+
+  const renderFeedback = () => {
+    return (
+      <SettingsItem
+        icon="message-circle"
+        title={t("settings.send_feedback")}
+        onPress={handleSendFeedback}
+      />
+    );
+  };
+
+  const renderRating = () => {
+    return (
+      <SettingsItem
+        icon="heart"
+        title={t("settings.rate_app")}
+        onPress={handleRateApp}
+      />
     );
   };
 
   const renderPrivacyPolicy = () => {
-    if (!showDevScreen) return null;
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={styles.settingItem}
+      <SettingsItem
+        icon="lock"
+        title={t("settings.privacy_policy")}
         onPress={() => {
           openLink(PRIVACY_POLICY_URL);
         }}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather name="lock" size={20} color={theme.colors.onBackground} />
-          <Typography variant="bodyBold" style={styles.settingTitle}>
-            {t("settings.privacy_policy")}
-          </Typography>
-        </View>
-      </CustomPressable>
+      />
     );
   };
 
   const renderTermsOfService = () => {
     if (!IS_IOS) return null;
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={styles.settingItem}
+      <SettingsItem
+        icon="file-text"
+        title={t("settings.terms_of_service")}
         onPress={() => {
           openLink(EULA_URL);
         }}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather name="file-text" size={20} />
-          <Typography variant="bodyBold" style={styles.settingTitle}>
-            {t("settings.terms_of_service")}
-          </Typography>
-        </View>
-      </CustomPressable>
+      />
     );
   };
 
   const renderDevScreenButton = () => {
     if (!showDevScreen) return null;
     return (
-      <CustomPressable
-        activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-        style={styles.settingItem}
-        onPress={() => {
-          router.navigate("/dev-screen");
-        }}
-        withHaptics={false}
-      >
-        <View style={styles.settingTitle}>
-          <Feather name="settings" size={20} color={theme.colors.error} />
-          <Typography
-            variant="bodyBold"
-            color="error"
-            style={styles.settingTitle}
-          >
-            Developer screen
-          </Typography>
-        </View>
-      </CustomPressable>
+      <View>
+        <Typography variant="smallBold">Developer</Typography>
+        <Card>
+          <SettingsItem
+            icon="settings"
+            title="Developer screen"
+            onPress={() => {
+              router.navigate("/dev-screen");
+            }}
+          />
+        </Card>
+      </View>
     );
   };
-
-  const renderList = () => (
-    <Card>
-      {renderThemeSetting()}
-      {renderLanguageSetting()}
-      {renderNotifications()}
-      {renderImportSetting()}
-      {renderExportSetting()}
-      {renderPrivacyPolicy()}
-      {renderTermsOfService()}
-      {renderDevScreenButton()}
-    </Card>
-  );
 
   const renderLanguageModal = () => {
     return (
@@ -339,13 +319,47 @@ export const Settings = () => {
     );
   };
 
+  const sections = [
+    {
+      title: t("settings.general"),
+      items: [renderThemeSetting, renderLanguageSetting, renderNotifications],
+    },
+    {
+      title: t("settings.data"),
+      items: [renderImportSetting, renderExportSetting],
+    },
+    {
+      title: t("settings.support"),
+      items: [renderFeedback, renderRating],
+    },
+    {
+      title: t("settings.about"),
+      items: [renderPrivacyPolicy, renderTermsOfService],
+    },
+  ];
+
   return (
     <>
       {renderHeader()}
-      <SafeView style={styles.container}>
-        {renderList()}
-        {renderLanguageModal()}
-      </SafeView>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={[styles.content, { paddingBottom }]}>
+          {renderPremium()}
+          <View style={styles.sections}>
+            {sections.map((section) => (
+              <View key={section.title} style={styles.section}>
+                <Typography variant="smallBold">{section.title}</Typography>
+                <Card>
+                  {section.items.map((renderFn, i) => (
+                    <View key={i}>{renderFn()}</View>
+                  ))}
+                </Card>
+              </View>
+            ))}
+          </View>
+          {renderDevScreenButton()}
+        </View>
+      </ScrollView>
+      {renderLanguageModal()}
       {renderImportConfirmation()}
     </>
   );
@@ -355,7 +369,16 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: theme.layout.spacing.lg,
+    },
+    content: {
+      padding: theme.layout.spacing.lg,
+      gap: theme.layout.spacing.lg,
+    },
+    sections: {
+      gap: theme.layout.spacing.lg,
+    },
+    section: {
+      gap: theme.layout.spacing.sm,
     },
     settingItem: {
       paddingVertical: theme.layout.spacing.lg,

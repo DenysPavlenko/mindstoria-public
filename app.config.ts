@@ -47,6 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         CFBundleLocalizations: ["en", "uk"],
+        LSApplicationQueriesSchemes: ["mailto"],
       },
       config: {
         usesNonExemptEncryption: false,

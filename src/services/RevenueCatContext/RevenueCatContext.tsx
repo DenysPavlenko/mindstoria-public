@@ -27,10 +27,11 @@ interface RevenueCatContextValue {
   setShowPaywall: (visible: boolean) => void;
   checkPremiumFeature: (callback: () => void) => void;
   submitBackdoorCode: (code: string) => boolean;
+  subscriptionActive: boolean;
 }
 
 const RevenueCatContext = createContext<RevenueCatContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 export const RevenueCatProvider = ({
@@ -44,7 +45,7 @@ export const RevenueCatProvider = ({
   const [error, setError] = useState<string | null>(null);
   const [setupError, setSetupError] = useState<string | null>(null);
   const [backdoorActive, setBackdoorActive] = useState(() =>
-    isBackdoorActive()
+    isBackdoorActive(),
   );
 
   const isPreviewEnv = useMemo(() => getAppVariant() === "preview", []);
@@ -70,7 +71,7 @@ export const RevenueCatProvider = ({
     try {
       const customerInfo = await Purchases.getCustomerInfo();
       setSubscriptionActive(
-        typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined"
+        typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined",
       );
     } catch (error) {
       const errorMsg = getErrorMessage(error);
@@ -114,7 +115,7 @@ export const RevenueCatProvider = ({
         setShowPaywall(true);
       }
     },
-    [setShowPaywall, isPreviewEnv, subscriptionActive, backdoorActive]
+    [setShowPaywall, isPreviewEnv, subscriptionActive, backdoorActive],
   );
 
   const value = useMemo(() => {
@@ -125,6 +126,7 @@ export const RevenueCatProvider = ({
       setShowPaywall,
       checkPremiumFeature,
       submitBackdoorCode,
+      subscriptionActive,
     };
   }, [
     showPaywall,
@@ -134,6 +136,7 @@ export const RevenueCatProvider = ({
     setupError,
     checkPremiumFeature,
     submitBackdoorCode,
+    subscriptionActive,
   ]);
 
   return (

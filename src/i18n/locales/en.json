@@ -55,7 +55,8 @@
     "skip": "Skip",
     "export_csv": "Export as CSV",
     "list": "List",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "write": "Write"
   },
   "welcome": {
     "title": "Welcome to Mindstoria!",
@@ -152,13 +153,20 @@
   },
   "settings": {
     "title": "Settings",
+    "send_feedback": "Send Feedback",
+    "general": "General",
+    "data": "Data",
+    "support": "Support",
+    "about": "About",
+    "rate_app": "Rate the App",
     "dark_theme": "Dark Theme",
     "language": "Language",
     "import_data": "Import Data",
     "export_data": "Export Data",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
-    "import_data_warning": "Importing data will overwrite your current data. Are you sure you want to proceed?"
+    "import_data_warning": "Importing data will overwrite your current data. Are you sure you want to proceed?",
+    "feedback_subject": "Feedback for Mindstoria App"
   },
   "paywall": {
     "title": "Unlock Premium Features",
@@ -177,6 +185,7 @@
     "more_to_come": "More to come",
     "more_to_come_desc": "Stay tuned for more exciting features and improvements in the future",
     "subscribe": "Subscribe",
+    "subscribe_to_premium": "Subscribe to Premium",
     "restore": "Already subscribed? Restore Purchase",
     "no_purchases_to_restore": "No purchases to restore",
     "reaccuring_billing": "Recurring billing. Cancel anytime",

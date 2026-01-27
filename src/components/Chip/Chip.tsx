@@ -1,5 +1,5 @@
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKeys, TSizeKeys } from "@/types";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import React, { ReactNode, useMemo } from "react";
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
@@ -8,7 +8,7 @@ import { Typography } from "../Typography/Typography";
 
 interface ChipProps {
   label: string | ReactNode;
-  minHeight?: keyof TTheme["layout"]["size"] | number;
+  minHeight?: TSizeKeys | number;
   icon?: FeatherIconName;
   customContent?: ReactNode;
   onPress?: () => void;

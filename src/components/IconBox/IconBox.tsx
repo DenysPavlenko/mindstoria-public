@@ -1,5 +1,5 @@
 import { TTheme, useTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TBorderRadiusKeys, TColorKeys, TSizeKeys } from "@/types";
 import { Feather, FeatherIconName } from "@react-native-vector-icons/feather";
 import React, { ReactNode } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
@@ -7,8 +7,8 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 export interface IconBoxProps {
   icon?: FeatherIconName;
   customContent?: ReactNode;
-  size?: keyof TTheme["layout"]["size"] | number;
-  radius?: keyof TTheme["layout"]["borderRadius"] | number;
+  size?: TSizeKeys | number;
+  radius?: TBorderRadiusKeys | number;
   variant?: "contained" | "text";
   iconColor?: TColorKeys;
   backgroundColor?: TColorKeys;

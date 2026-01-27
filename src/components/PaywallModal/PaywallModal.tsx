@@ -97,7 +97,7 @@ export const PaywallModal = () => {
     // Auto-select annual package if available
     if (packages.length > 0 && !selectedPackage) {
       const annualPackage = packages.find(
-        (pkg) => pkg.packageType === PACKAGE_TYPE.ANNUAL
+        (pkg) => pkg.packageType === PACKAGE_TYPE.ANNUAL,
       );
       if (annualPackage) {
         setSelectedPackage(annualPackage);

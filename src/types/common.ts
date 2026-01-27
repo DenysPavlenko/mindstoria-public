@@ -2,6 +2,8 @@ import { TTheme } from "@/theme";
 
 // Exclude 'impact' from color keys since it's an object, not a color string
 export type TColorKeys = Exclude<keyof TTheme["colors"], "rating">;
+export type TSizeKeys = keyof TTheme["layout"]["size"];
+export type TBorderRadiusKeys = keyof TTheme["layout"]["borderRadius"];
 
 export type TTimePeriod = "week" | "month" | "year";
 

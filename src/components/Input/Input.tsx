@@ -1,4 +1,5 @@
 import { TTheme, useTheme, withAlpha } from "@/theme";
+import { TSizeKeys } from "@/types";
 import { useMemo } from "react";
 import {
   StyleProp,
@@ -16,7 +17,7 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
   label?: string;
   placeholder?: string;
   onChangeText?: (text: string) => void;
-  minHeight?: keyof TTheme["layout"]["size"];
+  minHeight?: TSizeKeys;
   error?: string;
   disabled?: boolean;
   multiline?: boolean;

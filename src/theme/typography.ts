@@ -51,7 +51,7 @@ export const typography = {
     lineHeight: lineHeight(14, 1.43),
   },
   smallBold: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.bold,
     fontSize: 14,
     lineHeight: lineHeight(14, 1.43),
   },
@@ -61,7 +61,7 @@ export const typography = {
     lineHeight: lineHeight(12, 1.33),
   },
   tinyBold: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.bold,
     fontSize: 12,
     lineHeight: lineHeight(12, 1.33),
   },
@@ -71,7 +71,7 @@ export const typography = {
     lineHeight: lineHeight(10, 1.33),
   },
   extraTinyBold: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.bold,
     fontSize: 10,
     lineHeight: lineHeight(10, 1.33),
   },

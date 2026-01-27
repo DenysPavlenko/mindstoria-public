@@ -31,3 +31,7 @@ export const NOTIFICATION_SETTINGS: TNotificationSettings = {
   selectedDays: [0, 1, 2, 3, 4, 5, 6], // Monday to Sunday by default
   times: ["09:00", "21:00"], // Default times
 };
+
+export const SUPPORT_EMAIL = "de.pavlenko.dev@gmail.com";
+
+export const APP_IDENTIFIER = "com.mindstoria.app";
