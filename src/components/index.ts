@@ -43,6 +43,7 @@ export * from "./SentimentFilter/SentimentFilter";
 export * from "./SentimentIconButton/SentimentIconButton";
 export * from "./SentimentStatsFilter/SentimentStatsFilter";
 export * from "./SentimentStatsView/SentimentStatsView";
+export * from "./SettingsItem/SettingsItem";
 export * from "./SleepLogsChart/SleepLogsChart";
 export * from "./SleepManager/SleepManager";
 export * from "./SleepText/SleepText";
