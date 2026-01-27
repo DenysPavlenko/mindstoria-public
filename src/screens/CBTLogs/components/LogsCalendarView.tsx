@@ -64,7 +64,6 @@ export const LogsCalendarView = () => {
             onPress={() => {
               router.navigate("/cbt-settings");
             }}
-            withHaptics={false}
           />
         }
       />
