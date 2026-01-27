@@ -3,7 +3,6 @@ import {
   MedsChart,
   SentimentStatsView,
   SleepLogsChart,
-  TAB_BAR_HEIGHT,
   TimePeriodSelect,
   WellbeingLogsChart,
 } from "@/components";
@@ -37,10 +36,10 @@ export const Statistics = () => {
   const sleepLogsItems = useAppSelector((state) => state.sleepLogs.items);
   const medLogsItems = useAppSelector((state) => state.medLogs.items);
   const impactDefsItems = useAppSelector(
-    (state) => state.impactDefinitions.items
+    (state) => state.impactDefinitions.items,
   );
   const emotionDefsItems = useAppSelector(
-    (state) => state.emotionDefinitions.items
+    (state) => state.emotionDefinitions.items,
   );
   const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
   const [currentDate, setCurrentDate] = useState(dayjs());
@@ -53,7 +52,7 @@ export const Statistics = () => {
       logs,
       "timestamp",
       currentPeriod,
-      currentDate
+      currentDate,
     );
     return filtered;
   }, [logsItems, currentPeriod, currentDate]);
@@ -68,7 +67,7 @@ export const Statistics = () => {
       sleepLogs,
       "timestamp",
       currentPeriod,
-      currentDate
+      currentDate,
     );
     const data = getSleepLogChartDataMap(filteredLogs, currentPeriod);
     return data;
@@ -81,7 +80,7 @@ export const Statistics = () => {
       medLogs,
       "timestamp",
       currentPeriod,
-      currentDate
+      currentDate,
     );
     const takenMeds = getTakenMedications(filteredLogs, medicationsItems);
     const data = getMedicationsChartData(takenMeds, currentPeriod);
@@ -96,7 +95,7 @@ export const Statistics = () => {
 
   const impactsStatsData = useMemo(() => {
     const impactLogItems = filteredLogItems.flatMap(
-      (log) => log.values.impacts || []
+      (log) => log.values.impacts || [],
     );
     const impacts = getImpacts(impactLogItems, impactDefsItems);
     return getImpactsStats(impacts);
@@ -104,14 +103,14 @@ export const Statistics = () => {
 
   const emotionsStatsData = useMemo(() => {
     const emotionLogItems = filteredLogItems.flatMap(
-      (log) => log.values.emotions || []
+      (log) => log.values.emotions || [],
     );
     const emotions = getEmotions(emotionLogItems, emotionDefsItems);
     return getEmotionsStats(emotions);
   }, [filteredLogItems, emotionDefsItems]);
 
   const paddingBottom = useMemo(() => {
-    return insets.bottom + TAB_BAR_HEIGHT + theme.layout.spacing.lg;
+    return insets.bottom + theme.layout.spacing.lg;
   }, [insets.bottom, theme.layout.spacing.lg]);
 
   const renderTimePeriodSelector = () => {
@@ -242,7 +241,6 @@ const createStyles = (theme: TTheme) =>
     },
     periodSelect: {
       padding: theme.layout.spacing.lg,
-      paddingTop: 0,
     },
     wrapper: {
       flex: 1,
