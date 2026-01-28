@@ -1,2 +1,2 @@
-export * from "./RevenueCatContext/RevenueCatContext";
+export * from "./notifications";
 export * from "./storage";

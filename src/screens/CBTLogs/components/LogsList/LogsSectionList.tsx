@@ -1,5 +1,6 @@
 import { Typography } from "@/components";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import { getRelativeDayTitle } from "@/utils";
 import dayjs from "dayjs";

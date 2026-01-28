@@ -1,7 +1,8 @@
 import Pills from "@/assets/icons/pills.svg";
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
 import { selectMedLogsMapByDate } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { CALENDAR_DATE_FORMAT, getGroupedTakenMedications } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import dayjs, { Dayjs } from "dayjs";

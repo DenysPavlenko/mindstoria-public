@@ -46,3 +46,5 @@ export enum RatingLevel {
   Good = 4,
   Great = 5,
 }
+
+export type TUnknownObject = { [key: string]: unknown };

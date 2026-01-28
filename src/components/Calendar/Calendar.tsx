@@ -1,9 +1,8 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { CALENDAR_DATE_FORMAT } from "@/utils";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native";
 import {
   LocaleConfig,
   Calendar as RNCalendar,
@@ -35,8 +34,6 @@ export const Calendar = ({ selectedDate, ...restProps }: CalendarProps) => {
 
   const calendarTheme = useMemo(() => getCalendarTheme(theme), [theme]);
 
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
   return (
     <Card style={restProps.style} noHorizontalPadding>
       <RNCalendar
@@ -51,5 +48,3 @@ export const Calendar = ({ selectedDate, ...restProps }: CalendarProps) => {
     </Card>
   );
 };
-
-const createStyles = (theme: TTheme) => StyleSheet.create({});

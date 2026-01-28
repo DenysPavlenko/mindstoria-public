@@ -1,5 +1,6 @@
 import { Card, Pill, SlideInModal, Typography } from "@/components";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TCBTLogMetricType } from "@/types";
 import { getCBTTitle } from "@/utils";
 import { useMemo } from "react";
@@ -78,7 +79,7 @@ export const InfoModal = ({ visible, metricType, onClose }: InfoModalProps) => {
 
   const getStepsToShow = () => {
     const currentStepIndex = CBT_STEPS.findIndex(
-      (step) => step.type === metricType
+      (step) => step.type === metricType,
     );
     return CBT_STEPS.slice(0, currentStepIndex + 1);
   };

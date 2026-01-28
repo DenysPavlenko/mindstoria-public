@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Button,
   ConfirmationDialog,
@@ -10,11 +11,12 @@ import {
 } from "@/components";
 import { CBT_LOG_METRICS } from "@/data";
 import { useAndroidBackHandler, useKeyboard } from "@/hooks";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addCBTLogThunk, updateCBTLogThunk } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TCBTLogMetric, TCBTLogValue, TCBTLogValues } from "@/types";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, trackEvent } from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
@@ -143,7 +145,7 @@ export const CBTLogManager = ({
         [metric.id]: value,
       }));
     },
-    []
+    [],
   );
 
   const handleSave = () => {
@@ -161,7 +163,7 @@ export const CBTLogManager = ({
           ...currentLog,
           values: logValues,
           timestamp,
-        })
+        }),
       );
     } else {
       dispatch(
@@ -170,9 +172,18 @@ export const CBTLogManager = ({
           values: logValues,
           timestamp,
           wellbeingLogId,
-        })
+        }),
       );
     }
+    trackEvent(ANALYTICS_EVENTS.CBT_LOG_COMPLETED, {
+      mode: isEditing ? "edit" : "create",
+      situationLogged: Boolean(logValues.situation),
+      thoughtLogged: Boolean(logValues.thought),
+      behaviorLogged: Boolean(logValues.behavior),
+      emotionsLogged: logValues.emotions.length > 0,
+      cognitiveDistortionsLogged: logValues.cognitiveDistortions.length > 0,
+      alternativeThoughtLogged: Boolean(logValues.alternativeThought),
+    });
     router.back();
   };
 
@@ -180,10 +191,12 @@ export const CBTLogManager = ({
     if (isValid) {
       setShowExitConfirmation(true);
     } else {
-      setShowExitConfirmation(false);
+      trackEvent(ANALYTICS_EVENTS.CBT_LOG_CANCELLED, {
+        mode: isEditing ? "edit" : "create",
+      });
       router.back();
     }
-  }, [isValid, router]);
+  }, [isValid, router, isEditing]);
 
   useAndroidBackHandler(() => {
     if (isFocused) {

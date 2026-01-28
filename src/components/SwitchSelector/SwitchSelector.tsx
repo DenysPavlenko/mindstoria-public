@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import React, { ReactNode, useMemo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";

@@ -1,5 +1,5 @@
-import { useRevenueCat } from "@/services";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TTimePeriod } from "@/types/common";
 import { formatPeriodRange } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
@@ -25,7 +25,6 @@ export const TimePeriodSelect = ({
   onChangeDate,
 }: TimePeriodSelectProps) => {
   const { theme } = useTheme();
-  const { checkPremiumFeature } = useRevenueCat();
   const { t } = useTranslation();
 
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -68,15 +67,11 @@ export const TimePeriodSelect = ({
   };
 
   const handleMovePeriod = (direction: -1 | 1) => {
-    checkPremiumFeature(() => {
-      movePeriod(direction);
-    });
+    movePeriod(direction);
   };
 
   const handlePeriodChange = (newPeriod: TTimePeriod) => {
-    checkPremiumFeature(() => {
-      onChangePeriod(newPeriod);
-    });
+    onChangePeriod(newPeriod);
   };
 
   const periodsData: { value: TTimePeriod; label: string }[] = [

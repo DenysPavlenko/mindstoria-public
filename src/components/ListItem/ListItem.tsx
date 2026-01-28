@@ -1,4 +1,5 @@
-import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
 import { useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { CustomPressable } from "../CustomPressable/CustomPressable";

@@ -1,4 +1,5 @@
 import PillIcon from "@/assets/feather/pill.svg";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   addMedLogThunk,
@@ -7,7 +8,7 @@ import {
   selectMedLogsMapByDate,
   updateMedLogThunk,
 } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TMedication, TMedLog } from "@/types";
 import { CALENDAR_DATE_FORMAT, TIME_FORMAT } from "@/utils";
 import dayjs from "dayjs";
@@ -109,7 +110,7 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
         </View>
       );
     },
-    [styles]
+    [styles],
   );
 
   const renderIcon = useCallback(
@@ -135,7 +136,7 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
         />
       );
     },
-    [theme]
+    [theme],
   );
 
   const renderItem = useCallback(
@@ -193,7 +194,7 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
         </Card>
       );
     },
-    [styles, t, todayLogs, renderTakenMed, renderIcon]
+    [styles, t, todayLogs, renderTakenMed, renderIcon],
   );
 
   const renderPlaceholder = () => {

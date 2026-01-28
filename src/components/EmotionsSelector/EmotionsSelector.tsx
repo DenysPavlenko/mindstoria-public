@@ -1,14 +1,16 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { useTranslatedEmotionDefinitions } from "@/hooks";
+import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { archiveEmotionDefinition } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import {
   RatingLevel,
   TEmotionDefinition,
   TEmotionLog,
   TSentimentType,
 } from "@/types";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, trackEvent } from "@/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -60,10 +62,13 @@ export const EmotionsSelector = ({
   }, [wellbeing]);
 
   const emotionLogsMap = useMemo(() => {
-    return emotionLogItems.reduce((acc, item) => {
-      acc[item.definitionId] = item;
-      return acc;
-    }, {} as Record<string, TEmotionLog>);
+    return emotionLogItems.reduce(
+      (acc, item) => {
+        acc[item.definitionId] = item;
+        return acc;
+      },
+      {} as Record<string, TEmotionLog>,
+    );
   }, [emotionLogItems]);
 
   // Filter emotion definitions based on search and type
@@ -99,7 +104,7 @@ export const EmotionsSelector = ({
 
   const handleEmotionPress = (
     item: TEmotionDefinition,
-    isSelected: boolean
+    isSelected: boolean,
   ) => {
     if (isSelected) {
       removeEmotionLog(item.id);
@@ -114,6 +119,9 @@ export const EmotionsSelector = ({
       params: { definitionId },
     });
     setSelectedDefinition(null);
+    trackEvent(ANALYTICS_EVENTS.EMOTION_EDIT_STARTED, {
+      source: "addButton",
+    });
   };
 
   const handleEmotionDelete = () => {
@@ -124,6 +132,9 @@ export const EmotionsSelector = ({
     dispatch(archiveEmotionDefinition(selectedDefinition.id));
     setShowConfirmDelete(false);
     setSelectedDefinition(null);
+    trackEvent(ANALYTICS_EVENTS.EMOTION_DELETE_CONFIRMED, {
+      name: selectedDefinition.name,
+    });
   };
 
   const renderFilter = () => {
@@ -137,6 +148,9 @@ export const EmotionsSelector = ({
           router.navigate({
             pathname: "/emotion-definition-form",
             params: { type: selectedType || undefined },
+          });
+          trackEvent(ANALYTICS_EVENTS.EMOTION_CREATE_STARTED, {
+            source: "addButton",
           });
         }}
         style={{ marginBottom: theme.layout.spacing.lg }}
@@ -179,6 +193,9 @@ export const EmotionsSelector = ({
               prefillName: searchQuery,
               type: selectedType || undefined,
             },
+          });
+          trackEvent(ANALYTICS_EVENTS.EMOTION_CREATE_STARTED, {
+            source: "emotionSearch",
           });
         }}
         style={styles.listContent}

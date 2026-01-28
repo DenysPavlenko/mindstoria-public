@@ -1,4 +1,5 @@
-import { TTheme, useTheme, withAlpha } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme, withAlpha } from "@/theme";
 import { TSizeKeys } from "@/types";
 import { useMemo } from "react";
 import {

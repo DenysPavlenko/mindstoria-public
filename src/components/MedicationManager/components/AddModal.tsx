@@ -1,5 +1,5 @@
 import { TimePickerModal } from "@/components/TimePickerModal/TimePickerModal";
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { TMedication, TMedLog } from "@/types/medications";
 import { generateUniqueId, TIME_FORMAT } from "@/utils";
 import dayjs from "dayjs";

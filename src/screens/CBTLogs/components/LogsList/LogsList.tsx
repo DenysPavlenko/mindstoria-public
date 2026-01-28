@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { TAB_BAR_CBT_LOG_BUTTON_PRESS } from "@/appConstants";
 import {
   Card,
@@ -5,10 +6,12 @@ import {
   Placeholder,
   TAB_BAR_HEIGHT,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { removeCBTLogThunk, selectCBTLogs } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TCBTLog, TCBTScreenView } from "@/types";
+import { trackEvent } from "@/utils";
 import { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -46,6 +49,10 @@ export const LogsList = ({ date, onCardPress, viewType }: LogsListProps) => {
         router.navigate({
           pathname: "/cbt-log-manager",
           params: { date: date?.toISOString() },
+        });
+        trackEvent(ANALYTICS_EVENTS.CBT_LOG_STARTED, {
+          mode: "create",
+          source: "cbt_log",
         });
       },
     );

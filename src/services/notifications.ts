@@ -1,4 +1,4 @@
-import { TNotificationSettings } from "@/types/notifications";
+import { TNotificationSettings } from "@/types";
 import dayjs from "dayjs";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
@@ -42,7 +42,7 @@ export class NotificationService {
   }
 
   static async scheduleNotifications(
-    settings: TNotificationSettings & { title: string; body: string }
+    settings: TNotificationSettings & { title: string; body: string },
   ): Promise<void> {
     try {
       // Cancel all existing notifications first
@@ -154,13 +154,13 @@ export class NotificationService {
   }
 
   static addNotificationReceivedListener(
-    listener: (notification: Notifications.Notification) => void
+    listener: (notification: Notifications.Notification) => void,
   ) {
     return Notifications.addNotificationReceivedListener(listener);
   }
 
   static addNotificationResponseReceivedListener(
-    listener: (response: Notifications.NotificationResponse) => void
+    listener: (response: Notifications.NotificationResponse) => void,
   ) {
     return Notifications.addNotificationResponseReceivedListener(listener);
   }

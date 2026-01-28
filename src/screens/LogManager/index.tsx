@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Button,
   ConfirmationDialog,
@@ -9,11 +10,12 @@ import {
   TimePickerModal,
 } from "@/components";
 import { useAndroidBackHandler, useKeyboard } from "@/hooks";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addLogThunk, selectCBTLogs, updateLogThunk } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TLogMetric, TLogValue, TLogValues } from "@/types";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, isStringEmpty, trackEvent } from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
@@ -140,6 +142,13 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
         }),
       );
     }
+    trackEvent(ANALYTICS_EVENTS.MOOD_LOG_COMPLETED, {
+      mode: isEditing ? "edit" : "create",
+      moodLogged: true,
+      impactsLogged: logValues.impacts.length > 0,
+      emotionsLogged: logValues.emotions.length > 0,
+      notesLogged: !isStringEmpty(logValues.notes),
+    });
   };
 
   const handleSave = () => {
@@ -156,10 +165,12 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     if (isValid) {
       setShowExitConfirmation(true);
     } else {
-      setShowExitConfirmation(false);
+      trackEvent(ANALYTICS_EVENTS.MOOD_LOG_CANCELLED, {
+        mode: isEditing ? "edit" : "create",
+      });
       router.back();
     }
-  }, [isValid, router]);
+  }, [isValid, router, isEditing]);
 
   useAndroidBackHandler(() => {
     if (isFocused) {
@@ -208,6 +219,10 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
         wellbeingLogId: savedLogId,
         logId: connectedCBTLogId,
       },
+    });
+    trackEvent(ANALYTICS_EVENTS.CBT_LOG_STARTED, {
+      mode: "create",
+      source: "mood_log",
     });
   };
 

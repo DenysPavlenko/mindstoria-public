@@ -1,5 +1,6 @@
 import { COGNITIVE_DISTORTIONS } from "@/data";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TCognitiveDistortionLog } from "@/types";
 import { generateUniqueId } from "@/utils";
 import { useMemo } from "react";
@@ -22,10 +23,13 @@ export const CognitiveDistortionSelector = ({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const cognitiveDistortionLogsMap = useMemo(() => {
-    return logItems.reduce((acc, item) => {
-      acc[item.definitionId] = item;
-      return acc;
-    }, {} as Record<string, TCognitiveDistortionLog>);
+    return logItems.reduce(
+      (acc, item) => {
+        acc[item.definitionId] = item;
+        return acc;
+      },
+      {} as Record<string, TCognitiveDistortionLog>,
+    );
   }, [logItems]);
 
   const handleDistortionPress = (definitionId: string) => {
@@ -34,7 +38,7 @@ export const CognitiveDistortionSelector = ({
     if (isSelected) {
       // Remove the distortion
       const filteredItems = logItems.filter(
-        (item) => item.definitionId !== definitionId
+        (item) => item.definitionId !== definitionId,
       );
       onChange(filteredItems);
     } else {

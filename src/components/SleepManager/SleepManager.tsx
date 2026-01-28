@@ -1,4 +1,5 @@
 import Moon from "@/assets/icons/moon.svg";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   addSleepLogThunk,
@@ -6,7 +7,6 @@ import {
   updateSleepLogThunk,
 } from "@/store/slices";
 import { selectSleepLogsGroupedByDate } from "@/store/slices/sleepLogs/sleepLogsSelectors";
-import { useTheme } from "@/theme";
 import {
   CALENDAR_DATE_FORMAT,
   generateUniqueId,
@@ -49,7 +49,7 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
           id: generateUniqueId(),
           quality: value,
           timestamp: date.toISOString(),
-        })
+        }),
       );
     }
   };

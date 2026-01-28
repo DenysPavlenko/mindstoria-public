@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { MAX_FREE_CUSTOM_SENTIMENT_DEFINITIONS } from "@/appConstants";
 import {
   Button,
@@ -10,12 +11,12 @@ import {
 } from "@/components";
 import { emojiList } from "@/data";
 import { useTranslatedEmotionDefinitions } from "@/hooks";
-import { useRevenueCat } from "@/services";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { addEmotionDefinition, updateEmotionDefinition } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TEmotionDefinition, TSentimentType } from "@/types";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, trackEvent } from "@/utils";
 import { useNavigation } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -39,7 +40,7 @@ export const EmotionDefinitionForm = ({
   const navigation = useNavigation();
   const { checkPremiumFeature } = useRevenueCat();
   const [emotionType, setEmotionType] = useState<TSentimentType>(
-    type || "positive"
+    type || "positive",
   );
   const [name, setName] = useState(prefillName || "");
   const [icon, setIcon] = useState<string>();
@@ -55,7 +56,7 @@ export const EmotionDefinitionForm = ({
   const hasDuplicate = useMemo(() => {
     if (definitionId) return false;
     return definitions.some(
-      (def) => def.name.toLowerCase().trim() === name.toLowerCase().trim()
+      (def) => def.name.toLowerCase().trim() === name.toLowerCase().trim(),
     );
   }, [name, definitions, definitionId]);
 
@@ -105,7 +106,7 @@ export const EmotionDefinitionForm = ({
         type: emotionType,
         icon: icon!,
         isUserCreated,
-      })
+      }),
     );
     navigation.goBack();
   };
@@ -114,8 +115,14 @@ export const EmotionDefinitionForm = ({
     if (!isValid) return;
     if (definitionId) {
       handleEdit();
+      trackEvent(ANALYTICS_EVENTS.EMOTION_EDIT_COMPLETED, {
+        type: emotionType,
+      });
     } else {
       handleAdd();
+      trackEvent(ANALYTICS_EVENTS.EMOTION_CREATE_COMPLETED, {
+        type: emotionType,
+      });
     }
   };
 

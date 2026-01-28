@@ -5,9 +5,9 @@ import {
   SleepManager,
   Typography,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toggleShowMedications } from "@/store/slices";
-import { useTheme } from "@/theme";
 import { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";

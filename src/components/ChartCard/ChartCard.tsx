@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import { ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";

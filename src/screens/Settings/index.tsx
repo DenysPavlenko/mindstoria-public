@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
 import {
   Card,
@@ -12,11 +13,11 @@ import {
 } from "@/components";
 import { useThemedSnackbar } from "@/hooks";
 import { setAppLanguage } from "@/i18n";
-import { useRevenueCat } from "@/services";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { importDataThunk } from "@/store/slices";
 import { selectDataToBackUp } from "@/store/slices/backUpData/backUpDataSelectors";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import {
   buildFeedbackUrl,
   buildRateAppUrl,
@@ -26,6 +27,7 @@ import {
   hasBackUpData,
   importDataAsJSON,
   openLink,
+  trackEvent,
 } from "@/utils";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -77,9 +79,19 @@ export const Settings = () => {
     return hasBackUpData(backUpData);
   }, [backUpData]);
 
+  const handleThemeToggle = () => {
+    toggleTheme();
+    trackEvent(ANALYTICS_EVENTS.THEME_CHANGED, {
+      theme: isDark ? "light" : "dark",
+    });
+  };
+
   const handleDataImportPress = () => {
-    checkPremiumFeature(async () => {
+    const hasPremiumFeature = checkPremiumFeature(() => {
       setShowImportConfirmation(true);
+    });
+    trackEvent(ANALYTICS_EVENTS.DATA_IMPORT_ATTEMPTED, {
+      paidUser: hasPremiumFeature,
     });
   };
 
@@ -90,21 +102,28 @@ export const Settings = () => {
         await dispatch(importDataThunk(data));
         snackbar.success(t("common.import_success"));
       }
+      trackEvent(ANALYTICS_EVENTS.DATA_IMPORT_COMPLETED);
     } catch (error) {
       const message = getErrorMessage(error, t("common.import_failure"));
+      trackEvent(ANALYTICS_EVENTS.DATA_IMPORT_FAILED, { error: message });
       snackbar.error(message);
     }
   };
 
   const handleDataExport = async () => {
     if (!hasData) return;
-    checkPremiumFeature(async () => {
+    const hasPremiumFeature = checkPremiumFeature(async () => {
       try {
         await exportDataAsJSON(backUpData);
+        trackEvent(ANALYTICS_EVENTS.DATA_EXPORT_COMPLETED);
       } catch (error) {
         const message = getErrorMessage(error, t("common.export_failure"));
+        trackEvent(ANALYTICS_EVENTS.DATA_EXPORT_FAILED, { error: message });
         snackbar.error(message);
       }
+    });
+    trackEvent(ANALYTICS_EVENTS.DATA_EXPORT_ATTEMPTED, {
+      paidUser: hasPremiumFeature,
     });
   };
 
@@ -112,6 +131,7 @@ export const Settings = () => {
     try {
       const feedbackUrl = await buildFeedbackUrl(t);
       await openLink(feedbackUrl);
+      trackEvent(ANALYTICS_EVENTS.FEEDBACK_LINK_CLICKED);
     } catch (error) {
       const message = getErrorMessage(error, t("common.something_went_wrong"));
       snackbar.error(message);
@@ -122,6 +142,7 @@ export const Settings = () => {
     try {
       const url = buildRateAppUrl();
       await openLink(url);
+      trackEvent(ANALYTICS_EVENTS.RATE_APP_LINK_CLICKED);
     } catch (error) {
       const message = getErrorMessage(error, t("common.something_went_wrong"));
       snackbar.error(message);
@@ -146,7 +167,7 @@ export const Settings = () => {
       <SettingsItem
         icon="moon"
         title={t("settings.dark_theme")}
-        action={<Switch value={isDark} onChange={toggleTheme} />}
+        action={<Switch value={isDark} onChange={handleThemeToggle} />}
       />
     );
   };
@@ -277,6 +298,9 @@ export const Settings = () => {
               onPress={() => {
                 setAppLanguage(lang.code);
                 setShowLanguageModal(false);
+                trackEvent(ANALYTICS_EVENTS.LANGUAGE_CHANGED, {
+                  language: lang.code,
+                });
               }}
               title={lang.label}
             />

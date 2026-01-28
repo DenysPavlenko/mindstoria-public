@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Header,
   MedsChart,
@@ -6,8 +7,9 @@ import {
   TimePeriodSelect,
   WellbeingLogsChart,
 } from "@/components";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TTimePeriod } from "@/types";
 import {
   filterDataByTimePeriod,
@@ -19,6 +21,7 @@ import {
   getSleepLogChartDataMap,
   getTakenMedications,
   getWellbeingChartDataMap,
+  trackEvent,
 } from "@/utils";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useState } from "react";
@@ -30,6 +33,7 @@ export const Statistics = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { checkPremiumFeature } = useRevenueCat();
   const { showMedications } = useAppSelector((state) => state.settings);
   const logsItems = useAppSelector((state) => state.logs.items);
   const medicationsItems = useAppSelector((state) => state.medications.items);
@@ -113,13 +117,35 @@ export const Statistics = () => {
     return insets.bottom + theme.layout.spacing.lg;
   }, [insets.bottom, theme.layout.spacing.lg]);
 
+  const handlePeriodChange = (period: TTimePeriod) => {
+    const hasPremium = checkPremiumFeature(() => {
+      setCurrentPeriod(period);
+      trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_PERIOD_CHANGED, { period });
+    });
+    trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_PERIOD_CHANGE_ATTEMPTED, {
+      paidUser: hasPremium,
+    });
+  };
+
+  const handleDateChange = (date: dayjs.Dayjs) => {
+    const hasPremium = checkPremiumFeature(() => {
+      setCurrentDate(date);
+      trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_DATE_CHANGED, {
+        date: date.toISOString(),
+      });
+    });
+    trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_DATE_CHANGE_ATTEMPTED, {
+      paidUser: hasPremium,
+    });
+  };
+
   const renderTimePeriodSelector = () => {
     return (
       <TimePeriodSelect
         date={currentDate}
         period={currentPeriod}
-        onChangePeriod={setCurrentPeriod}
-        onChangeDate={setCurrentDate}
+        onChangePeriod={handlePeriodChange}
+        onChangeDate={handleDateChange}
       />
     );
   };

@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";

@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { TAB_BAR_LOG_BUTTON_PRESS } from "@/appConstants";
 import {
   Card,
@@ -6,14 +7,16 @@ import {
   TAB_BAR_HEIGHT,
   Typography,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   removeLogThunk,
   selectCBTConnectionsMap,
   selectLogs,
 } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TLog } from "@/types";
+import { trackEvent } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -62,7 +65,8 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
           pathname: "/log-manager",
           params: { date: date.toISOString() },
         });
-      }
+        trackEvent(ANALYTICS_EVENTS.MOOD_LOG_STARTED, { mode: "create" });
+      },
     );
     return () => subscription.remove();
   }, [router, date]);

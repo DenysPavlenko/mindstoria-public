@@ -1,6 +1,5 @@
 import { ENTITLEMENT_ID, EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
-import { useRevenueCat } from "@/services";
-import { useTheme } from "@/theme";
+import { useRevenueCat, useTheme } from "@/providers";
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme/theme";
 import { getErrorMessage, openLink } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";

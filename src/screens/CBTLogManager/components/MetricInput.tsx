@@ -3,7 +3,8 @@ import {
   EmotionsSelector,
   Typography,
 } from "@/components";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import {
   RatingLevel,
   TCBTLogMetric,
@@ -65,7 +66,7 @@ export const MetricInput = ({
     (val: TCBTLogValue) => {
       onChange(metric, val);
     },
-    [metric, onChange]
+    [metric, onChange],
   );
 
   const handleInputWrapperPress = () => {

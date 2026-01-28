@@ -1,5 +1,6 @@
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";

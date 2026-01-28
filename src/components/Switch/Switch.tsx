@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import React, { useEffect, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {

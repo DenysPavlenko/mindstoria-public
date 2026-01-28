@@ -1,6 +1,6 @@
+import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { addMedication, updateMedication } from "@/store/slices";
-import { useTheme } from "@/theme";
 import { TMedication } from "@/types/medications";
 import { generateUniqueId } from "@/utils";
 import { useEffect, useMemo, useState } from "react";

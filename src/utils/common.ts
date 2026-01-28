@@ -91,3 +91,8 @@ export const buildRateAppUrl = () => {
     : `market://details?id=${appId}`;
   return url;
 };
+
+export const isStringEmpty = (str?: string | null): boolean => {
+  if (typeof str !== "string" || !str) return true;
+  return str.trim().length === 0;
+};

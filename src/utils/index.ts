@@ -1,3 +1,4 @@
+export * from "./analytics";
 export * from "./backdoor";
 export * from "./cbt";
 export * from "./cbtExport";
@@ -12,3 +13,4 @@ export * from "./medications";
 export * from "./sentiments";
 export * from "./sleepLogs";
 export * from "./time";
+export * from "./user";

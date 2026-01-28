@@ -1,4 +1,4 @@
-import { useRevenueCat } from "@/services";
+import { useRevenueCat } from "@/providers";
 import { useState } from "react";
 import { Button } from "../../Button/Button";
 import { Input } from "../../Input/Input";

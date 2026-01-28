@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { generatePeriodDates } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo } from "react";

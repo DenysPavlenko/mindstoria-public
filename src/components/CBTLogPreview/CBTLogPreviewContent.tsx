@@ -1,6 +1,7 @@
 import { CBT_LOG_METRICS, COGNITIVE_DISTORTIONS } from "@/data";
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import {
   TCBTLog,
   TCBTLogMetricType,
@@ -26,7 +27,7 @@ export const CBTLogPreviewContent = ({ log }: CBTLogPreviewContentProps) => {
   const { t } = useTranslation();
   const metricsData = CBT_LOG_METRICS;
   const emotionDefinitionsItems = useAppSelector(
-    (state) => state.emotionDefinitions.items
+    (state) => state.emotionDefinitions.items,
   );
 
   const metrics = useMemo(() => {
@@ -36,10 +37,13 @@ export const CBTLogPreviewContent = ({ log }: CBTLogPreviewContentProps) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const cognitiveDistortionsMap = useMemo(() => {
-    return COGNITIVE_DISTORTIONS.reduce((acc, item) => {
-      acc[item.id] = item;
-      return acc;
-    }, {} as Record<string, TCognitiveDistortionDefinition>);
+    return COGNITIVE_DISTORTIONS.reduce(
+      (acc, item) => {
+        acc[item.id] = item;
+        return acc;
+      },
+      {} as Record<string, TCognitiveDistortionDefinition>,
+    );
   }, []);
 
   const renderEmotionsChips = (items: TEmotionLog[]) => {
@@ -90,7 +94,7 @@ export const CBTLogPreviewContent = ({ log }: CBTLogPreviewContentProps) => {
   const renderMetricValue = (
     type: TCBTLogMetricType,
     values: TCBTLogValues,
-    noCardPadding: boolean
+    noCardPadding: boolean,
   ) => {
     const isTextMetric =
       type === "situation" ||

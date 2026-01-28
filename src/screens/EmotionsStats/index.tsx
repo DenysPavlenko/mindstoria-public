@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Card,
   Header,
@@ -8,10 +9,16 @@ import {
   TimePeriodSelect,
 } from "@/components";
 import { SentimentList } from "@/components/SentimentList/SentimentList";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TEmotionStatsItem, TLog, TSentimentType, TTimePeriod } from "@/types";
-import { filterDataByTimePeriod, getEmotions, getEmotionsStats } from "@/utils";
+import {
+  filterDataByTimePeriod,
+  getEmotions,
+  getEmotionsStats,
+  trackEvent,
+} from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useMemo, useRef, useState } from "react";
@@ -26,8 +33,9 @@ export const EmotionsStats = () => {
   const insets = useSafeAreaInsets();
   const logsItems = useAppSelector((state) => state.logs.items);
   const emotionDefsItems = useAppSelector(
-    (state) => state.emotionDefinitions.items
+    (state) => state.emotionDefinitions.items,
   );
+  const { checkPremiumFeature } = useRevenueCat();
   const cachedLogs = useRef<TLog[] | null>(null);
   const [emotionsType, setEmotionsType] = useState<TSentimentType | null>(null);
   const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
@@ -44,7 +52,7 @@ export const EmotionsStats = () => {
       logs,
       "timestamp",
       currentPeriod,
-      currentDate
+      currentDate,
     );
     cachedLogs.current = filtered;
     return filtered;
@@ -52,7 +60,7 @@ export const EmotionsStats = () => {
 
   const emotionsStatsData = useMemo(() => {
     const emotionLogItems = filteredLogItems.flatMap(
-      (log) => log.values.emotions || []
+      (log) => log.values.emotions || [],
     );
     const emotions = getEmotions(emotionLogItems, emotionDefsItems);
     return getEmotionsStats(emotions);
@@ -89,13 +97,44 @@ export const EmotionsStats = () => {
     );
   };
 
+  const handlePeriodChange = (period: TTimePeriod) => {
+    const hasPremium = checkPremiumFeature(() => {
+      setCurrentPeriod(period);
+      trackEvent(ANALYTICS_EVENTS.EMOTIONS_STATISTICS_PERIOD_CHANGED, {
+        period,
+      });
+    });
+    trackEvent(ANALYTICS_EVENTS.EMOTIONS_STATISTICS_PERIOD_CHANGE_ATTEMPTED, {
+      paidUser: hasPremium,
+    });
+  };
+
+  const handleDateChange = (date: dayjs.Dayjs) => {
+    const hasPremium = checkPremiumFeature(() => {
+      setCurrentDate(date);
+      trackEvent(ANALYTICS_EVENTS.EMOTIONS_STATISTICS_DATE_CHANGED, {
+        date: date.toISOString(),
+      });
+    });
+    trackEvent(ANALYTICS_EVENTS.EMOTIONS_STATISTICS_DATE_CHANGE_ATTEMPTED, {
+      paidUser: hasPremium,
+    });
+  };
+
+  const handleTypeChange = (newType: TSentimentType | null) => {
+    setEmotionsType(newType);
+    trackEvent(ANALYTICS_EVENTS.EMOTIONS_STATISTICS_TYPE_CHANGED, {
+      type: newType ?? "all",
+    });
+  };
+
   const renderTimePeriodSelector = () => {
     return (
       <TimePeriodSelect
         date={currentDate}
         period={currentPeriod}
-        onChangePeriod={setCurrentPeriod}
-        onChangeDate={setCurrentDate}
+        onChangePeriod={handlePeriodChange}
+        onChangeDate={handleDateChange}
       />
     );
   };
@@ -104,7 +143,7 @@ export const EmotionsStats = () => {
     return (
       <SentimentStatsFilter
         type={emotionsType}
-        onTypeChange={setEmotionsType}
+        onTypeChange={handleTypeChange}
         searchPlaceholder={t("emotions.search_emotion")}
         query={searchQuery}
         onSearch={setSearchQuery}
@@ -180,7 +219,6 @@ const createStyles = (theme: TTheme) =>
     },
     periodSelect: {
       padding: theme.layout.spacing.lg,
-      paddingTop: 0,
     },
     filters: {
       marginBottom: theme.layout.spacing.md,

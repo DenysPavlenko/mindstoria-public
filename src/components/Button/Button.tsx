@@ -1,4 +1,5 @@
-import { DISABLED_ALPHA, TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { DISABLED_ALPHA, TTheme } from "@/theme";
 import { TColorKeys, TSizeKeys } from "@/types/common";
 import { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, ViewStyle } from "react-native";

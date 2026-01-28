@@ -1,12 +1,12 @@
 import { APP_NAME, NOTIFICATION_SETTINGS } from "@/appConstants";
 import { Button, SafeView, Typography } from "@/components";
+import { useTheme } from "@/providers";
 import { NotificationService } from "@/services/notifications";
 import { useAppDispatch } from "@/store";
 import {
   enableNotifications,
   setNotificationsSetupShown,
 } from "@/store/slices";
-import { useTheme } from "@/theme";
 import Feather from "@react-native-vector-icons/feather";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";

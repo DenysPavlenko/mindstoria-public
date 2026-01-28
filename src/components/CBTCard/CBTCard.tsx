@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import Feather from "@react-native-vector-icons/feather";
 import dayjs from "dayjs";

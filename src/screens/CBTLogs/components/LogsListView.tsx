@@ -1,5 +1,6 @@
 import { CBTLogPreview, Header, IconButton, Typography } from "@/components";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";

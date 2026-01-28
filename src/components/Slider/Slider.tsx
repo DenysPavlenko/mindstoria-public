@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import { useCallback } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
@@ -44,14 +45,14 @@ export const Slider: React.FC<SliderProps> = ({
         progress.value = data;
       }
     },
-    [value]
+    [value],
   );
 
   const handleValueChange = useCallback(
     (val: number) => {
       onChange(Math.round(val));
     },
-    [onChange]
+    [onChange],
   );
 
   return (

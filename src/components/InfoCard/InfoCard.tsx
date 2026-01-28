@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { ReactNode, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { Card } from "../Card/Card";

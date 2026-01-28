@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Card,
   Header,
@@ -8,12 +9,12 @@ import {
   Typography,
 } from "@/components";
 import { useThemedSnackbar } from "@/hooks";
-import { useRevenueCat } from "@/services";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { selectCBTLogs, setCbtScreenView } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TCBTScreenView } from "@/types/settings";
-import { exportCBTAsCSV, getErrorMessage } from "@/utils";
+import { exportCBTAsCSV, getErrorMessage, trackEvent } from "@/utils";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -57,13 +58,18 @@ export const CBTSettings = () => {
 
   const handleCSVExportPress = () => {
     if (!hasDataToExport) return;
-    checkPremiumFeature(async () => {
+    const hasPremiumFeature = checkPremiumFeature(async () => {
       try {
         await exportCBTAsCSV(logs, emotionDefs, t);
+        trackEvent(ANALYTICS_EVENTS.CBT_EXPORT_COMPLETED);
       } catch (error) {
         const message = getErrorMessage(error, t("common.export_failure"));
+        trackEvent(ANALYTICS_EVENTS.CBT_EXPORT_FAILED, { error: message });
         snackbar.error(message);
       }
+    });
+    trackEvent(ANALYTICS_EVENTS.CBT_EXPORT_ATTEMPTED, {
+      paidUser: hasPremiumFeature,
     });
   };
 
@@ -98,7 +104,10 @@ export const CBTSettings = () => {
       <SettingsItem
         icon="info"
         title={t("cbt.what_is_cbt")}
-        onPress={() => router.navigate("/cbt-info")}
+        onPress={() => {
+          router.navigate("/cbt-info");
+          trackEvent(ANALYTICS_EVENTS.CBT_INFO_OPENED);
+        }}
       />
     );
   };
@@ -120,16 +129,19 @@ export const CBTSettings = () => {
         onClose={() => setShowViewModal(false)}
         style={{ paddingVertical: theme.layout.spacing.sm }}
       >
-        {LIST_VIEWS.map((lang, index) => {
+        {LIST_VIEWS.map((item, index) => {
           const isLast = index === LIST_VIEWS.length - 1;
           return (
             <ListItem
-              key={lang.value}
+              key={item.value}
               isLast={isLast}
               onPress={() => {
-                handleChangeCbtView(lang.value);
+                handleChangeCbtView(item.value);
+                trackEvent(ANALYTICS_EVENTS.CBT_VIEW_CHANGED, {
+                  view: item.value,
+                });
               }}
-              title={t(lang.label)}
+              title={t(item.label)}
             />
           );
         })}

@@ -10,6 +10,7 @@ import {
   TimePickerModal,
   Typography,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { NotificationService } from "@/services/notifications";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -20,7 +21,7 @@ import {
   toggleNotificationDay,
   toggleNotifications,
 } from "@/store/slices";
-import { DISABLED_ALPHA, TTheme, useTheme } from "@/theme";
+import { DISABLED_ALPHA, TTheme } from "@/theme";
 import Feather from "@react-native-vector-icons/feather";
 
 import dayjs from "dayjs";
@@ -52,7 +53,7 @@ export const Notifications = () => {
   });
   const [editingTime, setEditingTime] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState<PermissionStatus>(
-    PermissionStatus.UNDETERMINED
+    PermissionStatus.UNDETERMINED,
   );
   const [pickerTime, setPickerTime] = useState<{
     hours: number;
@@ -63,7 +64,7 @@ export const Notifications = () => {
 
   const daysOfWeek = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) =>
-      dayjs().startOf("isoWeek").add(i, "day").format("dd")
+      dayjs().startOf("isoWeek").add(i, "day").format("dd"),
     );
   }, []);
 
@@ -78,7 +79,7 @@ export const Notifications = () => {
         checkPermissionStatus();
       }
     },
-    [checkPermissionStatus]
+    [checkPermissionStatus],
   );
 
   const scheduleNotifications = useCallback(async () => {
@@ -101,7 +102,7 @@ export const Notifications = () => {
   useEffect(() => {
     const subscription = AppState.addEventListener(
       "change",
-      handleAppStateChange
+      handleAppStateChange,
     );
     return () => subscription?.remove();
   }, [checkPermissionStatus, handleAppStateChange]);

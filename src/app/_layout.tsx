@@ -2,12 +2,15 @@ import { PaywallModal, Typography } from "@/components";
 import { db, expoDb } from "@/db";
 import migrations from "@/drizzle/migrations";
 import { initI18n } from "@/i18n";
+import {
+  RevenueCatProvider,
+  ThemeProvider,
+  useRevenueCat,
+  useTheme,
+} from "@/providers";
 import { persistor, store, useAppSelector } from "@/store";
-import { MenuProvider } from "react-native-popup-menu";
-
-import { RevenueCatProvider } from "@/services";
 import { selectStartScreenShow } from "@/store/slices";
-import { ThemeProvider, useTheme } from "@/theme";
+import { initAnalytics, initAnalyticsUser, trackUserProfile } from "@/utils";
 import {
   Nunito_400Regular,
   Nunito_600SemiBold,
@@ -36,6 +39,7 @@ import { useEffect, useMemo, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { MenuProvider } from "react-native-popup-menu";
 import "react-native-reanimated";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -66,7 +70,14 @@ const AppContent = () => {
   const { theme, isLoading } = useTheme();
   const { error } = useMigrations(db, migrations);
   const [isTransReady, setIsTransReady] = useState(false);
+  const { subscriptionActive } = useRevenueCat();
   const showStartScreen = useAppSelector(selectStartScreenShow);
+  const { cbtScreenView } = useAppSelector((state) => state.settings);
+  const { enabled: notificationsEnabled } = useAppSelector((state) => {
+    return state.settings.notifications;
+  });
+  const [analyticsInitialized, setAnalyticsInitialized] = useState(false);
+
   let [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_600SemiBold,
@@ -82,6 +93,34 @@ const AppContent = () => {
   useEffect(() => {
     initI18n().then(() => setIsTransReady(true));
   }, []);
+
+  // Analytics initialization
+  useEffect(() => {
+    if (loaded) {
+      initAnalytics()
+        .then(initAnalyticsUser)
+        .then(() => setAnalyticsInitialized(true));
+    }
+  }, [loaded]);
+
+  // Track user profile properties
+  useEffect(() => {
+    if (analyticsInitialized) {
+      trackUserProfile({
+        locale: i18n.language,
+        subscriptionActive,
+        theme: theme.mode,
+        cbtView: cbtScreenView,
+        notificationsEnabled,
+      });
+    }
+  }, [
+    analyticsInitialized,
+    subscriptionActive,
+    theme.mode,
+    cbtScreenView,
+    notificationsEnabled,
+  ]);
 
   useEffect(() => {
     if (loaded) {
@@ -103,7 +142,7 @@ const AppContent = () => {
         notification: theme.colors.primary,
       },
     }),
-    [theme]
+    [theme],
   );
 
   // TODO: Better error handling UI

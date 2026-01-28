@@ -1,6 +1,7 @@
 import PillIcon from "@/assets/feather/pill.svg";
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TChartDataPoint, TTimePeriod } from "@/types";
 import { generatePeriodDatesForCharts } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";

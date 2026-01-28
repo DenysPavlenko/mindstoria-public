@@ -35,3 +35,4 @@ export const NOTIFICATION_SETTINGS: TNotificationSettings = {
 export const SUPPORT_EMAIL = "de.pavlenko.dev@gmail.com";
 
 export const APP_IDENTIFIER = "com.mindstoria.app";
+export const UNIQUE_USER_ID_KEY = "unique_user_id";

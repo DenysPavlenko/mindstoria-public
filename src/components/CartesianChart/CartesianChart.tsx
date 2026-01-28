@@ -1,4 +1,5 @@
-import { useTheme, withAlpha } from "@/theme";
+import { useTheme } from "@/providers";
+import { withAlpha } from "@/theme";
 import { TChartDataPoint, TTimePeriod } from "@/types";
 import { Nunito_400Regular } from "@expo-google-fonts/nunito";
 import { LinearGradient, useFont, vec } from "@shopify/react-native-skia";

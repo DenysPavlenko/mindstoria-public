@@ -1,5 +1,6 @@
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import {
   TEmotionDefinition,
   TEmotionLog,
@@ -27,10 +28,10 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
   const { t } = useTranslation();
   const metricsData = useAppSelector((state) => state.logMetrics.items);
   const impactDefinitionsItems = useAppSelector(
-    (state) => state.impactDefinitions.items
+    (state) => state.impactDefinitions.items,
   );
   const emotionDefinitionsItems = useAppSelector(
-    (state) => state.emotionDefinitions.items
+    (state) => state.emotionDefinitions.items,
   );
 
   const metrics = useMemo(() => {
@@ -42,7 +43,7 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
   const renderSentimentChips = (
     items: (TImpactLog | TEmotionLog)[],
     definitions: Record<string, TImpactDefinition | TEmotionDefinition>,
-    isEmotion: boolean = false
+    isEmotion: boolean = false,
   ) => {
     if (items.length === 0) return null;
     return (
@@ -82,7 +83,7 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
   const renderMetricValue = (
     type: TLogMetricType,
     values: TLogValues,
-    noCardPadding: boolean
+    noCardPadding: boolean,
   ) => {
     if (type === "wellbeing") {
       return (
@@ -95,14 +96,14 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
       return renderSentimentChips(
         values.impacts,
         impactDefinitionsItems,
-        false
+        false,
       );
     }
     if (type === "emotions" && values.emotions.length > 0) {
       return renderSentimentChips(
         values.emotions,
         emotionDefinitionsItems,
-        true
+        true,
       );
     }
     if (type === "notes" && !isEmpty(values.notes?.trim())) {

@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { getRatingLevelLabel } from "@/utils";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";

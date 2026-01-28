@@ -1,6 +1,9 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TLog } from "@/types";
+import { trackEvent } from "@/utils";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -50,6 +53,7 @@ export const LogPreview = ({
         metricId,
       },
     });
+    trackEvent(ANALYTICS_EVENTS.MOOD_LOG_STARTED, { mode: "edit" });
   };
 
   const renderSwitch = () => {

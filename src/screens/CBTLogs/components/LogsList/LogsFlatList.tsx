@@ -1,5 +1,6 @@
 import { Typography } from "@/components/Typography/Typography";
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo } from "react";

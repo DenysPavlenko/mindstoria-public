@@ -1,10 +1,13 @@
-import { TTheme, useTheme } from "@/theme";
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import {
   TEmotionStatsItem,
   TImpactStatsItem,
   TSentimentCategory,
   TSentimentType,
 } from "@/types";
+import { trackEvent } from "@/utils";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -50,6 +53,17 @@ export const SentimentStatsView = ({
     } else if (category === "impact") {
       router.navigate("/impacts-stats");
     }
+  };
+
+  const handleTypeChange = (newType: TSentimentType | null) => {
+    setType(newType);
+    const eventName =
+      category === "impact"
+        ? ANALYTICS_EVENTS.IMPACTS_STATISTICS_TYPE_CHANGED
+        : ANALYTICS_EVENTS.EMOTIONS_STATISTICS_TYPE_CHANGED;
+    trackEvent(eventName, {
+      type: newType ?? "all",
+    });
   };
 
   const renderPlaceholder = () => {
@@ -103,7 +117,7 @@ export const SentimentStatsView = ({
     return (
       <SentimentStatsFilter
         type={type}
-        onTypeChange={setType}
+        onTypeChange={handleTypeChange}
         style={styles.filter}
         hideSearch
       />

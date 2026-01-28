@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   CalendarPicker,
   Header,
@@ -6,6 +7,7 @@ import {
   Typography,
   WeekCalendar,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   fetchCBTLogsThunk,
@@ -17,9 +19,9 @@ import {
   selectMedLogDateAvailability,
   selectSleepLogsGroupedByDate,
 } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TLog } from "@/types";
-import { CALENDAR_DATE_FORMAT, getRelativeDayTitle } from "@/utils";
+import { CALENDAR_DATE_FORMAT, getRelativeDayTitle, trackEvent } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -86,7 +88,10 @@ export const Home = () => {
             <IconButton
               icon="calendar"
               size="md"
-              onPress={() => setShowCalendarPicker(true)}
+              onPress={() => {
+                setShowCalendarPicker(true);
+                trackEvent(ANALYTICS_EVENTS.MOOD_CALENDAR_OPENED);
+              }}
             />
             <Typography variant="h4">{title}</Typography>
           </View>
@@ -95,7 +100,10 @@ export const Home = () => {
           <IconButton
             icon="bar-chart-2"
             size="md"
-            onPress={() => router.navigate("/statistics")}
+            onPress={() => {
+              router.navigate("/statistics");
+              trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_OPENED);
+            }}
           />
         }
       />

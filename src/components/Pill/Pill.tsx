@@ -1,9 +1,5 @@
-import {
-  DISABLED_ALPHA,
-  TOUCHABLE_ACTIVE_OPACITY,
-  TTheme,
-  useTheme,
-} from "@/theme";
+import { useTheme } from "@/providers";
+import { DISABLED_ALPHA, TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";

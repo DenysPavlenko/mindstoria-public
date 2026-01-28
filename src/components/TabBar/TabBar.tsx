@@ -2,7 +2,8 @@ import {
   TAB_BAR_CBT_LOG_BUTTON_PRESS,
   TAB_BAR_LOG_BUTTON_PRESS,
 } from "@/appConstants";
-import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme, withAlpha } from "@/theme";
+import { useTheme } from "@/providers";
+import { TOUCHABLE_ACTIVE_OPACITY, TTheme, withAlpha } from "@/theme";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useMemo } from "react";

@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import * as Haptics from "expo-haptics";
 import { useCallback, useState } from "react";
@@ -51,14 +52,14 @@ export const SliderAlt: React.FC<SliderAltProps> = ({
         progress.value = val;
       }
     },
-    [value]
+    [value],
   );
 
   const handleValueChange = useCallback(
     (val: number) => {
       onChange(Math.round(val));
     },
-    [onChange]
+    [onChange],
   );
 
   const numberOfSteps = max - min + 1;

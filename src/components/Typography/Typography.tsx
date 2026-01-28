@@ -1,4 +1,5 @@
-import { fonts, typography, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { fonts, typography } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import React from "react";
 import { Text, TextProps, TextStyle } from "react-native";

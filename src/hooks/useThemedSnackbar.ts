@@ -1,5 +1,5 @@
 // In snackbar.ts
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { useMemo } from "react";
 import Snackbar from "react-native-snackbar";
 
@@ -50,6 +50,6 @@ export const useThemedSnackbar = () => {
           },
         }),
     }),
-    [theme]
+    [theme],
   );
 };

@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { MAX_FREE_CUSTOM_SENTIMENT_DEFINITIONS } from "@/appConstants";
 import {
   Button,
@@ -9,12 +10,12 @@ import {
 } from "@/components";
 import { iconList } from "@/data";
 import { useTranslatedImpactDefinitions } from "@/hooks";
-import { useRevenueCat } from "@/services";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { addImpactDefinition, updateImpactDefinition } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TImpactDefinition, TSentimentType } from "@/types";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, trackEvent } from "@/utils";
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useNavigation } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -39,7 +40,7 @@ export const ImpactDefinitionForm = ({
   const definitions = useTranslatedImpactDefinitions({ activeOnly: true });
   const navigation = useNavigation();
   const [impactType, setImpactType] = useState<TSentimentType>(
-    type || "positive"
+    type || "positive",
   );
   const [name, setName] = useState(prefillName || "");
   const [icon, setIcon] = useState<FeatherIconName>();
@@ -55,7 +56,7 @@ export const ImpactDefinitionForm = ({
   const hasDuplicate = useMemo(() => {
     if (definitionId) return false;
     return definitions.some(
-      (def) => def.name.toLowerCase().trim() === name.toLowerCase().trim()
+      (def) => def.name.toLowerCase().trim() === name.toLowerCase().trim(),
     );
   }, [name, definitions, definitionId]);
 
@@ -105,7 +106,7 @@ export const ImpactDefinitionForm = ({
         type: impactType,
         icon: icon!,
         isUserCreated,
-      })
+      }),
     );
     navigation.goBack();
   };
@@ -114,8 +115,14 @@ export const ImpactDefinitionForm = ({
     if (!isValid) return;
     if (definitionId) {
       handleEdit();
+      trackEvent(ANALYTICS_EVENTS.IMPACT_EDIT_COMPLETED, {
+        type: impactType,
+      });
     } else {
       handleAdd();
+      trackEvent(ANALYTICS_EVENTS.IMPACT_CREATE_COMPLETED, {
+        type: impactType,
+      });
     }
   };
 

@@ -1,14 +1,16 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { useTranslatedImpactDefinitions } from "@/hooks";
+import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { archiveImpactDefinition } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import {
   RatingLevel,
   TImpactDefinition,
   TImpactLog,
   TSentimentType,
 } from "@/types";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, trackEvent } from "@/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -60,10 +62,13 @@ export const ImpactsSelector = ({
   }, [wellbeing]);
 
   const impactLogsMap = useMemo(() => {
-    return impactLogItems.reduce((acc, item) => {
-      acc[item.definitionId] = item;
-      return acc;
-    }, {} as Record<string, TImpactLog>);
+    return impactLogItems.reduce(
+      (acc, item) => {
+        acc[item.definitionId] = item;
+        return acc;
+      },
+      {} as Record<string, TImpactLog>,
+    );
   }, [impactLogItems]);
 
   // Filter impact definitions based on search and type
@@ -108,6 +113,7 @@ export const ImpactsSelector = ({
       params: { definitionId },
     });
     setSelectedDefinition(null);
+    trackEvent(ANALYTICS_EVENTS.IMPACT_EDIT_STARTED);
   };
 
   const handleImpactDelete = () => {
@@ -118,6 +124,9 @@ export const ImpactsSelector = ({
     dispatch(archiveImpactDefinition(selectedDefinition.id));
     setShowConfirmDelete(false);
     setSelectedDefinition(null);
+    trackEvent(ANALYTICS_EVENTS.IMPACT_DELETE_CONFIRMED, {
+      name: selectedDefinition.name,
+    });
   };
 
   const renderFilter = () => {
@@ -133,6 +142,9 @@ export const ImpactsSelector = ({
           router.navigate({
             pathname: "/impact-definition-form",
             params: { type: selectedType || undefined },
+          });
+          trackEvent(ANALYTICS_EVENTS.IMPACT_CREATE_STARTED, {
+            source: "addButton",
           });
         }}
         style={styles.filterContainer}
@@ -174,6 +186,9 @@ export const ImpactsSelector = ({
               prefillName: searchQuery,
               type: selectedType || undefined,
             },
+          });
+          trackEvent(ANALYTICS_EVENTS.IMPACT_CREATE_STARTED, {
+            source: "impactSearch",
           });
         }}
         keyExtractor={(item) => item.id}

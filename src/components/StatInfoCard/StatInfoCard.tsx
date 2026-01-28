@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Card } from "../Card/Card";
 import { Typography } from "../Typography/Typography";

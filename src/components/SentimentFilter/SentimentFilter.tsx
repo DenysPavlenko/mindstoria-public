@@ -1,4 +1,5 @@
-import { TTheme, useTheme } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TSentimentType } from "@/types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";

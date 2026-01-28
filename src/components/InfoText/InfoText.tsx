@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { View } from "react-native";
 import { Typography } from "../Typography/Typography";
 

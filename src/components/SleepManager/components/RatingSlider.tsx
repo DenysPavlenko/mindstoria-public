@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { getRatingLevelColor } from "@/utils";
 import { useState } from "react";
 import { View } from "react-native";

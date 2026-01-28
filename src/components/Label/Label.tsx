@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { Typography, TypographyProps } from "../Typography/Typography";
 
 interface LabelProps {

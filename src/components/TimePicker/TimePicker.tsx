@@ -1,4 +1,5 @@
-import { fonts, TTheme, typography, useTheme, withAlpha } from "@/theme";
+import { useTheme } from "@/providers";
+import { fonts, TTheme, typography, withAlpha } from "@/theme";
 import { useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { LinearGradient } from "react-native-linear-gradient";

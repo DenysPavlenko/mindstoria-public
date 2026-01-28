@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import { CALENDAR_DATE_FORMAT, generateDaysForMonth } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo, useState } from "react";

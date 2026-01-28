@@ -25,7 +25,7 @@ interface RevenueCatContextValue {
   error: string | null;
   showPaywall: boolean;
   setShowPaywall: (visible: boolean) => void;
-  checkPremiumFeature: (callback: () => void) => void;
+  checkPremiumFeature: (callback: () => void) => boolean;
   submitBackdoorCode: (code: string) => boolean;
   subscriptionActive: boolean;
 }
@@ -111,14 +111,16 @@ export const RevenueCatProvider = ({
       // Always allow premium features in preview or if backdoor is active
       if (isPreviewEnv || backdoorActive) {
         callback();
-        return;
+        return true;
       }
 
       if (subscriptionActive) {
         callback();
+        return true;
       } else {
         setShowPaywall(true);
       }
+      return false;
     },
     [setShowPaywall, isPreviewEnv, subscriptionActive, backdoorActive],
   );

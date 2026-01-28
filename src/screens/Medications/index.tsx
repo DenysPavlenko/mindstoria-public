@@ -11,6 +11,7 @@ import {
   SafeView,
   Typography,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   activateMedication,
@@ -18,7 +19,7 @@ import {
   deactivateMedication,
 } from "@/store/slices";
 import { selectNonArchivedMedications } from "@/store/slices/medications/medicationsSelectors";
-import { TOUCHABLE_ACTIVE_OPACITY, TTheme, useTheme } from "@/theme";
+import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
 import { TMedication } from "@/types/medications";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";

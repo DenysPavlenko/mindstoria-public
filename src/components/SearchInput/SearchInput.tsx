@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme";
+import { useTheme } from "@/providers";
 import Feather from "@react-native-vector-icons/feather";
 import { isEmpty } from "lodash";
 import { IconButton } from "../IconButton/IconButton";

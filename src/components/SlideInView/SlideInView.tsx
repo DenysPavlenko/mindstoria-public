@@ -1,4 +1,5 @@
-import { TTheme, useTheme, withAlpha } from "@/theme";
+import { useTheme } from "@/providers";
+import { TTheme, withAlpha } from "@/theme";
 import { TColorKeys } from "@/types/common";
 import React, { useEffect, useMemo, useRef } from "react";
 import {

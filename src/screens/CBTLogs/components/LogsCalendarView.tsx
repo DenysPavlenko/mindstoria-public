@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   CalendarPicker,
   CBTLogPreview,
@@ -6,11 +7,16 @@ import {
   Typography,
   WeekCalendar,
 } from "@/components";
+import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
 import { selectCBTLogDateAvailability } from "@/store/slices";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
-import { CALENDAR_DATE_FORMAT, getRelativeDayTitle } from "@/utils/";
+import {
+  CALENDAR_DATE_FORMAT,
+  getRelativeDayTitle,
+  trackEvent,
+} from "@/utils/";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -52,7 +58,10 @@ export const LogsCalendarView = () => {
             <IconButton
               icon="calendar"
               size="md"
-              onPress={() => setShowCalendarPicker(true)}
+              onPress={() => {
+                trackEvent(ANALYTICS_EVENTS.CBT_CALENDAR_OPENED);
+                setShowCalendarPicker(true);
+              }}
             />
             <Typography variant="h4">{title}</Typography>
           </View>

@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Card,
   Header,
@@ -8,10 +9,16 @@ import {
   TimePeriodSelect,
 } from "@/components";
 import { SentimentList } from "@/components/SentimentList/SentimentList";
+import { useRevenueCat, useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
-import { TTheme, useTheme } from "@/theme";
+import { TTheme } from "@/theme";
 import { TImpactStatsItem, TLog, TSentimentType, TTimePeriod } from "@/types";
-import { filterDataByTimePeriod, getImpacts, getImpactsStats } from "@/utils";
+import {
+  filterDataByTimePeriod,
+  getImpacts,
+  getImpactsStats,
+  trackEvent,
+} from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useMemo, useRef, useState } from "react";
@@ -24,9 +31,10 @@ export const ImpactsStats = () => {
   const isFocused = useIsFocused();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { checkPremiumFeature } = useRevenueCat();
   const logsItems = useAppSelector((state) => state.logs.items);
   const impactDefsItems = useAppSelector(
-    (state) => state.impactDefinitions.items
+    (state) => state.impactDefinitions.items,
   );
   const cachedLogs = useRef<TLog[] | null>(null);
   const [impactsType, setImpactsType] = useState<TSentimentType | null>(null);
@@ -44,7 +52,7 @@ export const ImpactsStats = () => {
       logs,
       "timestamp",
       currentPeriod,
-      currentDate
+      currentDate,
     );
     cachedLogs.current = filtered;
     return filtered;
@@ -52,7 +60,7 @@ export const ImpactsStats = () => {
 
   const impactsStatsData = useMemo(() => {
     const impactLogItems = filteredLogItems.flatMap(
-      (log) => log.values.impacts || []
+      (log) => log.values.impacts || [],
     );
     const impacts = getImpacts(impactLogItems, impactDefsItems);
     return getImpactsStats(impacts);
@@ -75,6 +83,37 @@ export const ImpactsStats = () => {
     return insets.bottom + theme.layout.spacing.lg;
   }, [insets.bottom, theme.layout.spacing.lg]);
 
+  const handlePeriodChange = (period: TTimePeriod) => {
+    const hasPremium = checkPremiumFeature(() => {
+      setCurrentPeriod(period);
+      trackEvent(ANALYTICS_EVENTS.IMPACTS_STATISTICS_PERIOD_CHANGED, {
+        period,
+      });
+    });
+    trackEvent(ANALYTICS_EVENTS.IMPACTS_STATISTICS_PERIOD_CHANGE_ATTEMPTED, {
+      paidUser: hasPremium,
+    });
+  };
+
+  const handleDateChange = (date: dayjs.Dayjs) => {
+    const hasPremium = checkPremiumFeature(() => {
+      setCurrentDate(date);
+      trackEvent(ANALYTICS_EVENTS.IMPACTS_STATISTICS_DATE_CHANGED, {
+        date: date.toISOString(),
+      });
+    });
+    trackEvent(ANALYTICS_EVENTS.IMPACTS_STATISTICS_DATE_CHANGE_ATTEMPTED, {
+      paidUser: hasPremium,
+    });
+  };
+
+  const handleTypeChange = (newType: TSentimentType | null) => {
+    setImpactsType(newType);
+    trackEvent(ANALYTICS_EVENTS.IMPACTS_STATISTICS_TYPE_CHANGED, {
+      type: newType ?? "all",
+    });
+  };
+
   const renderPlaceholder = () => {
     return (
       <View
@@ -94,8 +133,8 @@ export const ImpactsStats = () => {
       <TimePeriodSelect
         date={currentDate}
         period={currentPeriod}
-        onChangePeriod={setCurrentPeriod}
-        onChangeDate={setCurrentDate}
+        onChangePeriod={handlePeriodChange}
+        onChangeDate={handleDateChange}
       />
     );
   };
@@ -104,7 +143,7 @@ export const ImpactsStats = () => {
     return (
       <SentimentStatsFilter
         type={impactsType}
-        onTypeChange={setImpactsType}
+        onTypeChange={handleTypeChange}
         searchPlaceholder={t("impacts.search_impact")}
         query={searchQuery}
         onSearch={setSearchQuery}
@@ -180,7 +219,6 @@ const createStyles = (theme: TTheme) =>
     },
     periodSelect: {
       padding: theme.layout.spacing.lg,
-      paddingTop: 0,
     },
     filters: {
       marginBottom: theme.layout.spacing.md,
