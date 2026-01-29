@@ -44,11 +44,16 @@ export const RevenueCatProvider = ({
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [setupError, setSetupError] = useState<string | null>(null);
-  const [backdoorActive, setBackdoorActive] = useState(() =>
-    isBackdoorActive(),
-  );
+  const [backdoorActive, setBackdoorActive] = useState(false);
 
   const isPreviewEnv = useMemo(() => getAppVariant() === "preview", []);
+
+  useEffect(() => {
+    // Check if backdoor is active on mount
+    isBackdoorActive().then((active) => {
+      setBackdoorActive(active);
+    });
+  }, []);
 
   useEffect(() => {
     if (isPreviewEnv) {

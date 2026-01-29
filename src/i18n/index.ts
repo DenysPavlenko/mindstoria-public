@@ -1,14 +1,12 @@
 import { APP_LANGUAGE_KEY } from "@/appConstants";
+import { storage } from "@/services";
 import dayjs from "dayjs";
 import "dayjs/locale/uk";
 import * as Localization from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { createMMKV } from "react-native-mmkv";
 import en from "./locales/en.json";
 import ua from "./locales/ua.json";
-
-const i18nStorage = createMMKV();
 
 const resources = {
   en: { translation: en },
@@ -43,7 +41,7 @@ const getDeviceLanguage = () => {
 
 const loadLanguage = async () => {
   try {
-    const savedLang = i18nStorage.getString(APP_LANGUAGE_KEY);
+    const savedLang = await storage.getItem(APP_LANGUAGE_KEY);
     if (savedLang) {
       return savedLang;
     }
@@ -68,7 +66,7 @@ export const initI18n = async () => {
 };
 
 export const setAppLanguage = (lang: string) => {
-  i18nStorage.set(APP_LANGUAGE_KEY, lang);
+  storage.setItem(APP_LANGUAGE_KEY, lang);
   i18n.changeLanguage(lang);
   // Update dayjs locale when language changes
   dayjs.locale(lang === "ua" ? "uk" : "en");

@@ -60,19 +60,19 @@ const emotionDefinitionsPersistConfig = {
 const persistedUIReducer = persistReducer(uiPersistConfig, uiSliceReducer);
 const persistedSettingsReducer = persistReducer(
   settingsPersistConfig,
-  settingsReducer
+  settingsReducer,
 );
 const persistedMedicationsReducer = persistReducer(
   medicationsPersistConfig,
-  medicationsReducer
+  medicationsReducer,
 );
 const persistedImpactDefinitionsReducer = persistReducer(
   impactDefinitionsPersistConfig,
-  impactDefinitionsReducer
+  impactDefinitionsReducer,
 );
 const persistedEmotionDefinitionsReducer = persistReducer(
   emotionDefinitionsPersistConfig,
-  emotionDefinitionsReducer
+  emotionDefinitionsReducer,
 );
 
 export const store = configureStore({

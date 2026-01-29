@@ -1,8 +1,5 @@
 import { BACKDOOR_CODE, BACKDOOR_STORAGE_KEY } from "@/appConstants";
-import { createMMKV } from "react-native-mmkv";
-
-// Separate MMKV instance for backdoor to keep it isolated
-export const backdoorStorage = createMMKV();
+import { storage } from "@/services";
 
 // Check if the provided code is correct
 export const validateBackdoorCode = (code: string): boolean => {
@@ -10,16 +7,16 @@ export const validateBackdoorCode = (code: string): boolean => {
 };
 
 // Store the backdoor active state
-export const activateBackdoor = (): void => {
-  backdoorStorage.set(BACKDOOR_STORAGE_KEY, true);
+export const activateBackdoor = (): Promise<void> => {
+  return storage.setItem(BACKDOOR_STORAGE_KEY, "true");
 };
 
 // Check if backdoor is currently active
-export const isBackdoorActive = (): boolean => {
-  return backdoorStorage.getBoolean(BACKDOOR_STORAGE_KEY) ?? false;
+export const isBackdoorActive = async (): Promise<boolean> => {
+  return (await storage.getItem(BACKDOOR_STORAGE_KEY)) === "true";
 };
 
 // Deactivate backdoor (for testing or reset)
-export const deactivateBackdoor = (): void => {
-  backdoorStorage.remove(BACKDOOR_STORAGE_KEY);
+export const deactivateBackdoor = (): Promise<void> => {
+  return storage.removeItem(BACKDOOR_STORAGE_KEY);
 };

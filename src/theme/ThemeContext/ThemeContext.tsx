@@ -1,4 +1,5 @@
 import { THEME_STORAGE_KEY } from "@/appConstants";
+import { storage } from "@/services";
 import React, {
   createContext,
   useCallback,
@@ -8,10 +9,7 @@ import React, {
   useState,
 } from "react";
 import { useColorScheme } from "react-native";
-import { createMMKV } from "react-native-mmkv";
 import { darkTheme, lightTheme, TTheme } from "../theme";
-
-export const themeStorage = createMMKV();
 
 interface ThemeContextValue {
   theme: TTheme;
@@ -29,11 +27,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Load theme preference from storage on mount
   useEffect(() => {
-    const loadThemePreference = () => {
+    const loadThemePreference = async () => {
       try {
-        const savedTheme = themeStorage.getBoolean(THEME_STORAGE_KEY);
+        const savedTheme = await storage.getItem(THEME_STORAGE_KEY);
         if (savedTheme !== undefined) {
-          setIsDark(savedTheme);
+          setIsDark(savedTheme === "true");
         }
       } catch (error) {
         console.error("Error loading theme preference:", error);
@@ -49,7 +47,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     setIsDark((prev) => {
       const newTheme = !prev;
       try {
-        themeStorage.set(THEME_STORAGE_KEY, newTheme);
+        storage.setItem(THEME_STORAGE_KEY, newTheme.toString());
       } catch (error) {
         console.error("Error saving theme preference:", error);
       }
@@ -64,7 +62,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       toggleTheme,
       isLoading,
     }),
-    [isDark, isLoading, toggleTheme]
+    [isDark, isLoading, toggleTheme],
   );
 
   return (
