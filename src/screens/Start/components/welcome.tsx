@@ -3,6 +3,8 @@ import { Button, SafeView, Typography } from "@/components";
 import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { setWelcomeShown } from "@/store/slices/settings/settingsSlice";
+import { trackEvent } from "@/utils";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
@@ -15,8 +17,13 @@ export const Welcome = ({ onNext }: WelcomeProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
 
+  useEffect(() => {
+    trackEvent("WELCOME_SCREEN_OPENED");
+  }, []);
+
   const handleGetStarted = () => {
     dispatch(setWelcomeShown());
+    trackEvent("WELCOME_GET_STARTED_CLICKED");
     onNext?.();
   };
 

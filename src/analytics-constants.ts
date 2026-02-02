@@ -1,10 +1,11 @@
 export const ANALYTICS_EVENTS = {
+  WELCOME_SCREEN_OPENED: "welcomeScreen_opened",
+  WELCOME_GET_STARTED_CLICKED: "welcomeGetStarted_clicked",
   // Mood
   MOOD_LOG_STARTED: "moodLog_started",
   MOOD_LOG_CANCELLED: "moodLog_cancelled",
   MOOD_LOG_COMPLETED: "moodLog_completed",
   MOOD_CALENDAR_OPENED: "moodCalendar_opened",
-
   // Mood Statistics
   MOOD_STATISTICS_OPENED: "moodStatistics_opened",
   MOOD_STATISTICS_PERIOD_CHANGE_ATTEMPTED:
@@ -12,6 +13,21 @@ export const ANALYTICS_EVENTS = {
   MOOD_STATISTICS_PERIOD_CHANGED: "moodStatistics_period_changed", // { period: "week" | "month" | "year" }
   MOOD_STATISTICS_DATE_CHANGE_ATTEMPTED: "moodStatistics_date_change_attempted", // { paidUser: boolean }
   MOOD_STATISTICS_DATE_CHANGED: "moodStatistics_date_changed", // { date: string }
+
+  // Sleep
+  SLEEP_LOG_ADDED: "sleepLog_added",
+  SLEEP_LOG_UPDATED: "sleepLog_updated",
+  SLEEP_LOG_CANCELLED: "sleepLog_cancelled",
+  SLEEP_LOG_DELETED: "sleepLog_deleted",
+
+  // Meds
+  MEDICATION_ADDED: "medication_added",
+  MEDICATION_UPDATED: "medication_updated",
+  MEDICATION_DELETED: "medication_deleted",
+
+  MED_LOG_ADDED: "medLog_added",
+  MED_LOG_UPDATED: "medLog_updated",
+  MED_LOG_DELETED: "medLog_deleted",
 
   // Emotions
   EMOTION_CREATE_STARTED: "emotionCreate_started", // { source: "emotionSearch" | "addButton" }

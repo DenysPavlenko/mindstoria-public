@@ -29,6 +29,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import utc from "dayjs/plugin/utc";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import Constants from "expo-constants";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
@@ -112,6 +113,7 @@ const AppContent = () => {
         theme: theme.mode,
         cbtView: cbtScreenView,
         notificationsEnabled,
+        appVersion: Constants.expoConfig?.version,
       });
     }
   }, [

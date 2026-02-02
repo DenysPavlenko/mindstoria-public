@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   AddMedicationModal,
   Button,
@@ -21,6 +22,7 @@ import {
 import { selectNonArchivedMedications } from "@/store/slices/medications/medicationsSelectors";
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
 import { TMedication } from "@/types/medications";
+import { trackEvent } from "@/utils";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
@@ -49,6 +51,7 @@ export const Medications = () => {
     if (itemToArchive) {
       dispatch(archiveMedication(itemToArchive.id));
       setItemToArchive(null);
+      trackEvent(ANALYTICS_EVENTS.MEDICATION_DELETED);
     }
   };
 

@@ -29,7 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: getAppName(),
     slug: "mindstoria",
-    version: "1.0.4",
+    version: "1.0.6",
     orientation: "portrait",
     icon: "./src/assets/images/icon.png",
     scheme: "mindstoria",

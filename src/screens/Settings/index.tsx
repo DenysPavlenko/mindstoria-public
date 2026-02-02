@@ -1,5 +1,5 @@
 import { ANALYTICS_EVENTS } from "@/analytics-constants";
-import { EULA_URL, PRIVACY_POLICY_URL } from "@/appConstants";
+import { EULA_URL, PRIVACY_POLICY_URL, WEBSITE_URL } from "@/appConstants";
 import {
   Card,
   ConfirmationDialog,
@@ -239,6 +239,18 @@ export const Settings = () => {
     );
   };
 
+  const renderWebsite = () => {
+    return (
+      <SettingsItem
+        icon="globe"
+        title={t("settings.website")}
+        onPress={() => {
+          openLink(WEBSITE_URL);
+        }}
+      />
+    );
+  };
+
   const renderPrivacyPolicy = () => {
     return (
       <SettingsItem
@@ -358,7 +370,7 @@ export const Settings = () => {
     },
     {
       title: t("settings.about"),
-      items: [renderPrivacyPolicy, renderTermsOfService],
+      items: [renderWebsite, renderPrivacyPolicy, renderTermsOfService],
     },
   ];
 

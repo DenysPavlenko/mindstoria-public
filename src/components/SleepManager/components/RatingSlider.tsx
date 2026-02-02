@@ -8,8 +8,8 @@ import { SlideInModal } from "../../SlideInModal/SlideInModal";
 import { SliderAlt } from "../../SliderAlt/SliderAlt";
 
 interface RatingSliderProps {
-  onClose: () => void;
-  onSave: (value: number) => void;
+  onClose: (withData: boolean) => void;
+  onSave: (value: number, source: "overlay" | "button") => void;
   onDelete: () => void;
   quality: number | null;
 }
@@ -52,10 +52,11 @@ export const RatingSlider = ({
           size="md"
           disabled={sleepQuality === null}
           onPress={() => {
-            if (sleepQuality !== null) {
-              onSave(sleepQuality);
+            const withData = sleepQuality !== null;
+            if (withData) {
+              onSave(sleepQuality, "button");
             }
-            onClose();
+            onClose(withData);
           }}
         />
       </View>
@@ -66,10 +67,11 @@ export const RatingSlider = ({
     <SlideInModal
       visible
       onClose={() => {
-        onClose();
-        if (sleepQuality !== null) {
-          onSave(sleepQuality);
+        const withData = sleepQuality !== null;
+        if (withData) {
+          onSave(sleepQuality, "overlay");
         }
+        onClose(withData);
       }}
       hideCloseButton
       title={renderTitle()}

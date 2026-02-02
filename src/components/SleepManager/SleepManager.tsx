@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import Moon from "@/assets/icons/moon.svg";
 import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -12,6 +13,7 @@ import {
   generateUniqueId,
   getRatingLevelColor,
   getRatingLevelLabel,
+  trackEvent,
 } from "@/utils";
 import { Dayjs } from "dayjs";
 import React, { useMemo, useState } from "react";
@@ -40,9 +42,10 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
 
   const quality = todaySleep?.quality || null;
 
-  const handleSave = (value: number) => {
+  const handleSave = (value: number, source: "overlay" | "button") => {
     if (todaySleep) {
       dispatch(updateSleepLogThunk({ ...todaySleep, quality: value }));
+      trackEvent(ANALYTICS_EVENTS.SLEEP_LOG_UPDATED, { source });
     } else {
       dispatch(
         addSleepLogThunk({
@@ -51,7 +54,23 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
           timestamp: date.toISOString(),
         }),
       );
+      trackEvent(ANALYTICS_EVENTS.SLEEP_LOG_ADDED, { source });
     }
+  };
+
+  const handleSliderClose = (withData: boolean) => {
+    setShowModal(false);
+    if (!withData) {
+      trackEvent(ANALYTICS_EVENTS.SLEEP_LOG_CANCELLED);
+    }
+  };
+
+  const handleDelete = () => {
+    if (todaySleep) {
+      dispatch(removeSleepThunk(todaySleep));
+      trackEvent(ANALYTICS_EVENTS.SLEEP_LOG_DELETED);
+    }
+    setShowModal(false);
   };
 
   const renderIcon = () => {
@@ -99,13 +118,8 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
       <RatingSlider
         quality={quality}
         onSave={handleSave}
-        onClose={() => setShowModal(false)}
-        onDelete={() => {
-          if (todaySleep) {
-            dispatch(removeSleepThunk(todaySleep));
-          }
-          setShowModal(false);
-        }}
+        onClose={handleSliderClose}
+        onDelete={handleDelete}
       />
     );
   };

@@ -1,8 +1,9 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
 import { addMedication, updateMedication } from "@/store/slices";
 import { TMedication } from "@/types/medications";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, trackEvent } from "@/utils";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -53,8 +54,10 @@ export const AddMedicationModal = ({
     };
     if (itemToEdit) {
       dispatch(updateMedication(newMed));
+      trackEvent(ANALYTICS_EVENTS.MEDICATION_UPDATED);
     } else {
       dispatch(addMedication(newMed));
+      trackEvent(ANALYTICS_EVENTS.MEDICATION_ADDED);
     }
     setTitle("");
     setDose("");

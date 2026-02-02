@@ -16,7 +16,7 @@ const mixpanel = new Mixpanel(
 
 export const trackEvent = (name: string, data?: TUnknownObject) => {
   if (__DEV__) {
-    // console.log("lg:trackEvent", name, data);
+    console.log("lg:trackEvent", name, data);
   }
   mixpanel.track(name, data);
 };
@@ -42,6 +42,7 @@ export const trackUserProfile = async (data: {
   theme: "light" | "dark" | "system";
   cbtView: "list" | "calendar";
   notificationsEnabled: boolean;
+  appVersion: string | undefined;
 }) => {
   if (__DEV__) {
     console.log("lg:trackUserProfile", data);

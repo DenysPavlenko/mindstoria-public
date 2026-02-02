@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import PillIcon from "@/assets/feather/pill.svg";
 import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -10,7 +11,7 @@ import {
 } from "@/store/slices";
 import { TTheme } from "@/theme";
 import { TMedication, TMedLog } from "@/types";
-import { CALENDAR_DATE_FORMAT, TIME_FORMAT } from "@/utils";
+import { CALENDAR_DATE_FORMAT, TIME_FORMAT, trackEvent } from "@/utils";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -58,16 +59,19 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
   const handleAddMedLog = (log: TMedLog) => {
     dispatch(addMedLogThunk(log));
     setModalData(null);
+    trackEvent(ANALYTICS_EVENTS.MED_LOG_ADDED);
   };
 
   const handleEditMedLog = (log: TMedLog) => {
     dispatch(updateMedLogThunk(log));
     setModalData(null);
+    trackEvent(ANALYTICS_EVENTS.MED_LOG_UPDATED);
   };
 
   const handleDeleteMedLog = (log: TMedLog) => {
     dispatch(removeMedLogThunk(log));
     setModalData(null);
+    trackEvent(ANALYTICS_EVENTS.MED_LOG_DELETED);
   };
 
   const renderMedModal = () => {
