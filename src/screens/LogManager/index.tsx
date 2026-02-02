@@ -240,7 +240,6 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
           isEditing={isEditing}
           onChange={handleValueChange}
           isActive={isActive}
-          onNext={handleNext}
         />
       </View>
     );
