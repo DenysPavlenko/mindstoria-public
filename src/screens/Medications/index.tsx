@@ -18,8 +18,8 @@ import {
   activateMedication,
   archiveMedication,
   deactivateMedication,
+  selectNonArchivedMedications,
 } from "@/store/slices";
-import { selectNonArchivedMedications } from "@/store/slices/medications/medicationsSelectors";
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
 import { TMedication } from "@/types/medications";
 import { trackEvent } from "@/utils";
@@ -58,7 +58,10 @@ export const Medications = () => {
   const renderPlaceholder = () => {
     return (
       <View style={styles.placeholder}>
-        <Placeholder title={t("medications.no_medications_added_yet")} />
+        <Placeholder
+          title={t("medications.no_medications_added_yet")}
+          icon="droplet"
+        />
       </View>
     );
   };
@@ -86,7 +89,7 @@ export const Medications = () => {
           </View>
           <IconButton
             size="md"
-            backgroundColor="errorContainer"
+            color="errorContainer"
             iconColor="error"
             icon="trash-2"
             onPress={() => {

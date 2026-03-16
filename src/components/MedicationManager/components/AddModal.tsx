@@ -132,10 +132,10 @@ export const AddModal = ({
           return (
             <IconButton
               key={label}
-              customContent={
-                <Typography variant="smallBold">{label}</Typography>
-              }
-              size="xl"
+              customIcon={<Typography variant="smallBold">{label}</Typography>}
+              color="primaryContainer"
+              iconColor="onPrimaryContainer"
+              disabled={!medData}
               onPress={() => {
                 setDosage((prev) => {
                   const numVal = Number(prev);
@@ -191,7 +191,7 @@ export const AddModal = ({
           <IconButton
             size="md"
             icon="trash-2"
-            backgroundColor="errorContainer"
+            color="errorContainer"
             iconColor="onErrorContainer"
             disabled={!medData}
             onPress={handleDelete}

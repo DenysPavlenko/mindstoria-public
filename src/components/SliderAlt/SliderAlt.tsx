@@ -1,7 +1,7 @@
+import { useHaptics } from "@/hooks";
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
-import * as Haptics from "expo-haptics";
+import { TColorKey } from "@/types/common";
 import { useCallback, useState } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Slider as RNSlider } from "react-native-awesome-slider";
@@ -15,10 +15,10 @@ export interface SliderAltProps {
   max: number;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-  containerColor?: TColorKeys;
-  thumbColor?: TColorKeys;
+  containerColor?: TColorKey;
+  thumbColor?: TColorKey;
   customThumbColor?: string;
-  activeMarkColor?: TColorKeys;
+  activeMarkColor?: TColorKey;
 }
 
 export const SliderAlt: React.FC<SliderAltProps> = ({
@@ -34,6 +34,7 @@ export const SliderAlt: React.FC<SliderAltProps> = ({
   style,
 }) => {
   const { theme } = useTheme();
+  const { triggerImpact } = useHaptics();
   const [containerWidth, setContainerWidth] = useState(370);
 
   const styles = createStyles(theme);
@@ -133,7 +134,7 @@ export const SliderAlt: React.FC<SliderAltProps> = ({
         renderBubble={() => null}
         hapticMode="step"
         onHapticFeedback={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          triggerImpact();
         }}
         renderMark={() => null}
         forceSnapToStep

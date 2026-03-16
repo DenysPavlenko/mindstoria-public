@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import React, { ReactNode, useMemo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { CustomPressable } from "../CustomPressable/CustomPressable";
@@ -10,25 +10,33 @@ interface Option<T extends string | number> {
   value: T;
   label: ReactNode;
 }
+
 interface SwitchSelectorProps<T extends string | number> {
   options: Option<T>[];
   selectedValue: T | null;
   onChange: (value: T) => void;
   style?: StyleProp<ViewStyle>;
-  bgColor?: TColorKeys;
-  selectedBgColor?: TColorKeys;
+  bgColor?: TColorKey;
+  selectedBgColor?: TColorKey;
 }
 
 export function SwitchSelector<T extends string | number>({
   options,
   selectedValue,
   onChange,
-  bgColor = "surfaceVariant",
-  selectedBgColor = "surface",
+  bgColor = "surfaceContainer",
+  selectedBgColor = "secondaryContainer",
   style,
 }: SwitchSelectorProps<T>) {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const renderLabel = (label: ReactNode) => {
+    if (typeof label === "string" || typeof label === "number") {
+      return <Typography variant="smallBold">{label}</Typography>;
+    }
+    return label;
+  };
 
   return (
     <View
@@ -50,15 +58,8 @@ export function SwitchSelector<T extends string | number>({
                 { backgroundColor: theme.colors[selectedBgColor] },
               ],
             ]}
-            withHaptics={false}
           >
-            <Typography
-              variant="smallBold"
-              color={isSelected ? "onSurface" : "onSurfaceVariant"}
-              numberOfLines={1}
-            >
-              {option.label}
-            </Typography>
+            {renderLabel(option.label)}
           </CustomPressable>
         );
       })}
@@ -81,6 +82,5 @@ const createStyles = (theme: TTheme) =>
       borderRadius: theme.layout.borderRadius.xl,
       justifyContent: "center",
       alignItems: "center",
-      minWidth: theme.layout.size.xxl,
     },
   });

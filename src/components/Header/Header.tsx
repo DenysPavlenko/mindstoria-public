@@ -54,12 +54,11 @@ export const Header = ({
     return (
       <View style={styles.leftContainer}>
         <IconButton
-          backgroundColor="surfaceVariant"
-          iconColor="onSurfaceVariant"
-          icon="chevron-left"
-          variant="contained"
+          icon="arrow-left"
+          variant="text"
+          edge={["start"]}
           onPress={handleBack}
-          iconScale={0.5}
+          iconScale={0.7}
           size="md"
           withHaptics={false}
         />

@@ -35,8 +35,18 @@ export const typography = {
     fontSize: 18,
     lineHeight: lineHeight(18, 1.33),
   },
+  h6: {
+    fontFamily: fonts.bold,
+    fontSize: 16,
+    lineHeight: lineHeight(16, 1.5),
+  },
   body: {
     fontFamily: fonts.regular,
+    fontSize: 16,
+    lineHeight: lineHeight(16, 1.5),
+  },
+  bodySemibold: {
+    fontFamily: fonts.semibold,
     fontSize: 16,
     lineHeight: lineHeight(16, 1.5),
   },
@@ -50,6 +60,11 @@ export const typography = {
     fontSize: 14,
     lineHeight: lineHeight(14, 1.43),
   },
+  smallSemibold: {
+    fontFamily: fonts.semibold,
+    fontSize: 14,
+    lineHeight: lineHeight(14, 1.43),
+  },
   smallBold: {
     fontFamily: fonts.bold,
     fontSize: 14,
@@ -57,6 +72,11 @@ export const typography = {
   },
   tiny: {
     fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: lineHeight(12, 1.33),
+  },
+  tinySemibold: {
+    fontFamily: fonts.semibold,
     fontSize: 12,
     lineHeight: lineHeight(12, 1.33),
   },
@@ -70,14 +90,14 @@ export const typography = {
     fontSize: 10,
     lineHeight: lineHeight(10, 1.33),
   },
+  extraTinySemibold: {
+    fontFamily: fonts.semibold,
+    fontSize: 10,
+    lineHeight: lineHeight(10, 1.33),
+  },
   extraTinyBold: {
     fontFamily: fonts.bold,
     fontSize: 10,
     lineHeight: lineHeight(10, 1.33),
-  },
-  buttonText: {
-    fontFamily: fonts.semibold,
-    fontSize: 16,
-    lineHeight: lineHeight(16, 1.5),
   },
 } as const;

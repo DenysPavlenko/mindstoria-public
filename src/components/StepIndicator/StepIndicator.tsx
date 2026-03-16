@@ -1,5 +1,5 @@
 import { useTheme } from "@/providers";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { AnimatedStep } from "./components/AnimatedStep";
@@ -7,8 +7,8 @@ import { AnimatedStep } from "./components/AnimatedStep";
 export interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
-  color?: TColorKeys;
-  backgroundColor?: TColorKeys;
+  color?: TColorKey;
+  backgroundColor?: TColorKey;
   height?: number;
   stepSpacing?: number;
   borderRadius?: number;

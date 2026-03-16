@@ -1,4 +1,4 @@
-import { TNotificationSettings } from "./types";
+import { RatingLevel, TNotificationSettings } from "./types";
 
 export const APP_NAME = "Mindstoria";
 export const APP_LANGUAGE_KEY = "appLanguage";
@@ -36,3 +36,21 @@ export const SUPPORT_EMAIL = "de.pavlenko.dev@gmail.com";
 
 export const APP_IDENTIFIER = "com.mindstoria.app";
 export const UNIQUE_USER_ID_KEY = "unique_user_id";
+
+export const LEGACY_IMPACT_TRANSLATION_PREFIXES = [
+  "positive_impacts.",
+  "negative_impacts.",
+];
+
+export const LEGACY_EMOTION_TRANSLATION_PREFIXES = [
+  "positive_emotions.",
+  "negative_emotions.",
+];
+
+export const RATING_VALUES = Object.values(RatingLevel).filter(
+  (value) => typeof value === "number",
+) as number[];
+
+export const DEFAULT_SENTIMENT_CATEGORY_ID = "other";
+
+export const MIXPANEL_SERVER_URL = "https://api-eu.mixpanel.com";

@@ -1,27 +1,21 @@
-import { TSentimentLevel, TSentimentStatsItem, TSentimentType } from "./common";
+import {
+  TSentimentDefinition,
+  TSentimentLog,
+  TSentimentStatsItem,
+} from "./sentiment";
 
-export type TEmotionDefinition = {
-  id: string;
-  name: string;
-  type: TSentimentType;
-  icon: string;
-  isUserCreated: boolean;
-  isArchived?: boolean;
-};
+export type TEmotionDefinition = TSentimentDefinition<string>;
 
 export type TEmotionDefinitions = Record<string, TEmotionDefinition>;
 
-export type TEmotionLog = {
-  id: string;
-  definitionId: string;
-  level?: TSentimentLevel;
-};
-
-export type TEmotion = TEmotionLog & {
+export type TEmotion = TSentimentLog & {
   name: string;
-  type: TSentimentType;
   icon: string;
   isArchived?: boolean;
 };
 
 export type TEmotionStatsItem = TSentimentStatsItem<string>;
+export type TEmotionStats = {
+  totalCount: number;
+  data: TEmotionStatsItem[];
+};

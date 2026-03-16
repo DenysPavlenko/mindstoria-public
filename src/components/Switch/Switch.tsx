@@ -16,7 +16,10 @@ interface SwitchProps {
 
 export const Switch = ({ value, onChange }: SwitchProps) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const height = theme.layout.size.xs;
+
+  const styles = useMemo(() => createStyles(theme, height), [theme, height]);
 
   // value for Switch Animation
   const switchTranslate = useSharedValue(0);
@@ -25,13 +28,13 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
   // useEffect for change the switchTranslate Value
   useEffect(() => {
     if (value) {
-      switchTranslate.value = 22;
+      switchTranslate.value = height;
       progress.value = 1;
     } else {
       switchTranslate.value = 4;
       progress.value = 0;
     }
-  }, [value, switchTranslate, progress]);
+  }, [value, switchTranslate, height, progress]);
 
   // Circle Animation
   const customSpringStyles = useAnimatedStyle(() => {
@@ -65,18 +68,20 @@ export const Switch = ({ value, onChange }: SwitchProps) => {
   );
 };
 
-const createStyles = (theme: TTheme) =>
-  StyleSheet.create({
+const createStyles = (theme: TTheme, height: number) => {
+  const width = height * 2;
+  const circleSize = height - 4;
+  return StyleSheet.create({
     container: {
-      width: 50,
-      height: 28,
-      borderRadius: 28 / 2,
+      width: width,
+      height: height,
+      borderRadius: height / 2,
       justifyContent: "center",
     },
     circle: {
-      width: 24,
-      height: 24,
-      borderRadius: 24 / 2,
+      width: circleSize,
+      height: circleSize,
+      borderRadius: circleSize / 2,
       shadowColor: "black",
       backgroundColor: theme.colors.surface,
       shadowOffset: {
@@ -88,3 +93,4 @@ const createStyles = (theme: TTheme) =>
       elevation: 4,
     },
   });
+};

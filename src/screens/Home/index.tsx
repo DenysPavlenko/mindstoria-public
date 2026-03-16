@@ -1,6 +1,5 @@
 import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
-  CalendarPicker,
   Header,
   IconButton,
   LogPreview,
@@ -40,7 +39,6 @@ export const Home = () => {
   const medLogsLookup = useAppSelector(selectMedLogDateAvailability);
   const logsLookup = useAppSelector(selectLogDateAvailability);
   const cbtConnections = useAppSelector(selectCBTConnectionsMap);
-  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<TLog | null>(null);
 
@@ -77,29 +75,13 @@ export const Home = () => {
   const renderHeader = () => {
     return (
       <Header
-        leftContent={
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: theme.layout.spacing.sm,
-            }}
-          >
-            <IconButton
-              icon="calendar"
-              size="md"
-              onPress={() => {
-                setShowCalendarPicker(true);
-                trackEvent(ANALYTICS_EVENTS.MOOD_CALENDAR_OPENED);
-              }}
-            />
-            <Typography variant="h4">{title}</Typography>
-          </View>
-        }
+        leftContent={<Typography variant="h4">{title}</Typography>}
         rightContent={
           <IconButton
-            icon="bar-chart-2"
+            icon="pie-chart"
             size="md"
+            variant="text"
+            edge={["end"]}
             onPress={() => {
               router.navigate("/statistics");
               trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_OPENED);
@@ -122,19 +104,6 @@ export const Home = () => {
     );
   };
 
-  const renderCalendarPicker = () => {
-    if (!showCalendarPicker) return null;
-    return (
-      <CalendarPicker
-        visible
-        onClose={() => setShowCalendarPicker(false)}
-        date={selectedDate}
-        onDateChange={setSelectedDate}
-        getDotsCount={getDotsCount}
-      />
-    );
-  };
-
   return (
     <View style={styles.container}>
       {renderHeader()}
@@ -151,7 +120,6 @@ export const Home = () => {
           date={selectedDate}
           onCardPress={setSelectedLog}
         />
-        {renderCalendarPicker()}
         {renderLogsPreview()}
       </View>
     </View>

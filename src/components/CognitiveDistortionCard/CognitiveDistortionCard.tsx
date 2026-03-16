@@ -32,13 +32,7 @@ export const CognitiveDistortionCard = ({
       style={styles.card}
     >
       <View style={styles.container}>
-        <IconBox
-          icon={icon}
-          size="md"
-          backgroundColor="surface"
-          iconColor="onSurface"
-          radius="lg"
-        />
+        <IconBox icon={icon} size="md" color="surface" iconColor="onSurface" />
         <View style={styles.textContainer}>
           <Typography
             variant="h5"

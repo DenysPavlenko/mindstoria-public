@@ -1,6 +1,4 @@
-import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
-  CalendarPicker,
   CBTLogPreview,
   Header,
   IconButton,
@@ -12,11 +10,7 @@ import { useAppSelector } from "@/store";
 import { selectCBTLogDateAvailability } from "@/store/slices";
 import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
-import {
-  CALENDAR_DATE_FORMAT,
-  getRelativeDayTitle,
-  trackEvent,
-} from "@/utils/";
+import { CALENDAR_DATE_FORMAT, getRelativeDayTitle } from "@/utils/";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -29,7 +23,6 @@ export const LogsCalendarView = () => {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
   const logsLookup = useAppSelector(selectCBTLogDateAvailability);
   const [selectedLog, setSelectedLog] = useState<TCBTLog | null>(null);
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -47,28 +40,12 @@ export const LogsCalendarView = () => {
   const renderHeader = () => {
     return (
       <Header
-        leftContent={
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: theme.layout.spacing.sm,
-            }}
-          >
-            <IconButton
-              icon="calendar"
-              size="md"
-              onPress={() => {
-                trackEvent(ANALYTICS_EVENTS.CBT_CALENDAR_OPENED);
-                setShowCalendarPicker(true);
-              }}
-            />
-            <Typography variant="h4">{title}</Typography>
-          </View>
-        }
+        leftContent={<Typography variant="h4">{title}</Typography>}
         rightContent={
           <IconButton
             icon="settings"
+            variant="text"
+            edge={["end"]}
             size="md"
             onPress={() => {
               router.navigate("/cbt-settings");
@@ -86,19 +63,6 @@ export const LogsCalendarView = () => {
     );
   };
 
-  const renderCalendarPicker = () => {
-    if (!showCalendarPicker) return null;
-    return (
-      <CalendarPicker
-        visible
-        onClose={() => setShowCalendarPicker(false)}
-        date={selectedDate}
-        onDateChange={setSelectedDate}
-        getDotsCount={getDotsCount}
-      />
-    );
-  };
-
   return (
     <View style={styles.container}>
       {renderHeader()}
@@ -113,7 +77,6 @@ export const LogsCalendarView = () => {
         onCardPress={setSelectedLog}
         viewType="calendar"
       />
-      {renderCalendarPicker()}
       {renderLogsPreview()}
     </View>
   );

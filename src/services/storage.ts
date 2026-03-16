@@ -12,4 +12,7 @@ export const storage = {
   removeItem: async (key: string) => {
     MMKVStorage.remove(key);
   },
+  clearAll: async () => {
+    MMKVStorage.clearAll();
+  },
 };

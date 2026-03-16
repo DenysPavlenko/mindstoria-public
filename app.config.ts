@@ -29,7 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: getAppName(),
     slug: "mindstoria",
-    version: "1.0.6",
+    version: "1.0.8",
     orientation: "portrait",
     icon: "./src/assets/images/icon.png",
     scheme: "mindstoria",
@@ -114,6 +114,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       router: {},
       APP_VARIANT: APP_VARIANT,
+      mixpanelToken: process.env.EXPO_PUBLIC_MIXPANEL_PROJECT_TOKEN,
       eas: {
         projectId: "7c6015c0-d5e3-46b8-85ac-b567bd299cfd",
       },

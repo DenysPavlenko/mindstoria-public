@@ -24,6 +24,8 @@ export const LogsListView = () => {
         rightContent={
           <IconButton
             icon="settings"
+            variant="text"
+            edge={["end"]}
             size="md"
             onPress={() => {
               router.navigate("/cbt-settings");

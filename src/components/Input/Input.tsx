@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
 import { TTheme, withAlpha } from "@/theme";
-import { TSizeKeys } from "@/types";
+import { TColorKey, TSizeKey } from "@/types";
 import { useMemo } from "react";
 import {
   StyleProp,
@@ -18,7 +18,9 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
   label?: string;
   placeholder?: string;
   onChangeText?: (text: string) => void;
-  minHeight?: TSizeKeys;
+  bgColor?: TColorKey;
+  variant?: "contained" | "outlined";
+  minHeight?: TSizeKey;
   error?: string;
   disabled?: boolean;
   multiline?: boolean;
@@ -44,11 +46,13 @@ export const Input = ({
   multiline = false,
   numberOfLines = 1,
   keyboardType = "default",
+  variant = "contained",
   autoCapitalize = "sentences",
   autoCorrect = true,
   secureTextEntry = false,
   minHeight = "lg",
   style,
+  bgColor = "surfaceContainerHigh",
   inputContainerStyle,
   inputStyle,
   testID,
@@ -61,12 +65,27 @@ export const Input = ({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const getInputContainerStyle = () => {
+    const variantStyle =
+      variant === "outlined"
+        ? {
+            backgroundColor: "transparent",
+            borderColor: theme.colors.surfaceVariant,
+            borderWidth: 1,
+          }
+        : {};
     return StyleSheet.flatten([
       styles.inputContainer,
       {
         minHeight: theme.layout.size[minHeight],
         borderRadius: theme.layout.size[minHeight] / 2,
+        backgroundColor: bgColor
+          ? theme.colors[bgColor]
+          : theme.colors.surfaceVariant,
+        borderColor: bgColor
+          ? theme.colors[bgColor]
+          : theme.colors.surfaceVariant,
       },
+      variantStyle,
       error && styles.inputError,
       disabled && styles.inputDisabled,
       multiline && styles.inputMultiline,
@@ -126,8 +145,6 @@ const createStyles = (theme: TTheme) => {
     },
     inputContainer: {
       borderWidth: 1,
-      backgroundColor: theme.colors.surfaceVariant,
-      borderColor: theme.colors.surfaceVariant,
       paddingHorizontal: theme.layout.spacing.md,
       alignItems: "center",
       flexDirection: "row",

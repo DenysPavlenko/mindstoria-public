@@ -1,6 +1,7 @@
 import { useTheme } from "@/providers";
 import Feather from "@react-native-vector-icons/feather";
 import { isEmpty } from "lodash";
+import { useTranslation } from "react-i18next";
 import { IconButton } from "../IconButton/IconButton";
 import { Input, InputProps } from "../Input/Input";
 
@@ -12,6 +13,7 @@ export const SearchInput = ({
   ...restProps
 }: SearchInputProps) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const showClearButton = !isEmpty(value?.trim());
 
@@ -31,7 +33,7 @@ export const SearchInput = ({
       right={
         showClearButton && (
           <IconButton
-            backgroundColor="surface"
+            color="surface"
             iconColor="onSurface"
             icon="x"
             size="xs"
@@ -40,7 +42,7 @@ export const SearchInput = ({
         )
       }
       value={value}
-      placeholder="Search"
+      placeholder={t("common.search")}
       onChangeText={onChangeText}
       {...restProps}
     />

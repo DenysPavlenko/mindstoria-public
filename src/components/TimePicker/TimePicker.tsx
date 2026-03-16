@@ -36,7 +36,7 @@ export const TimerPicker = ({
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: theme.colors.primaryContainer,
+          backgroundColor: theme.colors.outlineVariant,
           borderRadius: theme.layout.borderRadius.lg,
         }}
       >

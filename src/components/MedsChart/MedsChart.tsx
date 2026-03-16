@@ -24,7 +24,6 @@ interface MedsChartProps {
   data: Record<string, TChartDataPoint[]>;
   period: TTimePeriod;
   currentDate: Dayjs;
-  variant?: "simple" | "detailed";
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
@@ -32,7 +31,6 @@ interface MedsChartProps {
 export const MedsChart = ({
   data,
   currentDate,
-  variant = "detailed",
   period,
   style,
   onPress,
@@ -107,7 +105,6 @@ export const MedsChart = ({
                 label={name}
                 icon={icon}
                 minHeight="xs"
-                bgColor="surface"
                 selected={medId === selectedMedId}
                 onPress={() => setSelectedMedId(medId)}
               />
@@ -122,7 +119,6 @@ export const MedsChart = ({
     return (
       <CartesianChart
         period={period}
-        variant={variant}
         data={pagedData}
         yMin={0}
         yMax={maxValue}
@@ -134,7 +130,6 @@ export const MedsChart = ({
 
   return (
     <ChartCard
-      variant={variant}
       customIcon={
         <PillIcon
           width={iconSize}

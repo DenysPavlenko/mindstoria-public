@@ -1,5 +1,4 @@
 import { ANALYTICS_EVENTS } from "@/analytics-constants";
-import PillIcon from "@/assets/feather/pill.svg";
 import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -20,7 +19,6 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { Button } from "../Button/Button";
 import { Card } from "../Card/Card";
 import { Chip } from "../Chip/Chip";
-import { IconBox } from "../IconBox/IconBox";
 import { IconButton } from "../IconButton/IconButton";
 import { Placeholder } from "../Placeholder/Placeholder";
 import { Typography } from "../Typography/Typography";
@@ -95,7 +93,7 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
         <View key={log.id} style={styles.doseBadgeContainer}>
           <IconButton
             onPress={() => setModalData({ med, log })}
-            customContent={
+            customIcon={
               <Typography
                 variant="smallBold"
                 color="onPrimaryContainer"
@@ -106,7 +104,7 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
             }
             radius="lg"
             size="md"
-            backgroundColor="primaryContainer"
+            color="primaryContainer"
           />
           <Typography align="center" variant="tinyBold">
             {dayjs(log.timestamp).format(TIME_FORMAT)}
@@ -115,32 +113,6 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
       );
     },
     [styles],
-  );
-
-  const renderIcon = useCallback(
-    (isArchived: boolean, isActive: boolean) => {
-      if (isArchived) {
-        return <IconBox icon="archive" radius="lg" backgroundColor="surface" />;
-      }
-      if (!isActive) {
-        return <IconBox icon="eye-off" radius="lg" backgroundColor="surface" />;
-      }
-      const size = theme.layout.size.lg * 0.45;
-      return (
-        <IconBox
-          customContent={
-            <PillIcon
-              width={size}
-              height={size}
-              color={theme.colors.onSurface}
-            />
-          }
-          radius="lg"
-          backgroundColor="surface"
-        />
-      );
-    },
-    [theme],
   );
 
   const renderItem = useCallback(
@@ -164,7 +136,6 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
             </Typography>
           )}
           <View style={styles.listCardTopRow}>
-            {renderIcon(isArchived, isActive)}
             <View style={{ flex: 1 }}>
               <Typography variant="h5" numberOfLines={2}>
                 {item.name}
@@ -175,8 +146,8 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
             </View>
             <IconButton
               icon="plus"
-              size="md"
-              backgroundColor="surface"
+              color="primary"
+              iconColor="onPrimary"
               onPress={() => {
                 setModalData({ med: item });
               }}
@@ -187,24 +158,22 @@ export const MedicationManager = ({ date }: MedicationManagerProps) => {
               <View style={styles.listCardTakenContainer}>
                 {takenLogs.map((log) => renderTakenMed(log, item))}
               </View>
-              <Chip
-                label={`${totalDosage} ${item.units}`}
-                bgColor="surface"
-                textColor="onSurface"
-                minHeight="md"
-              />
+              <Chip label={`${totalDosage} ${item.units}`} />
             </View>
           )}
         </Card>
       );
     },
-    [styles, t, todayLogs, renderTakenMed, renderIcon],
+    [styles, t, todayLogs, renderTakenMed],
   );
 
   const renderPlaceholder = () => {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Placeholder title={t("medications.no_medications_text")} />
+        <Placeholder
+          title={t("medications.no_medications_text")}
+          icon="droplet"
+        />
       </View>
     );
   };

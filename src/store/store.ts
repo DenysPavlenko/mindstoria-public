@@ -2,16 +2,18 @@ import { configureStore } from "@reduxjs/toolkit";
 import { createMMKV } from "react-native-mmkv";
 import devToolsEnhancer from "redux-devtools-expo-dev-plugin";
 import { persistReducer, persistStore, Storage } from "redux-persist";
-import cbtLogsReducer from "./slices/cbtLogs/cbtLogsSlice";
-import emotionDefinitionsReducer from "./slices/emotionDefinitions/emotionDefinitionsSlice";
-import impactDefinitionsReducer from "./slices/impactDefinitions/impactDefinitionsSlice";
-import logMetricsReducer from "./slices/logMetrics/logMetricsSlice";
-import logsReducer from "./slices/logs/logsSlice";
-import medicationsReducer from "./slices/medications/medicationsSlice";
-import medLogsReducer from "./slices/medLogs/medLogsSlice";
-import settingsReducer from "./slices/settings/settingsSlice";
-import sleepLogsReducer from "./slices/sleepLogs/sleepLogsSlice";
-import uiSliceReducer from "./slices/ui/uiSlice";
+import cbtLogsReducer from "./slices/cbtLogs/slice";
+import draftLogReducer from "./slices/draftLog/slice";
+import emotionDefinitionsReducer from "./slices/emotionDefinitions/slice";
+import impactDefinitionsReducer from "./slices/impactDefinitions/slice";
+import logMetricsReducer from "./slices/logMetrics/slice";
+import logsReducer from "./slices/logs/slice";
+import medicationsReducer from "./slices/medications/slice";
+import medLogsReducer from "./slices/medLogs/slice";
+import sentimentFrequencyReducer from "./slices/sentimentFrequency/slice";
+import settingsReducer from "./slices/settings/slice";
+import sleepLogsReducer from "./slices/sleepLogs/slice";
+import uiSliceReducer from "./slices/ui/slice";
 
 const storage = createMMKV();
 
@@ -34,6 +36,7 @@ export const reduxStorage: Storage = {
 const uiPersistConfig = {
   key: "ui",
   storage: reduxStorage,
+  blacklist: ["statsSession"],
 };
 
 const settingsPersistConfig = {
@@ -56,6 +59,11 @@ const emotionDefinitionsPersistConfig = {
   storage: reduxStorage,
 };
 
+const sentimentFrequencyPersistConfig = {
+  key: "sentimentFrequency",
+  storage: reduxStorage,
+};
+
 // Create persisted reducers
 const persistedUIReducer = persistReducer(uiPersistConfig, uiSliceReducer);
 const persistedSettingsReducer = persistReducer(
@@ -74,6 +82,10 @@ const persistedEmotionDefinitionsReducer = persistReducer(
   emotionDefinitionsPersistConfig,
   emotionDefinitionsReducer,
 );
+const persistedSentimentFrequencyReducer = persistReducer(
+  sentimentFrequencyPersistConfig,
+  sentimentFrequencyReducer,
+);
 
 export const store = configureStore({
   reducer: {
@@ -83,10 +95,12 @@ export const store = configureStore({
     emotionDefinitions: persistedEmotionDefinitionsReducer,
     logMetrics: logMetricsReducer,
     logs: logsReducer,
+    draftLog: draftLogReducer,
     medications: persistedMedicationsReducer,
     sleepLogs: sleepLogsReducer,
     medLogs: medLogsReducer,
     cbtLogs: cbtLogsReducer,
+    sentimentFrequency: persistedSentimentFrequencyReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

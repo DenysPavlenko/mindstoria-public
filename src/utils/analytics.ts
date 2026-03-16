@@ -1,39 +1,81 @@
-import { storage } from "@/services";
+import { MIXPANEL_SERVER_URL } from "@/appConstants";
 import { TUnknownObject } from "@/types";
+import Constants from "expo-constants";
 import { Mixpanel } from "mixpanel-react-native";
+import { Platform } from "react-native";
 import { getOrCreateUserId } from "./user";
 
-const MIXPANEL_API_KEY = process.env.EXPO_PUBLIC_MIXPANEL_PROJECT_TOKEN || "";
+const setLogging = false;
 
-const trackAutomaticEvents = false; // disable legacy autotrack mobile events
-const useNative = false; // use JS implementation
-const mixpanel = new Mixpanel(
-  MIXPANEL_API_KEY,
-  trackAutomaticEvents,
-  useNative,
-  storage,
-);
-
-export const trackEvent = (name: string, data?: TUnknownObject) => {
-  if (__DEV__) {
-    console.log("lg:trackEvent", name, data);
-  }
-  mixpanel.track(name, data);
+const getMixpanelToken = () => {
+  return (
+    process.env.EXPO_PUBLIC_MIXPANEL_PROJECT_TOKEN ||
+    Constants.expoConfig?.extra?.mixpanelToken ||
+    null
+  );
 };
 
-export const resetTracking = async () => {
-  mixpanel.reset();
+const isAnalyticsEnabled = () => {
+  if (__DEV__) return true;
+  return true;
 };
 
+let mixpanel: Mixpanel | null = null;
+const getMixpanel = () => {
+  if (mixpanel) return mixpanel;
+
+  const token = getMixpanelToken();
+  if (!token) return null;
+
+  const trackAutomaticEvents = false;
+  mixpanel = new Mixpanel(token, trackAutomaticEvents);
+  return mixpanel;
+};
+
+let initPromise: Promise<void> | null = null;
 export const initAnalytics = async () => {
-  await mixpanel.init();
-  mixpanel.setServerURL("https://api-eu.mixpanel.com");
-  // mixpanel.setLoggingEnabled(__DEV__);
+  if (!isAnalyticsEnabled()) return;
+
+  const instance = getMixpanel();
+  if (!instance) {
+    console.warn("Mixpanel: missing project token");
+    return;
+  }
+
+  if (!initPromise) {
+    const serverURL = MIXPANEL_SERVER_URL;
+    const superProperties = {
+      app_variant: process.env.APP_VARIANT || "unknown",
+      app_version: Constants.expoConfig?.version,
+      platform: Platform.OS,
+    };
+
+    initPromise = instance.init(false, superProperties, serverURL);
+  }
+
+  try {
+    await initPromise;
+    if (setLogging) {
+      instance.setLoggingEnabled(true);
+    }
+  } catch (error) {
+    initPromise = null;
+    console.warn("Mixpanel: init failed", error);
+  }
 };
 
 export const initAnalyticsUser = async () => {
+  if (!isAnalyticsEnabled()) return;
   const userId = await getOrCreateUserId();
-  await mixpanel.identify(userId);
+  await initAnalytics();
+  await getMixpanel()?.identify(userId);
+};
+
+export const trackEvent = (name: string, data?: TUnknownObject) => {
+  if (!isAnalyticsEnabled()) return;
+  initAnalytics().then(() => {
+    getMixpanel()?.track(name, data);
+  });
 };
 
 export const trackUserProfile = async (data: {
@@ -44,8 +86,7 @@ export const trackUserProfile = async (data: {
   notificationsEnabled: boolean;
   appVersion: string | undefined;
 }) => {
-  if (__DEV__) {
-    console.log("lg:trackUserProfile", data);
-  }
-  mixpanel.getPeople().set(data);
+  if (!isAnalyticsEnabled()) return;
+  await initAnalytics();
+  getMixpanel()?.getPeople().set(data);
 };

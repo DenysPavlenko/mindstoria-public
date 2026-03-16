@@ -1,13 +1,19 @@
 import {
+  RatingLevel,
   TEmotion,
   TEmotionDefinition,
   TEmotionDefinitions,
-  TEmotionLog,
-  TEmotionStatsItem,
+  TEmotionStats,
+  TLog,
+  TSentimentLog,
 } from "@/types";
-import { groupBy } from "lodash";
+import { filterLogsByMood } from "./common";
+import { getSentimentStats } from "./sentiment";
 
-export const getEmotions = (logs: TEmotionLog[], defs: TEmotionDefinitions) => {
+export const getEmotions = (
+  logs: TSentimentLog[],
+  defs: TEmotionDefinitions,
+) => {
   const emotions: TEmotion[] = [];
   logs.forEach((log) => {
     const definition = defs[log.definitionId];
@@ -16,7 +22,6 @@ export const getEmotions = (logs: TEmotionLog[], defs: TEmotionDefinitions) => {
         id: log.id,
         definitionId: log.definitionId,
         name: definition.name,
-        type: definition.type,
         icon: definition.icon,
         isArchived: definition.isArchived,
       });
@@ -25,16 +30,22 @@ export const getEmotions = (logs: TEmotionLog[], defs: TEmotionDefinitions) => {
   return emotions;
 };
 
-export const getEmotionsStats = (emotions: TEmotion[]): TEmotionStatsItem[] => {
-  const groupedEmotions = groupBy(emotions, "definitionId");
-  return Object.entries(groupedEmotions)
-    .map(([id, items]) => {
-      const { name, icon, type, isArchived } = items[0]!;
-      return { id, name, icon, type, isArchived, count: items.length };
-    })
-    .sort((a, b) => {
-      return b.count - a.count;
-    });
+export const getEmotionStats = (emotions: TEmotion[]): TEmotionStats => {
+  return getSentimentStats(emotions, (id, items) => {
+    const { name, icon, isArchived } = items[0]!;
+    return { id, name, icon, isArchived, count: items.length };
+  });
+};
+
+export const getEmotionStatsByMood = (
+  logs: TLog[],
+  emotionDefs: TEmotionDefinitions,
+  selectedMood: RatingLevel | null,
+): TEmotionStats => {
+  const filteredLogs = filterLogsByMood(logs, selectedMood);
+  const emotionLogs = filteredLogs.flatMap((l) => l.values.emotions);
+  const emotions = getEmotions(emotionLogs, emotionDefs);
+  return getEmotionStats(emotions);
 };
 
 export const sortEmotionDefinitions = (defs: TEmotionDefinition[]) => {

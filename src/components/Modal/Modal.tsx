@@ -1,7 +1,7 @@
 import { useKeyboard } from "@/hooks";
 import { useTheme } from "@/providers";
 import { TTheme, withAlpha } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   Animated,
@@ -25,7 +25,7 @@ interface ModalProps {
   animated?: boolean;
   style?: StyleProp<ViewStyle>;
   maxWidth?: number;
-  bgColor?: TColorKeys;
+  bgColor?: TColorKey;
 }
 
 const isAndroid = Platform.OS === "android";

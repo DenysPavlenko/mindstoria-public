@@ -5,9 +5,9 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import {
   addSleepLogThunk,
   removeSleepThunk,
+  selectSleepLogsGroupedByDate,
   updateSleepLogThunk,
 } from "@/store/slices";
-import { selectSleepLogsGroupedByDate } from "@/store/slices/sleepLogs/sleepLogsSelectors";
 import {
   CALENDAR_DATE_FORMAT,
   generateUniqueId,
@@ -75,7 +75,7 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
 
   const renderIcon = () => {
     const iconColor = quality
-      ? theme.colors.surface
+      ? getRatingLevelColor(quality, theme)
       : theme.colors.outlineVariant;
     const size = INFO_CARD_HEIGHT - theme.layout.spacing.lg * 2;
     const positionStyle: ViewStyle = fullMode
@@ -86,7 +86,7 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
           bottom: 0,
           justifyContent: "center",
         }
-      : { position: "absolute", right: -20, top: -20 };
+      : { position: "absolute", right: -24, top: -24 };
     return (
       <View style={positionStyle}>
         <Moon width={size} height={size} fill={iconColor} />
@@ -95,16 +95,14 @@ export const SleepManager = ({ date, fullMode }: SleepManagerProps) => {
   };
 
   const renderCard = () => {
-    const cardColor = quality ? getRatingLevelColor(quality, theme) : undefined;
     return (
       <InfoCard
         title={t("sleep.quality")}
         onPress={() => setShowModal(true)}
-        cardColor={cardColor}
         icon={renderIcon()}
       >
         {quality && (
-          <Typography variant="h3" color="surface">
+          <Typography variant="h3">
             {getRatingLevelLabel(quality, t)}
           </Typography>
         )}

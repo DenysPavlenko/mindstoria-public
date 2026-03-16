@@ -50,7 +50,7 @@ export const TimePickerModal = ({
       );
     }
     return (
-      <Button textColor="onPrimaryContainer" variant="text" onPress={onClose}>
+      <Button textColor="onSurface" variant="text" onPress={onClose}>
         {t("common.cancel")}
       </Button>
     );

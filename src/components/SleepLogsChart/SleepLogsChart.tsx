@@ -1,10 +1,12 @@
 import { RANGE_MAX_LEVEL, RANGE_MIN_LEVEL } from "@/appConstants";
+import { useTheme } from "@/providers";
+import { TTheme } from "@/theme";
 import { TChartDataMap, TTimePeriod } from "@/types";
-import { generatePeriodDatesForCharts } from "@/utils";
+import { generatePeriodDatesForCharts, getRatingLevelColor } from "@/utils";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { CartesianChart } from "../CartesianChart/CartesianChart";
 import { ChartCard } from "../ChartCard/ChartCard";
 import { Typography } from "../Typography/Typography";
@@ -27,6 +29,9 @@ export const SleepLogsChart = ({
   variant = "detailed",
 }: SleepLogsChartProps) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Generate all dates for the week period
   const dates = useMemo(() => {
@@ -65,13 +70,26 @@ export const SleepLogsChart = ({
         yMin={RANGE_MIN_LEVEL}
         yMax={RANGE_MAX_LEVEL}
         variant={variant}
+        customYLabel={(tick) => {
+          const color = getRatingLevelColor(tick, theme);
+          return (
+            <View style={[styles.dot, { backgroundColor: color }]}>
+              <Typography
+                variant="extraTinySemibold"
+                color="surface"
+                style={{ fontSize: 9 }}
+              >
+                {tick}
+              </Typography>
+            </View>
+          );
+        }}
       />
     );
   };
 
   return (
     <ChartCard
-      variant={variant}
       iconName="moon"
       info={renderInfo()}
       chart={renderChart()}
@@ -81,3 +99,14 @@ export const SleepLogsChart = ({
     />
   );
 };
+
+const createStyles = (theme: TTheme) =>
+  StyleSheet.create({
+    dot: {
+      width: theme.layout.size.xxs,
+      height: theme.layout.size.xxs,
+      borderRadius: theme.layout.size.xxs / 2,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });

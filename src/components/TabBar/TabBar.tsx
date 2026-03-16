@@ -21,8 +21,8 @@ import { IconButton } from "../IconButton/IconButton";
 import { Typography } from "../Typography/Typography";
 
 const TAB_BAR_PADDING = 4;
-const TAB_ITEM_HEIGHT = 56;
-const TAB_ITEM_WIDTH = 92;
+const TAB_ITEM_HEIGHT = 52;
+const TAB_ITEM_WIDTH = TAB_ITEM_HEIGHT * 1.6;
 export const TAB_BAR_HEIGHT = TAB_ITEM_HEIGHT + TAB_BAR_PADDING * 2;
 const ADD_BUTTON_SIZE = TAB_BAR_HEIGHT;
 
@@ -98,7 +98,7 @@ export const TabBar = ({
             animatedStyle,
             {
               position: "absolute",
-              backgroundColor: theme.colors.surfaceVariant,
+              backgroundColor: theme.colors.secondaryContainer,
               borderRadius: TAB_ITEM_HEIGHT / 2,
               width: TAB_ITEM_WIDTH,
               height: TAB_ITEM_HEIGHT,
@@ -144,11 +144,19 @@ export const TabBar = ({
               activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
             >
               <Feather
-                size={24}
+                size={theme.layout.size.xs}
                 name={tabData.icon}
-                color={theme.colors.onSurface}
+                color={
+                  isFocused
+                    ? theme.colors.onSecondaryContainer
+                    : theme.colors.onSurface
+                }
               />
-              <Typography variant="extraTiny" align="center" color="onSurface">
+              <Typography
+                variant="extraTiny"
+                align="center"
+                color={isFocused ? "onSecondaryContainer" : "onSurface"}
+              >
                 {t(tabData.label)}
               </Typography>
             </CustomPressable>
@@ -164,9 +172,9 @@ export const TabBar = ({
       <IconButton
         icon="plus"
         size={ADD_BUTTON_SIZE}
-        backgroundColor="primary"
+        color="primary"
         iconColor="onPrimary"
-        style={[styles.shadow, { marginLeft: "auto" }]}
+        style={[styles.shadow]}
         onPress={handleLogButtonPress}
         activeOpacity={1}
       />
@@ -203,12 +211,12 @@ const createStyles = (theme: TTheme, isDark: boolean) =>
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      gap: theme.layout.spacing.lg,
+      gap: theme.layout.spacing.md,
       zIndex: 2,
     },
     tabsContainer: {
       backgroundColor: isDark
-        ? theme.colors.surfaceContainerHigh
+        ? theme.colors.surfaceContainer
         : theme.colors.surface,
       flexDirection: "row",
       alignItems: "center",

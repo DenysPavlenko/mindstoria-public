@@ -2,9 +2,9 @@
   "common": {
     "today": "Сьогодні",
     "yesterday": "Вчора",
-    "week": "Тиждень",
-    "month": "Місяць",
-    "year": "Рік",
+    "weekly": "Тиждень",
+    "monthly": "Місяць",
+    "yearly": "Рік",
     "cancel": "Скасувати",
     "save": "Зберегти",
     "add": "Додати",
@@ -12,7 +12,6 @@
     "confirm_delete": "Підтвердити видалення",
     "delete": "Видалити",
     "no_data": "Немає даних",
-    "add_note": "Додати нотатку",
     "import_success": "Імпорт успішний!",
     "import_failure": "Не вдалося імпортувати. Спробуйте ще раз",
     "export_success": "Експорт успішний!",
@@ -23,13 +22,12 @@
     "confirm": "Підтвердити",
     "avg": "Середнє {{count}}",
     "i_feel": "Я почуваюся",
-    "daily_essentials": "Щоденні показники",
     "logged": "Збережено",
-    "show_more": "Показати більше",
+    "view_all": "Показати все",
     "all": "Усе",
     "entry_count_one": "{{count}} запис",
     "entry_count_other": "{{count}} записи",
-    "how_are_you": "Як ви",
+    "how_are_you_feeling": "Як ви почуваєтесь?",
     "feeling": "почуваєтесь",
     "name": "Назва",
     "enter_name": "Введіть назву",
@@ -40,11 +38,16 @@
     "something_went_wrong": " Овва! Щось пішло не так",
     "ready_to_finish": "Готові завершити?",
     "your_data_will_be_saved": "Ваші дані будуть збережені, і ви зможете продовжити пізніше",
+    "leave": "Вийти",
+    "leave_without_saving_title": "Вийти без збереження?",
+    "leave_without_saving_content": "Ваші зміни буде втрачено.",
     "archived": "Архівовано",
     "inactive": "Неактивно",
     "start_typing": "Почніть вводити...",
     "log_confirm_delete": "Ви впевнені, що хочете видалити цей запис?",
     "maybe_later": "Можливо пізніше",
+    "log_one": "Запис",
+    "log_other": "Записи",
     "log": "Запис",
     "thought": "Думка",
     "choose_time": "Виберіть час",
@@ -53,11 +56,20 @@
     "mo": "міс",
     "yr": "рік",
     "enable": "Увімкнути",
+    "terms": "Умови",
+    "privacy": "Конфіденційність",
     "skip": "Пропустити",
     "list": "Список",
     "calendar": "Календар",
     "export_csv": "Експортувати як CSV",
-    "write": "Написати"
+    "write": "Написати",
+    "done": "Готово",
+    "no_items_pinned": "Немає закріплених елементів",
+    "got_it": "Зрозуміло",
+    "haptics": "Вібрація",
+    "search": "Пошук...",
+    "category": "Категорія",
+    "add_new": "Додати новий"
   },
 
   "rating": {
@@ -68,52 +80,39 @@
     "great": "Чудово"
   },
 
-  "wellbeing": {
-    "title": "Самопочуття",
-    "wellbeing_log": "Запис самопочуття",
-    "add_log": "Додайте свій перший запис самопочуття на сьогодні"
-  },
-
-  "logs": {
-    "wellbeing": "Самопочуття",
-    "wellbeing_title": "Як я почуваюся?",
-    "impacts": "Впливи",
-    "impacts_title": "Що впливає на моє самопочуття",
-    "emotions": "Емоції",
-    "emotions_title": "Емоції, які я відчуваю",
-    "notes": "Нотатки",
-    "notes_title": "Додаткові нотатки"
+  "mood": {
+    "title": "Настрій",
+    "add_log": "Додайте свій перший запис настрою на сьогодні"
   },
 
   "impacts": {
     "title": "Впливи",
-    "add_impact": "Додати власний вплив",
+    "add_own_impact": "Додати власний вплив",
     "duplicate_impact_name": "Вплив із такою назвою вже існує",
     "search_impact": "Пошук впливу...",
     "impact_name": "Назва впливу",
-    "add_positive_impact_placeholder": "Напр., 'Вправи'",
-    "add_negative_impact_placeholder": "Напр., 'Погана погода'",
-    "": "Ви ще не додали жодного впливу",
+    "add_impact_placeholder": "Напр., 'Вправи'",
     "confirm_delete": "Ви впевнені, що хочете видалити цей вплив?",
     "impact_one": "{{count}} вплив",
     "impact_other": "{{count}} впливів",
-    "whats_impacting_you": "Що на вас впливає?",
+    "what_affected_your_mood": "Що формує ваш настрій?",
     "select_one_or_more_impacts": "Оберіть один або кілька факторів, які впливають на ваше самопочуття",
     "impacts_statistics": "Статистика впливів",
     "positive_impacts": "Позитивні впливи",
     "negative_impacts": "Негативні впливи",
-    "impacts_count": "Лічильник впливів"
+    "top_impacts": "Топ впливів",
+    "select_impacts": "Виберіть впливи"
   },
 
   "emotions": {
     "title": "Емоції",
-    "what_emotions_are_you_feeling": "Які емоції ви відчуваєте?",
+    "what_are_you_feeling": "Які емоції ви відчуваєте?",
     "select_the_emotions": "Оберіть емоції, які відповідають вашому стану",
     "search_emotion": "Пошук емоції...",
     "confirm_delete": "Ви впевнені, що хочете видалити цю емоцію?",
     "emotion_one": "{{count}} емоція",
     "emotion_other": "{{count}} емоцій",
-    "add_emotion": "Додати власну емоцію",
+    "add_own_emotion": "Додати власну емоцію",
     "emotion_name": "Назва емоції",
     "add_positive_emotion_placeholder": "Напр., 'Вдячність'",
     "add_negative_emotion_placeholder": "Напр., 'Роздратування'",
@@ -121,7 +120,13 @@
     "positive_emotions": "Позитивні емоції",
     "negative_emotions": "Негативні емоції",
     "emotions_statistics": "Статистика емоцій",
-    "emotions_count": "Лічильник емоцій"
+    "top_emotions": "Топ емоцій",
+    "select_emotions": "Виберіть эмоції"
+  },
+
+  "notes": {
+    "title": "Нотатки",
+    "add_note": "Додати нотатку"
   },
 
   "sentiments": {
@@ -131,9 +136,9 @@
   },
 
   "sleep": {
+    "title": "Sleep",
     "quality": "Якість сну",
-    "how_well_did_you_sleep": "Як добре ви",
-    "sleep": "спали",
+    "how_well_did_you_sleep": "Як добре ви спали?",
     "my_sleep_was": "Я спав"
   },
 
@@ -211,8 +216,28 @@
     "notifications_description": "Регулярні нагадування допомагають залишатися послідовними та усвідомленими.",
     "notification_body": "Знайдіть хвилинку, щоб перевірити свій стан"
   },
+  "emotion_categories": {
+    "joyful": "Радісні",
+    "peaceful": "Спокійні",
+    "anxious": "Тривожні",
+    "angry": "Злі",
+    "sad": "Сумні",
+    "self_conscious": "Сором’язливі",
+    "other": "Інше"
+  },
+  "impact_categories": {
+    "body": "Тіло",
+    "social": "Соціум",
+    "mindset": "Мислення",
+    "work": "Робота",
+    "self_care": "Турбота про себе",
+    "leisure": "Відпочинок",
+    "environment": "Середовище",
+    "difficult_moments": "Складні моменти",
+    "other": "Інше"
+  },
 
-  "positive_emotions": {
+  "emotions_list": {
     "joy": "Радість",
     "happiness": "Щастя",
     "love": "Любов",
@@ -242,10 +267,7 @@
     "cheerfulness": "Веселість",
     "warmth": "Теплота",
     "fulfillment": "Здійснення",
-    "delight": "Захват"
-  },
-
-  "negative_emotions": {
+    "delight": "Захват",
     "anxiety": "Тривога",
     "sadness": "Смуток",
     "anger": "Злість",
@@ -278,32 +300,71 @@
     "doubt": "Сумнів"
   },
 
-  "positive_impacts": {
-    "exercise": "Фізичні вправи",
+  "impacts_list": {
+    "exercise": "Фізична активність",
     "meditation": "Медитація",
     "good_sleep": "Гарний сон",
-    "therapy_session": "Сеанс терапії",
-    "positive_news": "Позитивні новини",
-    "healthy_meal": "Здорова їжа",
+    "family": "Сім'я",
     "outside_time": "Свіже повітря",
-    "laughter": "Сміх",
-    "compliment": "Комплімент",
-    "finished_task": "Виконане завдання",
     "music": "Музика",
-    "family_time": "Час із родиною",
-    "pet_time": "Час із улюбленцем",
     "hobby": "Хобі",
-    "helped_someone": "Допоміг комусь",
-    "learned_something": "Навчився чомусь новому",
-    "self_care": "Самодогляд",
-    "positive_feedback": "Позитивний відгук",
+    "pet": "Домашній улюбленець",
     "relaxation": "Розслаблення",
-    "social_support": "Соціальна підтримка",
-    "gratitude": "Вдячність",
     "progress": "Прогрес",
     "reading": "Читання",
     "yoga": "Йога",
-    "gaming": "Ігри"
+    "gaming": "Ігри",
+    "overthinking": "Надмірні роздуми",
+    "overworking": "Перевтома",
+    "panic_attack": "Панічна атака",
+    "self_doubt": "Невпевненість",
+    "argument": "Сварка",
+    "poor_sleep": "Поганий сон",
+    "criticism": "Критика",
+    "doomscrolling": "Думскролінг",
+    "rumination": "Нав'язливі думки",
+    "burnout": "Вигорання",
+    "loneliness": "Самотність",
+    "illness": "Хвороба",
+    "isolation": "Ізоляція",
+    "low_energy": "Низький рівень енергії",
+    "overwhelm": "Перевантаження",
+    "learning": "Навчання",
+    "friends": "Друзі",
+    "therapy": "Терапія",
+    "good_news": "Гарні новини",
+    "bad_news": "Погані новини",
+    "support": "Підтримка",
+    "setback": "Невдача",
+    "self_care": "Турбота про себе",
+
+    "financial_worry": "Фінансові переживання",
+    "gratitude": "Вдячність",
+    "stress": "Стрес",
+    "late": "Запізнення",
+    "distraction": "Відволікання",
+    "social_support": "Соціальна підтримка",
+    "laughter": "Сміх",
+    "negtive_news": "Негативні новини",
+    "positive_news": "Позитивні новини",
+    "therapy_session": "Сеанс терапії",
+    "positive_feedback": "Позитивний відгук",
+    "unexpected_change": "Неочікувана зміна",
+    "disappointment": "Розчарування",
+    "helped_someone": "Допоміг комусь",
+    "pet_time": "Час з улюбленцем",
+    "compliment": "Комплімент",
+    "healthy_meal": "Здоровий прийом їжі",
+    "family_time": "Час із сім'єю",
+    "finished_task": "Завершене завдання",
+    "learned_something": "Дізнався щось нове",
+    "bad_weather": "Погана погода",
+    "good_weather": "Гарна погода",
+    "clutter": "Безлад",
+    "nature": "Природа",
+    "noise": "Шум",
+    "crowds": "Натовпи",
+    "finances": "Фінанси"
   },
 
   "welcome": {
@@ -311,31 +372,6 @@
     "subtitle": "Відстежуйте, як насправді проходить ваш день",
     "description": "Mindstoria допомагає фіксувати моменти, відстежувати свої емоції, розуміти впливи, що їх формують, та досліджувати свої думки за допомогою керованого КПТ-щоденника",
     "get_started": "Почати"
-  },
-
-  "negative_impacts": {
-    "overthinking": "Зацикленість",
-    "overworking": "Перепрацювання",
-    "panic_attack": "Панічна атака",
-    "self_doubt": "Самосумнів",
-    "negtive_news": "Негативні новини",
-    "argument": "Суперечка",
-    "doomscrolling": " Думскролінг",
-    "rumination": "Румінація",
-    "burnout": "Вигорання",
-    "poor_sleep": "Поганий сон",
-    "criticism": "Критика",
-    "stress": "Стрес",
-    "loneliness": "Самотність",
-    "distraction": "Відволікання",
-    "illness": "Хвороба",
-    "isolation": "Ізоляція",
-    "financial_worry": "Фінансові занепокоєння",
-    "late": "Запізнення",
-    "disappointment": "Розчарування",
-    "low_energy": "Низька енергія",
-    "unexpected_change": "Неочікувана зміна",
-    "overwhelm": "Перевантаженість"
   },
 
   "cbt": {

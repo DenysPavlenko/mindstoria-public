@@ -28,6 +28,7 @@ interface RevenueCatContextValue {
   checkPremiumFeature: (callback: () => void) => boolean;
   submitBackdoorCode: (code: string) => boolean;
   subscriptionActive: boolean;
+  premiumState: "unknown" | "premium" | "free";
 }
 
 const RevenueCatContext = createContext<RevenueCatContextValue | undefined>(
@@ -45,6 +46,7 @@ export const RevenueCatProvider = ({
   const [error, setError] = useState<string | null>(null);
   const [setupError, setSetupError] = useState<string | null>(null);
   const [backdoorActive, setBackdoorActive] = useState(false);
+  const [customerInfoFetched, setCustomerInfoFetched] = useState(false);
 
   const isPreviewEnv = useMemo(() => getAppVariant() === "preview", []);
 
@@ -81,6 +83,9 @@ export const RevenueCatProvider = ({
     } catch (error) {
       const errorMsg = getErrorMessage(error);
       setError(errorMsg);
+      setSubscriptionActive(false);
+    } finally {
+      setCustomerInfoFetched(true);
     }
   }, [isReady, setupError]);
 
@@ -125,6 +130,18 @@ export const RevenueCatProvider = ({
     [setShowPaywall, isPreviewEnv, subscriptionActive, backdoorActive],
   );
 
+  const premiumState = useMemo<RevenueCatContextValue["premiumState"]>(() => {
+    if (isPreviewEnv || backdoorActive) return "premium";
+    if (!customerInfoFetched && !setupError) return "unknown";
+    return subscriptionActive ? "premium" : "free";
+  }, [
+    isPreviewEnv,
+    backdoorActive,
+    customerInfoFetched,
+    setupError,
+    subscriptionActive,
+  ]);
+
   const value = useMemo(() => {
     return {
       isReady,
@@ -134,6 +151,7 @@ export const RevenueCatProvider = ({
       checkPremiumFeature,
       submitBackdoorCode,
       subscriptionActive,
+      premiumState,
     };
   }, [
     showPaywall,
@@ -144,6 +162,7 @@ export const RevenueCatProvider = ({
     checkPremiumFeature,
     submitBackdoorCode,
     subscriptionActive,
+    premiumState,
   ]);
 
   return (

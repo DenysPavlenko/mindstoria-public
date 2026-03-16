@@ -1,5 +1,5 @@
 import { useTheme } from "@/providers";
-import { TColorKeys, TSizeKeys } from "@/types/common";
+import { TColorKey, TSizeKey } from "@/types/common";
 import { ReactNode } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Typography } from "../Typography/Typography";
@@ -7,9 +7,9 @@ import { Typography } from "../Typography/Typography";
 interface BadgeProps {
   value?: string | number;
   customValue?: ReactNode;
-  size?: TSizeKeys | number;
-  bgColor?: TColorKeys;
-  textColor?: TColorKeys;
+  size?: TSizeKey | number;
+  bgColor?: TColorKey;
+  textColor?: TColorKey;
   absolute?: boolean;
   position?: {
     top?: number;

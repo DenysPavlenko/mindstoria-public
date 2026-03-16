@@ -1,3 +1,4 @@
+import PillIcon from "@/assets/feather/pill.svg";
 import { useTheme } from "@/providers";
 import { DISABLED_ALPHA, TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
@@ -7,7 +8,7 @@ import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { Typography } from "../Typography/Typography";
 
 interface SettingsItemProps {
-  icon: FeatherIconName;
+  icon: FeatherIconName | "pill";
   title: string;
   action?: React.ReactNode;
   onPress?: () => void;
@@ -34,6 +35,22 @@ export const SettingsItem = ({
 
   const Component = onPress ? CustomPressable : View;
 
+  const renderIcon = () => {
+    if (icon === "pill") {
+      const size = theme.layout.size.xs;
+      return (
+        <PillIcon width={size} height={size} color={theme.colors.outline} />
+      );
+    }
+    return (
+      <Feather
+        name={icon}
+        size={theme.layout.size.xs}
+        color={theme.colors.outline}
+      />
+    );
+  };
+
   return (
     <Component
       style={[styles.settingItem, disabled && { opacity: DISABLED_ALPHA }]}
@@ -43,12 +60,8 @@ export const SettingsItem = ({
       withHaptics={withHaptics}
     >
       <View style={styles.settingTitle}>
-        <Feather
-          name={icon}
-          size={theme.layout.size.xs}
-          color={theme.colors.onBackground}
-        />
-        <Typography variant="bodyBold">{title}</Typography>
+        {renderIcon()}
+        <Typography variant="h6">{title}</Typography>
       </View>
       {renderedAction()}
     </Component>
@@ -80,7 +93,7 @@ const createStyles = (theme: TTheme) =>
     settingTitle: {
       flexDirection: "row",
       alignItems: "center",
-      gap: theme.layout.spacing.sm,
+      gap: theme.layout.spacing.lg,
     },
     settingAction: {
       alignItems: "center",

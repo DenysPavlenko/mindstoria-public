@@ -7,7 +7,6 @@ import { Typography } from "../Typography/Typography";
 
 interface InfoCardProps {
   title: string;
-  cardColor?: string;
   icon: ReactNode;
   onPress?: () => void;
   children: React.ReactNode;
@@ -15,27 +14,14 @@ interface InfoCardProps {
 
 export const INFO_CARD_HEIGHT = 120;
 
-export const InfoCard = ({
-  title,
-  icon,
-  onPress,
-  children,
-  cardColor,
-}: InfoCardProps) => {
+export const InfoCard = ({ title, icon, onPress, children }: InfoCardProps) => {
   const { theme } = useTheme();
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <Card
-      style={[styles.container, cardColor && { backgroundColor: cardColor }]}
-      onPress={onPress}
-    >
-      <Typography
-        variant="bodyBold"
-        color={cardColor ? "surface" : "onSurface"}
-        numberOfLines={1}
-      >
+    <Card style={styles.container} onPress={onPress}>
+      <Typography variant="h6" numberOfLines={1}>
         {title}
       </Typography>
       {icon}
@@ -52,5 +38,6 @@ const createStyles = (theme: TTheme) =>
       paddingVertical: theme.layout.spacing.lg,
       justifyContent: "flex-end",
       overflow: "hidden",
+      gap: theme.layout.spacing.xs,
     },
   });

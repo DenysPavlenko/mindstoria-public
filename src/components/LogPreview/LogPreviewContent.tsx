@@ -1,16 +1,16 @@
 import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
+import { selectLogMetrics } from "@/store/slices";
 import { TTheme } from "@/theme";
 import {
   TEmotionDefinition,
-  TEmotionLog,
   TImpactDefinition,
-  TImpactLog,
   TLog,
   TLogMetricType,
   TLogValues,
+  TSentimentLog,
 } from "@/types";
-import { getRatingLevelLabel, getSentimentColor } from "@/utils";
+import { getRatingLevelLabel } from "@/utils";
 import { isEmpty } from "lodash";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,7 +26,7 @@ interface LogPreviewContentProps {
 export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const metricsData = useAppSelector((state) => state.logMetrics.items);
+  const metricsData = useAppSelector(selectLogMetrics);
   const impactDefinitionsItems = useAppSelector(
     (state) => state.impactDefinitions.items,
   );
@@ -41,7 +41,7 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const renderSentimentChips = (
-    items: (TImpactLog | TEmotionLog)[],
+    items: (TSentimentLog | TSentimentLog)[],
     definitions: Record<string, TImpactDefinition | TEmotionDefinition>,
     isEmotion: boolean = false,
   ) => {
@@ -59,19 +59,15 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
           {items.map(({ id, definitionId }) => {
             const definition = definitions[definitionId];
             if (!definition) return null;
-            const color = getSentimentColor(definition.type, theme);
             const chipIconProp = isEmotion
-              ? { customContent: <Typography>{definition.icon}</Typography> }
+              ? { customIcon: <Typography>{definition.icon}</Typography> }
               : { icon: (definition as TImpactDefinition).icon };
             return (
               <Chip
                 key={id}
-                {...chipIconProp}
-                bgColor="surface"
-                iconColor="error"
-                iconStyle={{ color }}
                 disabled={definition.isArchived}
                 label={t(definition.name)}
+                {...chipIconProp}
               />
             );
           })}
@@ -132,6 +128,12 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
   };
 
   const renderList = () => {
+    const translations: Record<TLogMetricType, string> = {
+      wellbeing: t("mood.title"),
+      impacts: t("impacts.title"),
+      emotions: t("emotions.title"),
+      notes: t("notes.title"),
+    };
     return metrics.map((item) => {
       const noCardPadding = item.type === "impacts" || item.type === "emotions";
       return (
@@ -144,7 +146,7 @@ export const LogPreviewContent = ({ log }: LogPreviewContentProps) => {
                 marginBottom: theme.layout.spacing.xxs,
               }}
             >
-              {t(`logs.${item.type}_title`)}
+              {translations[item.type]}
             </Typography>
             {renderMetricValue(item.type, log.values, noCardPadding)}
           </View>
@@ -168,6 +170,7 @@ const createStyles = (theme: TTheme) =>
     metricItem: {
       flexDirection: "row",
       paddingVertical: theme.layout.spacing.md,
+      overflow: "hidden",
     },
     metricInfo: {
       flex: 1,

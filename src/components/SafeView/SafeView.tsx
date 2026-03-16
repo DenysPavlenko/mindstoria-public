@@ -15,7 +15,7 @@ export interface ISafeViewProps extends ViewProps {
 
 const generatePaddings = (
   direction: ISafeViewProps["direction"],
-  insets: EdgeInsets
+  insets: EdgeInsets,
 ) => ({
   ...((direction === "vertical" || direction === "top") && {
     paddingTop: insets.top,
@@ -55,5 +55,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export default SafeView;

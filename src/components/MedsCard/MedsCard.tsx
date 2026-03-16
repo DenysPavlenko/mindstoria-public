@@ -61,13 +61,7 @@ export const MedsCard = ({ date }: MedsCardProps) => {
                 icon = "eye-off";
               }
               return (
-                <Chip
-                  minHeight="xs"
-                  icon={icon}
-                  key={index}
-                  label={label}
-                  bgColor="surface"
-                />
+                <Chip minHeight="xs" icon={icon} key={index} label={label} />
               );
             })}
           </View>
@@ -86,7 +80,7 @@ export const MedsCard = ({ date }: MedsCardProps) => {
       title={t("medications.title")}
       onPress={handlePress}
       icon={
-        <View style={{ position: "absolute", right: -20, top: -20 }}>
+        <View style={{ position: "absolute", right: -24, top: -24 }}>
           <Pills width={iconSize} height={iconSize} fill={iconColor} />
         </View>
       }

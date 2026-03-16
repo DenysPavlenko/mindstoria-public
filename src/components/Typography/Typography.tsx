@@ -1,12 +1,12 @@
 import { useTheme } from "@/providers";
 import { fonts, typography } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKey, TTypographyVariant } from "@/types/common";
 import React from "react";
 import { Text, TextProps, TextStyle } from "react-native";
 
 export interface TypographyProps extends TextProps {
-  variant?: keyof typeof typography;
-  color?: TColorKeys;
+  variant?: TTypographyVariant;
+  color?: TColorKey;
   align?: TextStyle["textAlign"];
   fontWeight?: keyof typeof fonts;
 }

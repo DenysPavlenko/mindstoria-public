@@ -1,11 +1,6 @@
 import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { TAB_BAR_CBT_LOG_BUTTON_PRESS } from "@/appConstants";
-import {
-  Card,
-  ConfirmationDialog,
-  Placeholder,
-  TAB_BAR_HEIGHT,
-} from "@/components";
+import { ConfirmationDialog, Placeholder, TAB_BAR_HEIGHT } from "@/components";
 import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { removeCBTLogThunk, selectCBTLogs } from "@/store/slices";
@@ -80,7 +75,7 @@ export const LogsList = ({ date, onCardPress, viewType }: LogsListProps) => {
   const renderPlaceholder = () => {
     return (
       <View style={styles.placeholder}>
-        <Placeholder title={t("cbt.add_log")} />
+        <Placeholder title={t("cbt.add_log")} icon="edit-3" />
       </View>
     );
   };
@@ -112,10 +107,10 @@ export const LogsList = ({ date, onCardPress, viewType }: LogsListProps) => {
   };
 
   return (
-    <Card style={styles.container} noPadding>
+    <View style={styles.container}>
       {viewType === "calendar" ? renderFlatList() : renderSectionList()}
       {renderConfirmDelete()}
-    </Card>
+    </View>
   );
 };
 
@@ -123,9 +118,6 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingTop: theme.layout.spacing.lg,
-      borderBottomLeftRadius: theme.layout.borderRadius.xxl,
-      borderBottomRightRadius: theme.layout.borderRadius.xxl,
     },
     placeholder: {
       flex: 1,

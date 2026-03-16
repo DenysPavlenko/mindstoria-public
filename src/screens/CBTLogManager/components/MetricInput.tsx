@@ -1,8 +1,4 @@
-import {
-  CognitiveDistortionSelector,
-  EmotionsSelector,
-  Typography,
-} from "@/components";
+import { CognitiveDistortionSelector, Typography } from "@/components";
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
 import {
@@ -10,11 +6,12 @@ import {
   TCBTLogMetric,
   TCBTLogValue,
   TCognitiveDistortionLog,
-  TEmotionLog,
+  TSentimentLog,
 } from "@/types";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
+import { EmotionSelector } from "./EmotionSelector";
 import { FullScreenInputWrapper } from "./FullScreenInputWrapper";
 
 const IS_IOS = Platform.OS === "ios";
@@ -23,7 +20,7 @@ export type TCBTLogFormValues = {
   situation: string | null;
   thought: string | null;
   behavior: string | null;
-  emotions: TEmotionLog[];
+  emotions: TSentimentLog[];
   cognitiveDistortions: TCognitiveDistortionLog[];
   alternativeThought: string | null;
 };
@@ -137,10 +134,9 @@ export const MetricInput = ({
       case "emotions":
         return (
           <View style={styles.container}>
-            <EmotionsSelector
+            <EmotionSelector
               emotionLogItems={values.emotions}
               onChange={handleValueChange}
-              wellbeing={wellbeing || null}
             />
           </View>
         );

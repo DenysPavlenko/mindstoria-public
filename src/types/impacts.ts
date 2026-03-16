@@ -1,28 +1,22 @@
 import { FeatherIconName } from "@react-native-vector-icons/feather";
-import { TSentimentLevel, TSentimentStatsItem, TSentimentType } from "./common";
+import {
+  TSentimentDefinition,
+  TSentimentLog,
+  TSentimentStatsItem,
+} from "./sentiment";
 
-export type TImpactDefinition = {
-  id: string;
-  name: string;
-  type: TSentimentType;
-  icon: FeatherIconName;
-  isUserCreated: boolean;
-  isArchived?: boolean;
-};
+export type TImpactDefinition = TSentimentDefinition<FeatherIconName>;
 
 export type TImpactDefinitions = Record<string, TImpactDefinition>;
 
-export type TImpactLog = {
-  id: string;
-  definitionId: string;
-  level?: TSentimentLevel;
-};
-
-export type TImpact = TImpactLog & {
+export type TImpact = TSentimentLog & {
   name: string;
-  type: TSentimentType;
   icon: FeatherIconName;
   isArchived?: boolean;
 };
 
 export type TImpactStatsItem = TSentimentStatsItem<FeatherIconName>;
+export type TImpactStats = {
+  totalCount: number;
+  data: TImpactStatsItem[];
+};

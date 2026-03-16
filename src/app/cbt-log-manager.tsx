@@ -1,13 +1,9 @@
-import { CBTLogManager } from "@/screens";
+import { CBTLogManager, CBTLogManagerProps } from "@/screens";
 import { useLocalSearchParams } from "expo-router";
 
 export default function CBTLogManagerScreen() {
-  const { date, logId, metricId, wellbeingLogId } = useLocalSearchParams<{
-    date?: string;
-    logId?: string;
-    metricId?: string;
-    wellbeingLogId?: string;
-  }>();
+  const { date, logId, metricId, wellbeingLogId } =
+    useLocalSearchParams<CBTLogManagerProps>();
 
   return (
     <CBTLogManager

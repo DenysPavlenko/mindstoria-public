@@ -2,7 +2,7 @@ import WelcomeIllustration from "@/assets/images/welcome-illustration.svg";
 import { Button, SafeView, Typography } from "@/components";
 import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
-import { setWelcomeShown } from "@/store/slices/settings/settingsSlice";
+import { setWelcomeShown } from "@/store/slices";
 import { trackEvent } from "@/utils";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";

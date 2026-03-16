@@ -2,7 +2,7 @@ import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
 import { generatePeriodDates } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dimensions,
@@ -11,6 +11,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { CalendarPicker } from "../CalendarPicker/CalendarPicker";
 import { IconButton } from "../IconButton/IconButton";
 import { Typography } from "../Typography/Typography";
 
@@ -34,11 +35,12 @@ export const WeekCalendar = ({
   const { theme } = useTheme();
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
+  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const daysOfWeek = useMemo(() => {
-    return generatePeriodDates("week", dayjs());
+    return generatePeriodDates("week", dayjs()).slice(1);
   }, []);
 
   const weekNameFormat = useMemo(() => {
@@ -71,19 +73,19 @@ export const WeekCalendar = ({
         style={{ alignItems: "center", justifyContent: "space-between" }}
       >
         <IconButton
-          customContent={
+          customIcon={
             <>
               <View style={styles.dayItemContent}>
                 <Typography
                   color={isToday ? "onPrimary" : "onSurface"}
-                  variant="tinyBold"
+                  variant="tinySemibold"
                   style={{ marginBottom: -2 }}
                 >
                   {dayjs(isoDay).format(weekNameFormat)}
                 </Typography>
                 <Typography
                   variant="smallBold"
-                  color={isToday ? "onPrimary" : "onSurface"}
+                  color={isToday ? "onPrimary" : "onSecondaryContainer"}
                 >
                   {dayjs(isoDay).format("D")}
                 </Typography>
@@ -93,20 +95,43 @@ export const WeekCalendar = ({
           }
           size={ICON_SIZE}
           radius={ICON_SIZE / 2}
-          backgroundColor={isToday ? "primary" : "surfaceVariant"}
+          color={isToday ? "primary" : "secondaryContainer"}
           onPress={() => onDateChange(dayjs(isoDay))}
         />
       </View>
     );
   };
 
+  const renderCalendarPicker = () => {
+    if (!showCalendarPicker) return null;
+    return (
+      <CalendarPicker
+        visible
+        onClose={() => setShowCalendarPicker(false)}
+        date={date}
+        onDateChange={(newDate) => {
+          onDateChange(newDate);
+          setShowCalendarPicker(false);
+        }}
+        getDotsCount={getDotsCount}
+      />
+    );
+  };
+
   return (
     <View style={style}>
       <View style={styles.dayItemsContainer}>
-        {daysOfWeek.map((day) => {
-          return renderDayItem(day);
-        })}
+        <IconButton
+          color="secondaryContainer"
+          iconColor="onSecondaryContainer"
+          icon="calendar"
+          size={ICON_SIZE}
+          radius={ICON_SIZE / 2}
+          onPress={() => setShowCalendarPicker(true)}
+        />
+        {daysOfWeek.map(renderDayItem)}
       </View>
+      {renderCalendarPicker()}
     </View>
   );
 };

@@ -314,14 +314,14 @@ export const PaywallModal = () => {
             radius="lg"
             onPress={handleBackdoorIconPress}
             activeOpacity={1}
-            backgroundColor="primaryContainer"
+            color="primaryContainer"
             iconColor="onPrimaryContainer"
           />
         ) : (
           <IconBox
             icon={item.icon}
             radius="lg"
-            backgroundColor="primaryContainer"
+            color="primaryContainer"
             iconColor="onPrimaryContainer"
           />
         )}

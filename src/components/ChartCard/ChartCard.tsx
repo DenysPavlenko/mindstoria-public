@@ -8,9 +8,6 @@ import { Card } from "../Card/Card";
 import { IconBox } from "../IconBox/IconBox";
 import { Placeholder } from "../Placeholder/Placeholder";
 
-const DETAILED_CHART_HEIGHT = 180;
-const SIMPLE_CHART_HEIGHT = 64;
-
 interface ChartCardProps {
   info: ReactNode;
   chart: ReactNode;
@@ -18,7 +15,6 @@ interface ChartCardProps {
   customIcon?: ReactNode;
   hasData: boolean;
   onPress?: () => void;
-  variant?: "detailed" | "simple";
   style?: StyleProp<ViewStyle>;
 }
 
@@ -30,12 +26,11 @@ export const ChartCard = ({
   hasData,
   style,
   onPress,
-  variant = "detailed",
 }: ChartCardProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
 
-  const styles = useMemo(() => createStyles(theme, variant), [theme, variant]);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const renderPlaceholder = () => {
     return (
@@ -53,7 +48,7 @@ export const ChartCard = ({
   };
 
   return (
-    <Card noPadding style={[styles.container, style]} onPress={onPress}>
+    <Card style={[styles.container, style]} onPress={onPress}>
       <View style={styles.info}>
         <View
           style={{
@@ -63,11 +58,10 @@ export const ChartCard = ({
           }}
         >
           <IconBox
-            backgroundColor="surface"
+            color="surface"
             iconColor="onSurface"
-            radius="lg"
             icon={iconName}
-            customContent={customIcon}
+            customIcon={customIcon}
           />
           <View style={{ flex: 1 }}>{info}</View>
         </View>
@@ -77,9 +71,7 @@ export const ChartCard = ({
   );
 };
 
-const createStyles = (theme: TTheme, variant: "detailed" | "simple") => {
-  const height =
-    variant === "detailed" ? DETAILED_CHART_HEIGHT : SIMPLE_CHART_HEIGHT;
+const createStyles = (theme: TTheme) => {
   return StyleSheet.create({
     container: {
       alignItems: "center",
@@ -98,13 +90,10 @@ const createStyles = (theme: TTheme, variant: "detailed" | "simple") => {
     },
     info: {
       width: "100%",
-      padding: theme.layout.spacing.lg,
       paddingBottom: theme.layout.spacing.md,
     },
     chart: {
       width: "100%",
-      padding: variant === "detailed" ? theme.layout.spacing.md : 0,
-      height,
     },
   });
 };

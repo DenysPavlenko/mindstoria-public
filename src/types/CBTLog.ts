@@ -1,12 +1,12 @@
 import { FeatherIconName } from "@react-native-vector-icons/feather";
 import { TChartDataPoint } from "./common";
-import { TEmotionLog } from "./emotions";
+import { TSentimentLog } from "./emotions";
 
 export type TCBTLogValues = {
   situation: string;
   thought: string | null;
   behavior: string | null;
-  emotions: TEmotionLog[];
+  emotions: TSentimentLog[];
   cognitiveDistortions: TCognitiveDistortionLog[];
   alternativeThought: string | null;
 };

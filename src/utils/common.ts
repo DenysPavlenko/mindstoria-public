@@ -1,6 +1,6 @@
 import { APP_IDENTIFIER, SUPPORT_EMAIL } from "@/appConstants";
 import { TTheme } from "@/theme";
-import { RatingLevel, TTimePeriod } from "@/types";
+import { RatingLevel, TLog, TTimePeriod } from "@/types";
 import dayjs from "dayjs";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
@@ -33,6 +33,14 @@ export const getRatingLevelColor = (
   return theme.colors.rating[scaleMap[level]];
 };
 
+export const getRatingLevelContainerColor = (
+  level: RatingLevel,
+  theme: TTheme,
+): string => {
+  const scaleMap = { 1: "50", 2: "100", 3: "200", 4: "300", 5: "400" } as const;
+  return theme.colors.ratingContainer[scaleMap[level]];
+};
+
 export function filterDataByTimePeriod<T>(
   data: T[],
   parameter: keyof T,
@@ -50,6 +58,14 @@ export function filterDataByTimePeriod<T>(
     );
   });
 }
+
+export const filterLogsByMood = (
+  logs: TLog[],
+  selectedMood: RatingLevel | null,
+): TLog[] => {
+  if (selectedMood === null) return logs;
+  return logs.filter((l) => l.values.wellbeing === selectedMood);
+};
 
 export const getErrorMessage = (
   error: unknown,

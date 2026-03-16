@@ -1,40 +1,38 @@
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
+import { TSentimentDefinition } from "@/types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   FlatList,
+  FlatListProps,
   ListRenderItem,
-  StyleProp,
   StyleSheet,
   View,
-  ViewStyle,
 } from "react-native";
 import { SentimentIconButton } from "../SentimentIconButton/SentimentIconButton";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const NUM_COLUMNS = SCREEN_WIDTH > 500 ? 4 : 3;
+const NUM_COLUMNS = SCREEN_WIDTH > 500 ? 5 : 4;
 
-interface SentimentListProps<T> {
-  data: T[];
-  style?: StyleProp<ViewStyle>;
-  ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
-  renderItem: ListRenderItem<T>;
-  keyExtractor?: (item: T, index: number) => string;
+interface SentimentListProps extends Omit<
+  FlatListProps<TSentimentDefinition>,
+  "renderItem"
+> {
+  renderItem: ListRenderItem<TSentimentDefinition>;
   searchQuery?: string;
   onAddPress?: () => void;
 }
 
-export const SentimentList = <T,>({
-  data,
+export const SentimentList = ({
   ListEmptyComponent,
   renderItem,
   style,
   searchQuery,
   onAddPress,
-  keyExtractor,
-}: SentimentListProps<T>) => {
+  ...listProps
+}: SentimentListProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
 
@@ -57,25 +55,26 @@ export const SentimentList = <T,>({
 
   return (
     <FlatList
-      data={data}
       numColumns={NUM_COLUMNS}
-      contentContainerStyle={style}
-      keyExtractor={keyExtractor}
+      contentContainerStyle={[styles.container, style]}
       ListEmptyComponent={renderListEmpty()}
       showsVerticalScrollIndicator={false}
       renderItem={(props) => {
         return <View style={styles.item}>{renderItem(props)}</View>;
       }}
+      {...listProps}
     />
   );
 };
 
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
+    container: {
+      gap: theme.layout.spacing.sm,
+      marginHorizontal: -theme.layout.spacing.xxs,
+    },
     item: {
       width: `${100 / NUM_COLUMNS}%`,
       paddingHorizontal: theme.layout.spacing.xs,
-      paddingTop: theme.layout.spacing.md,
-      paddingBottom: theme.layout.spacing.sm,
     },
   });

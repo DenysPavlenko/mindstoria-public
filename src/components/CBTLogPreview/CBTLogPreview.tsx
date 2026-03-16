@@ -1,5 +1,6 @@
 import { useTheme } from "@/providers";
 import { useAppSelector } from "@/store";
+import { selectLogItems } from "@/store/slices";
 import { TTheme } from "@/theme";
 import { TCBTLog } from "@/types";
 import dayjs from "dayjs";
@@ -23,13 +24,13 @@ export const CBTLogPreview = ({ log, onClose }: CBTLogPreviewProps) => {
   const { theme } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const [tab, setTab] = useState<"wellbeing" | "thought">("thought");
-  const wellbeingLogs = useAppSelector((state) => state.logs.items);
+  const [tab, setTab] = useState<"mood" | "thought">("thought");
+  const moodLogs = useAppSelector(selectLogItems);
 
   const wellbeingLog = useMemo(() => {
     if (!log.wellbeingLogId) return null;
-    return wellbeingLogs[log.wellbeingLogId];
-  }, [log.wellbeingLogId, wellbeingLogs]);
+    return moodLogs[log.wellbeingLogId];
+  }, [log.wellbeingLogId, moodLogs]);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -53,7 +54,7 @@ export const CBTLogPreview = ({ log, onClose }: CBTLogPreviewProps) => {
         onChange={setTab}
         options={[
           { label: t("common.thought"), value: "thought" },
-          { label: t("wellbeing.title"), value: "wellbeing" },
+          { label: t("mood.title"), value: "mood" },
         ]}
       />
     );

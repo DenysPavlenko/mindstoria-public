@@ -1,13 +1,13 @@
 import { useTheme } from "@/providers";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 export interface ProgressProps {
   progress: number;
   height?: number;
-  color?: TColorKeys;
-  backgroundColor?: TColorKeys;
+  color?: TColorKey;
+  backgroundColor?: TColorKey;
   borderRadius?: number;
   animationDuration?: number;
   style?: StyleProp<ViewStyle>;

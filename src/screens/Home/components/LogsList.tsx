@@ -1,12 +1,6 @@
 import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { TAB_BAR_LOG_BUTTON_PRESS } from "@/appConstants";
-import {
-  Card,
-  ConfirmationDialog,
-  Placeholder,
-  TAB_BAR_HEIGHT,
-  Typography,
-} from "@/components";
+import { ConfirmationDialog, Placeholder, TAB_BAR_HEIGHT } from "@/components";
 import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -76,15 +70,6 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
     setLogToDelete(null);
   };
 
-  const renderHeader = () => {
-    if (sortedLogs.length === 0) return null;
-    return (
-      <View style={styles.header}>
-        <Typography variant="h4">{t("wellbeing.wellbeing_log")}</Typography>
-      </View>
-    );
-  };
-
   const renderConfirmDelete = () => {
     if (!logToDelete) return null;
     return (
@@ -102,7 +87,7 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
     if (isLoading) return null;
     return (
       <View style={styles.placeholder}>
-        <Placeholder title={t("wellbeing.add_log")} />
+        <Placeholder title={t("mood.add_log")} />
       </View>
     );
   };
@@ -129,11 +114,10 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
   };
 
   return (
-    <Card style={styles.container} noPadding>
-      {renderHeader()}
+    <View style={styles.container}>
       {renderList()}
       {renderConfirmDelete()}
-    </Card>
+    </View>
   );
 };
 
@@ -141,14 +125,12 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingTop: theme.layout.spacing.lg,
-      borderBottomLeftRadius: theme.layout.borderRadius.xxl,
-      borderBottomRightRadius: theme.layout.borderRadius.xxl,
     },
     placeholder: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
+      paddingBottom: TAB_BAR_HEIGHT,
     },
     header: {
       marginBottom: theme.layout.spacing.lg,

@@ -7,8 +7,7 @@ import {
 import { IconBox, IconBoxProps } from "../IconBox/IconBox";
 
 export interface IconButtonProps
-  extends IconBoxProps,
-    Omit<CustomPressableProps, "style"> {
+  extends IconBoxProps, Omit<CustomPressableProps, "style"> {
   containerStyle?: CustomPressableProps["style"];
 }
 
@@ -16,17 +15,18 @@ export const IconButton: React.FC<IconButtonProps> = ({
   onPress,
   disabled,
   icon,
-  customContent,
+  customIcon,
   size,
   radius,
   variant,
   iconColor,
-  backgroundColor,
+  color,
   iconScale,
   accessibilityLabel,
   autoSize,
   style,
   containerStyle,
+  edge,
   ...touchableProps
 }) => {
   return (
@@ -41,15 +41,16 @@ export const IconButton: React.FC<IconButtonProps> = ({
     >
       <IconBox
         icon={icon}
-        customContent={customContent}
+        customIcon={customIcon}
         size={size}
         radius={radius}
         variant={variant}
         iconColor={iconColor}
-        backgroundColor={backgroundColor}
+        color={color}
         iconScale={iconScale}
         accessibilityLabel={accessibilityLabel}
         autoSize={autoSize}
+        edge={edge}
         style={style}
       />
     </CustomPressable>

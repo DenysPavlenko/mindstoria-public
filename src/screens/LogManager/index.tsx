@@ -1,262 +1,140 @@
-import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Button,
   ConfirmationDialog,
   Header,
-  IconButton,
+  MoodInput,
   Pill,
-  SafeView,
-  StepIndicator,
+  SearchInput,
   TimePickerModal,
 } from "@/components";
 import { useAndroidBackHandler, useKeyboard } from "@/hooks";
 import { useTheme } from "@/providers";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { addLogThunk, selectCBTLogs, updateLogThunk } from "@/store/slices";
+import { useAppSelector } from "@/store";
+import { selectCBTLogs } from "@/store/slices";
 import { TTheme } from "@/theme";
-import { TLogMetric, TLogValue, TLogValues } from "@/types";
-import { generateUniqueId, isStringEmpty, trackEvent } from "@/utils";
+import { isStringEmpty } from "@/utils";
 import { useIsFocused } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
-import PagerView from "react-native-pager-view";
-import { CBTConnect } from "./components/CBTConnect";
-import { MetricInput, TLogFormValues } from "./components/MetricInput";
+import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AnimatedContentWrapper } from "./components/AnimatedContentWrapper";
+import { CBTCard } from "./components/CBTCard";
+import { EmotionsCard } from "./components/EmotionsCard";
+import { ImpactsCard } from "./components/ImpactsCard";
+import { NotesInput } from "./components/NotesInput";
+import { SearchResults } from "./components/SearchResults";
+import { useLogForm } from "./hooks/useLogForm";
+import { useSelectionMaps } from "./hooks/useSelectionMaps";
+import { TSentimentSearchResult } from "./hooks/useSentimentSearch";
+import { useSentimentToggle } from "./hooks/useSentimentToggle";
 
-interface LogManagerProps {
+export type LogManagerProps = {
   date?: string;
   logId?: string;
-  metricId?: string;
-}
+};
 
-export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
+export const LogManager = ({ date, logId }: LogManagerProps) => {
+  const { t } = useTranslation();
+  const { keyboardHeight } = useKeyboard();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const isFocused = useIsFocused();
-  const dispatch = useAppDispatch();
-  const { keyboardHeight } = useKeyboard();
   const { theme } = useTheme();
-  const { t } = useTranslation();
-  const pageViewRef = useRef<PagerView>(null);
-  const [values, setValues] = useState<TLogFormValues>({
-    wellbeing: null,
-    impacts: [],
-    emotions: [],
-    notes: null,
-  });
-  const logs = useAppSelector((state) => state.logs.items);
   const cbtLogs = useAppSelector(selectCBTLogs);
-  const metrics = useAppSelector((state) => state.logMetrics.items);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [timestamp, setTimestamp] = useState(date || dayjs().toISOString());
-  const [showCBTConnect, setShowCBTConnect] = useState(false);
-  const [savedLogId, setSavedLogId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [footerHeight, setFooterHeight] = useState(0);
 
-  const currentLog = useMemo(() => {
-    return logs[logId || ""] || null;
-  }, [logs, logId]);
+  const {
+    fields,
+    setField,
+    setAllFields,
+    resetForm,
+    currentLog,
+    isValid,
+    formattedTime,
+    initialTime,
+    saveLog,
+  } = useLogForm(logId);
+  const handleSentimentToggle = useSentimentToggle(fields, setField);
+  const { selectedImpactsMap, selectedEmotionsMap, selectedLogsMap } =
+    useSelectionMaps(fields.impacts, fields.emotions);
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  useEffect(() => {
+    if (currentLog) {
+      setAllFields({
+        ...currentLog.values,
+        timestamp: currentLog.timestamp,
+      });
+    } else {
+      const now = dayjs();
+      const timestamp = date
+        ? dayjs(date).hour(now.hour()).minute(now.minute()).toISOString()
+        : now.toISOString();
+      setField("timestamp", timestamp);
+    }
+  }, [currentLog, setAllFields, setField, date]);
+
+  // Reset form when navigating away from the screen
+  useEffect(() => {
+    return () => {
+      resetForm();
+    };
+  }, [resetForm]);
+
+  const handleSave = useCallback(() => {
+    const id = saveLog();
+    router.back();
+    return id;
+  }, [saveLog, router]);
+
+  const handleBackPress = useCallback(() => {
+    if (showExitConfirmation) return true;
+    if (isValid) {
+      setShowExitConfirmation(true);
+      return true;
+    }
+    router.back();
+    return true;
+  }, [isValid, router, showExitConfirmation]);
+
+  const handleExitWithoutSaving = useCallback(() => {
+    setShowExitConfirmation(false);
+    router.back();
+  }, [router]);
+
+  useAndroidBackHandler(() => {
+    if (isFocused) {
+      return handleBackPress();
+    }
+  });
 
   const connectedCBTLogId = useMemo(() => {
     if (!logId) return null;
     return cbtLogs.find((log) => log.wellbeingLogId === logId)?.id || null;
   }, [cbtLogs, logId]);
 
-  // Create theme-aware styles (memoized for performance)
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  const isEditing = Boolean(logId);
-
-  useEffect(() => {
-    if (currentLog) {
-      setValues(currentLog.values);
-      setTimestamp(currentLog.timestamp);
-    }
-  }, [currentLog]);
-
-  useEffect(() => {
-    if (metricId) {
-      const index = metrics.findIndex((metric) => metric.id === metricId);
-      setCurrentPage(index);
-      setCurrentStep(index);
-    }
-  }, [metricId, metrics]);
-
-  const initialTime = useMemo(() => {
-    const d = dayjs(timestamp);
-    const hours = d.hour();
-    const minutes = d.minute();
-    return { hours, minutes };
-  }, [timestamp]);
-
-  const formattedTime = useMemo(() => {
-    return dayjs(timestamp).format("HH:mm");
-  }, [timestamp]);
-
-  const isFirstPage = currentPage === 0;
-  const isLastPage = currentPage === metrics.length - 1;
-
-  const isValid = useMemo(() => {
-    const mandatoryMetrics = metrics.filter((metric) => metric.isMandatory);
-    const valuesToCheck = mandatoryMetrics.map((metric) => values[metric.type]);
-    return valuesToCheck.every((value) => value !== null);
-  }, [values, metrics]);
-
-  const handleValueChange = useCallback(
-    (metric: TLogMetric, value: TLogValue) => {
-      setValues((prevValues) => ({
-        ...prevValues,
-        [metric.id]: value,
-      }));
-    },
-    [],
-  );
-
-  const saveLog = () => {
-    if (!isValid || values.wellbeing === null) return;
-    const logValues: TLogValues = {
-      ...values,
-      wellbeing: values.wellbeing,
-      notes: values.notes?.trim() || null,
-    };
-    const logId = currentLog?.id || generateUniqueId();
-    setSavedLogId(logId);
-    if (currentLog) {
-      dispatch(
-        updateLogThunk({
-          ...currentLog,
-          values: logValues,
-          timestamp,
-        }),
-      );
-    } else {
-      dispatch(
-        addLogThunk({
-          id: logId,
-          values: logValues,
-          timestamp,
-        }),
-      );
-    }
-    trackEvent(ANALYTICS_EVENTS.MOOD_LOG_COMPLETED, {
-      mode: isEditing ? "edit" : "create",
-      moodLogged: true,
-      impactsLogged: logValues.impacts.length > 0,
-      emotionsLogged: logValues.emotions.length > 0,
-      notesLogged: !isStringEmpty(logValues.notes),
-    });
+  const onFooterLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    setFooterHeight(height);
   };
 
-  const handleSave = () => {
-    saveLog();
-    // If we're on the last page, show CBT connect screen
-    if (isLastPage) {
-      setShowCBTConnect(true);
-    } else {
-      router.back();
-    }
-  };
-
-  const handleExit = useCallback(() => {
-    if (isValid) {
-      setShowExitConfirmation(true);
-    } else {
-      trackEvent(ANALYTICS_EVENTS.MOOD_LOG_CANCELLED, {
-        mode: isEditing ? "edit" : "create",
-      });
-      router.back();
-    }
-  }, [isValid, router, isEditing]);
-
-  useAndroidBackHandler(() => {
-    if (isFocused) {
-      handleExit();
-      return true;
-    }
-  });
-
-  const handleTimeConfirm = (hours: number, minutes: number) => {
-    setShowTimePicker(false);
-    const newTime = dayjs(timestamp).hour(hours).minute(minutes).toISOString();
-    setTimestamp(newTime);
-  };
-
-  const handlePrev = () => {
-    if (isFirstPage) {
-      router.back();
-      return;
-    }
-    pageViewRef.current?.setPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (isLastPage) {
-      handleSave();
-      return;
-    }
-    pageViewRef.current?.setPage(currentPage + 1);
-  };
-
-  const handleCBTConnectClose = () => {
-    setShowCBTConnect(false);
-    router.back();
-  };
-
-  const handleStepPress = (step: number) => {
-    const targetPage = step - 1; // Convert to 0-based index
-    pageViewRef.current?.setPage(targetPage);
-  };
-
-  const handleConnectThoughtJournal = () => {
-    router.navigate({
-      pathname: "/cbt-log-manager",
-      params: {
-        date: timestamp,
-        wellbeingLogId: savedLogId,
-        logId: connectedCBTLogId,
-      },
-    });
-    trackEvent(ANALYTICS_EVENTS.CBT_LOG_STARTED, {
-      mode: "create",
-      source: "mood_log",
-    });
-  };
-
-  const renderMetric = (metric: TLogMetric, index: number) => {
-    const isActive = index === currentPage;
-    return (
-      <View
-        style={styles.metricInputContainer}
-        pointerEvents="box-only"
-        key={metric.id}
-      >
-        <MetricInput
-          metric={metric}
-          values={values}
-          isEditing={isEditing}
-          onChange={handleValueChange}
-          isActive={isActive}
-        />
-      </View>
-    );
+  const handleSearchResultPress = (item: TSentimentSearchResult) => {
+    handleSentimentToggle(item.sentimentType, item.id);
   };
 
   const renderHeader = () => {
     return (
       <Header
-        onBack={handleExit}
+        onBack={handleBackPress}
         preventBackNavigation
-        centerContent={
-          <StepIndicator
-            currentStep={currentStep + 1}
-            totalSteps={metrics.length}
-            onStepPress={handleStepPress}
-          />
-        }
         rightContent={
           <Pill label={formattedTime} onPress={() => setShowTimePicker(true)} />
         }
@@ -264,135 +142,167 @@ export const LogManager = ({ date, logId, metricId }: LogManagerProps) => {
     );
   };
 
-  const renderTimePicker = () => {
+  const renderModalInput = () => {
     return (
-      <TimePickerModal
-        visible={showTimePicker}
-        onClose={() => {
-          setShowTimePicker(false);
-        }}
-        onConfirm={handleTimeConfirm}
-        hours={initialTime.hours}
-        minutes={initialTime.minutes}
+      <MoodInput
+        value={fields.wellbeing}
+        onChange={(value) => setField("wellbeing", value)}
       />
     );
   };
 
-  const renderExitConfirmation = () => {
+  const renderFooterButton = () => {
+    if (searchQuery) {
+      return (
+        <Button onPress={() => setSearchQuery("")}>{t("common.done")}</Button>
+      );
+    }
     return (
-      <ConfirmationDialog
-        visible={showExitConfirmation}
-        title={t("common.ready_to_finish")}
-        content={t("common.your_data_will_be_saved")}
-        actionText={t("common.confirm")}
-        actionProps={{
-          buttonColor: "primary",
-          textColor: "onPrimary",
-        }}
-        onClose={() => setShowExitConfirmation(false)}
-        onConfirm={handleSave}
-      />
+      <Button disabled={!isValid} onPress={handleSave}>
+        {t("common.save")}
+      </Button>
     );
   };
 
-  const renderButtons = () => {
+  const contentList = useMemo(
+    () => [
+      {
+        id: "search",
+        render: () => (
+          <SearchInput value={searchQuery} onChangeText={setSearchQuery} />
+        ),
+      },
+      {
+        id: "impacts",
+        render: () => (
+          <ImpactsCard
+            selectedMap={selectedImpactsMap}
+            onButtonPress={(id) => handleSentimentToggle("impact", id)}
+          />
+        ),
+      },
+      {
+        id: "emotions",
+        render: () => (
+          <EmotionsCard
+            selectedMap={selectedEmotionsMap}
+            onButtonPress={(id) => handleSentimentToggle("emotion", id)}
+          />
+        ),
+      },
+      {
+        id: "notes",
+        render: () => (
+          <NotesInput
+            value={fields.notes || ""}
+            onChangeText={(text) => setField("notes", text)}
+          />
+        ),
+      },
+      {
+        id: "cbt",
+        render: () => (
+          <CBTCard
+            date={fields.timestamp}
+            cbtLogId={connectedCBTLogId}
+            canConnect={fields.wellbeing !== null}
+            onSave={handleSave}
+          />
+        ),
+      },
+    ],
+    [
+      searchQuery,
+      setField,
+      connectedCBTLogId,
+      fields.notes,
+      fields.timestamp,
+      fields.wellbeing,
+      handleSave,
+      handleSentimentToggle,
+      selectedEmotionsMap,
+      selectedImpactsMap,
+    ],
+  );
+
+  const renderMainContent = () => {
+    const hasSearchResults = !isStringEmpty(searchQuery);
+    const paddingBottom = keyboardHeight ? keyboardHeight - footerHeight : 0;
     return (
-      <View style={[styles.buttons]}>
-        <IconButton
-          icon="chevron-left"
-          disabled={isFirstPage}
-          onPress={handlePrev}
-          size="lg"
-        />
-        <View style={{ minWidth: 140 }}>
-          <Button disabled={!isValid} onPress={handleSave} fullWidth>
-            {t("common.save")}
-          </Button>
+      <View style={[styles.contentContainer, { paddingBottom: insets.bottom }]}>
+        <View style={[styles.contentWrapper, { paddingBottom }]}>
+          <FlatList
+            data={contentList}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => item.render()}
+            contentContainerStyle={styles.contentListContainer}
+            showsVerticalScrollIndicator={false}
+          />
+          {hasSearchResults && (
+            <SearchResults
+              query={searchQuery}
+              selectedMap={selectedLogsMap}
+              onPress={handleSearchResultPress}
+              paddingBottom={paddingBottom}
+            />
+          )}
         </View>
-        <IconButton
-          icon={isLastPage ? "check" : "chevron-right"}
-          disabled={isLastPage && !isValid}
-          onPress={handleNext}
-          size="lg"
-        />
+        <View style={styles.footer} onLayout={onFooterLayout}>
+          {renderFooterButton()}
+        </View>
       </View>
     );
   };
 
-  const renderMainContent = () => {
-    const currentMetric = metrics[currentPage];
-    const shouldAddKeyboardPadding = currentMetric?.type === "notes";
-    return (
-      <SafeView>
-        {renderHeader()}
-        <View
-          style={[
-            styles.container,
-            { paddingBottom: shouldAddKeyboardPadding ? keyboardHeight : 0 },
-          ]}
-        >
-          <PagerView
-            ref={pageViewRef}
-            style={styles.pageView}
-            initialPage={currentPage}
-            keyboardDismissMode="none"
-            onPageSelected={(e) => {
-              const newPage = e.nativeEvent.position;
-              setCurrentPage(newPage);
-            }}
-            onPageScroll={(e) => {
-              const { position, offset } = e.nativeEvent;
-              // Round up if more than halfway to the next page
-              const virtualStep = offset >= 0.5 ? position + 1 : position;
-              // Update only if different from currentStep
-              if (virtualStep !== currentStep) {
-                setCurrentStep(virtualStep);
-              }
-            }}
-            overdrag
-          >
-            {metrics.map(renderMetric)}
-          </PagerView>
-          {renderButtons()}
-        </View>
-        {renderTimePicker()}
-        {renderExitConfirmation()}
-      </SafeView>
-    );
-  };
-
-  const renderCBTConnect = () => {
-    return (
-      <CBTConnect
-        onClose={handleCBTConnectClose}
-        onConnectThoughtJournal={handleConnectThoughtJournal}
-        hasConnectedLog={Boolean(connectedCBTLogId)}
+  return (
+    <>
+      <AnimatedContentWrapper
+        shouldAnimate={!Boolean(currentLog)}
+        level={fields.wellbeing}
+        header={renderHeader()}
+        moodInput={renderModalInput()}
+        mainContent={renderMainContent()}
+        keyboardHeight={keyboardHeight}
       />
-    );
-  };
-
-  return showCBTConnect ? renderCBTConnect() : renderMainContent();
+      <TimePickerModal
+        visible={showTimePicker}
+        onClose={() => setShowTimePicker(false)}
+        onConfirm={(hours, minutes) => {
+          setShowTimePicker(false);
+          setField(
+            "timestamp",
+            dayjs(fields.timestamp).hour(hours).minute(minutes).toISOString(),
+          );
+        }}
+        hours={initialTime.hours}
+        minutes={initialTime.minutes}
+      />
+      <ConfirmationDialog
+        visible={showExitConfirmation}
+        title={t("common.leave_without_saving_title")}
+        content={t("common.leave_without_saving_content")}
+        actionText={t("common.leave")}
+        onClose={() => setShowExitConfirmation(false)}
+        onConfirm={handleExitWithoutSaving}
+      />
+    </>
+  );
 };
 
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "space-between",
-      marginTop: theme.layout.spacing.lg,
-    },
-    pageView: {
+    contentContainer: {
       flex: 1,
     },
-    metricInputContainer: {
+    contentWrapper: {
       flex: 1,
-      justifyContent: "flex-end",
     },
-    buttons: {
-      width: "100%",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: theme.layout.spacing.lg,
+    contentListContainer: {
+      gap: theme.layout.spacing.lg,
+      paddingTop: theme.layout.spacing.xl,
+      paddingBottom: theme.layout.spacing.sm,
+    },
+    footer: {
+      paddingVertical: theme.layout.spacing.lg,
     },
   });

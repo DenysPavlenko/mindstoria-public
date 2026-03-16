@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
 import { TTheme, withAlpha } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   Animated,
@@ -25,7 +25,7 @@ export interface SlideInViewProps {
   fixedHeight?: boolean;
   hideCloseButton?: boolean;
   title?: string | React.ReactNode;
-  bgColor?: TColorKeys;
+  bgColor?: TColorKey;
   style?: StyleProp<ViewStyle>;
 }
 

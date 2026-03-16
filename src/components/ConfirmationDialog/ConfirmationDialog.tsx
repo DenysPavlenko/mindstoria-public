@@ -42,8 +42,7 @@ export const ConfirmationDialog = ({
           {t("common.cancel")}
         </Button>
         <Button
-          variant="contained"
-          buttonColor="error"
+          color="error"
           textColor="onError"
           onPress={onConfirm}
           {...actionProps}

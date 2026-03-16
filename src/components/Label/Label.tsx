@@ -17,5 +17,3 @@ export const Label = ({ label, style }: LabelProps) => {
     </Typography>
   );
 };
-
-export default Label;

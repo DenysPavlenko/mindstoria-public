@@ -2,260 +2,147 @@ import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import {
   Header,
   MedsChart,
-  SentimentStatsView,
+  MoodLogsChart,
+  PeriodNavigator,
+  PeriodSelector,
+  SentimentStatsCard,
   SleepLogsChart,
-  TimePeriodSelect,
-  WellbeingLogsChart,
 } from "@/components";
-import { useRevenueCat, useTheme } from "@/providers";
-import { useAppSelector } from "@/store";
+import { useStatsPeriodNavigation } from "@/hooks";
+import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
-import { TTimePeriod } from "@/types";
-import {
-  filterDataByTimePeriod,
-  getEmotions,
-  getEmotionsStats,
-  getImpacts,
-  getImpactsStats,
-  getMedicationsChartData,
-  getSleepLogChartDataMap,
-  getTakenMedications,
-  getWellbeingChartDataMap,
-  trackEvent,
-} from "@/utils";
-import dayjs from "dayjs";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StatsOverview } from "./components/StatsOverview";
+import { useStats } from "./hooks/useStats";
 
 export const Statistics = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { checkPremiumFeature } = useRevenueCat();
-  const { showMedications } = useAppSelector((state) => state.settings);
-  const logsItems = useAppSelector((state) => state.logs.items);
-  const medicationsItems = useAppSelector((state) => state.medications.items);
-  const sleepLogsItems = useAppSelector((state) => state.sleepLogs.items);
-  const medLogsItems = useAppSelector((state) => state.medLogs.items);
-  const impactDefsItems = useAppSelector(
-    (state) => state.impactDefinitions.items,
-  );
-  const emotionDefsItems = useAppSelector(
-    (state) => state.emotionDefinitions.items,
-  );
-  const [currentPeriod, setCurrentPeriod] = useState<TTimePeriod>("week");
-  const [currentDate, setCurrentDate] = useState(dayjs());
-
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const filteredLogItems = useMemo(() => {
-    const logs = Object.values(logsItems);
-    const filtered = filterDataByTimePeriod(
-      logs,
-      "timestamp",
-      currentPeriod,
-      currentDate,
-    );
-    return filtered;
-  }, [logsItems, currentPeriod, currentDate]);
-
-  const wellbeingChartDataMap = useMemo(() => {
-    return getWellbeingChartDataMap(filteredLogItems, currentPeriod);
-  }, [filteredLogItems, currentPeriod]);
-
-  const sleepLogsChartDataMap = useMemo(() => {
-    const sleepLogs = Object.values(sleepLogsItems);
-    const filteredLogs = filterDataByTimePeriod(
-      sleepLogs,
-      "timestamp",
-      currentPeriod,
-      currentDate,
-    );
-    const data = getSleepLogChartDataMap(filteredLogs, currentPeriod);
-    return data;
-  }, [sleepLogsItems, currentPeriod, currentDate]);
-
-  const medicationsChartData = useMemo(() => {
-    if (!showMedications) return {};
-    const medLogs = Object.values(medLogsItems);
-    const filteredLogs = filterDataByTimePeriod(
-      medLogs,
-      "timestamp",
-      currentPeriod,
-      currentDate,
-    );
-    const takenMeds = getTakenMedications(filteredLogs, medicationsItems);
-    const data = getMedicationsChartData(takenMeds, currentPeriod);
-    return data;
-  }, [
-    showMedications,
-    medLogsItems,
-    medicationsItems,
-    currentPeriod,
-    currentDate,
-  ]);
-
-  const impactsStatsData = useMemo(() => {
-    const impactLogItems = filteredLogItems.flatMap(
-      (log) => log.values.impacts || [],
-    );
-    const impacts = getImpacts(impactLogItems, impactDefsItems);
-    return getImpactsStats(impacts);
-  }, [filteredLogItems, impactDefsItems]);
-
-  const emotionsStatsData = useMemo(() => {
-    const emotionLogItems = filteredLogItems.flatMap(
-      (log) => log.values.emotions || [],
-    );
-    const emotions = getEmotions(emotionLogItems, emotionDefsItems);
-    return getEmotionsStats(emotions);
-  }, [filteredLogItems, emotionDefsItems]);
-
-  const paddingBottom = useMemo(() => {
-    return insets.bottom + theme.layout.spacing.lg;
-  }, [insets.bottom, theme.layout.spacing.lg]);
-
-  const handlePeriodChange = (period: TTimePeriod) => {
-    const hasPremium = checkPremiumFeature(() => {
-      setCurrentPeriod(period);
-      trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_PERIOD_CHANGED, { period });
+  const { period, date, handlePeriodChange, handleDateChange } =
+    useStatsPeriodNavigation({
+      periodChangedEvent: ANALYTICS_EVENTS.MOOD_STATISTICS_PERIOD_CHANGED,
+      periodChangeAttemptedEvent:
+        ANALYTICS_EVENTS.MOOD_STATISTICS_PERIOD_CHANGE_ATTEMPTED,
+      dateChangedEvent: ANALYTICS_EVENTS.MOOD_STATISTICS_DATE_CHANGED,
     });
-    trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_PERIOD_CHANGE_ATTEMPTED, {
-      paidUser: hasPremium,
-    });
-  };
 
-  const handleDateChange = (date: dayjs.Dayjs) => {
-    const hasPremium = checkPremiumFeature(() => {
-      setCurrentDate(date);
-      trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_DATE_CHANGED, {
-        date: date.toISOString(),
-      });
-    });
-    trackEvent(ANALYTICS_EVENTS.MOOD_STATISTICS_DATE_CHANGE_ATTEMPTED, {
-      paidUser: hasPremium,
-    });
-  };
-
-  const renderTimePeriodSelector = () => {
-    return (
-      <TimePeriodSelect
-        date={currentDate}
-        period={currentPeriod}
-        onChangePeriod={handlePeriodChange}
-        onChangeDate={handleDateChange}
-      />
-    );
-  };
-
-  const renderWellbeingChart = useCallback(() => {
-    return (
-      <WellbeingLogsChart
-        dataMap={wellbeingChartDataMap}
-        currentDate={currentDate}
-        period={currentPeriod}
-      />
-    );
-  }, [wellbeingChartDataMap, currentDate, currentPeriod]);
-
-  const renderSleepLogsChart = useCallback(() => {
-    return (
-      <SleepLogsChart
-        dataMap={sleepLogsChartDataMap}
-        currentDate={currentDate}
-        period={currentPeriod}
-      />
-    );
-  }, [sleepLogsChartDataMap, currentDate, currentPeriod]);
-
-  const renderMedLogsCard = useCallback(() => {
-    if (!showMedications) return null;
-    return (
-      <MedsChart
-        data={medicationsChartData}
-        currentDate={currentDate}
-        period={currentPeriod}
-      />
-    );
-  }, [medicationsChartData, currentDate, currentPeriod, showMedications]);
-
-  const renderImpactsStats = useCallback(() => {
-    return (
-      <SentimentStatsView
-        title={t("impacts.impacts_count")}
-        data={impactsStatsData}
-        category="impact"
-      />
-    );
-  }, [impactsStatsData, t]);
-
-  const renderEmotionsStats = useCallback(() => {
-    return (
-      <SentimentStatsView
-        title={t("emotions.emotions_count")}
-        data={emotionsStatsData}
-        category="emotion"
-      />
-    );
-  }, [emotionsStatsData, t]);
+  const {
+    wellbeingChartData,
+    sleepChartData,
+    medsChartData,
+    impactsStats,
+    emotionsStats,
+  } = useStats(period, date);
 
   const listData = useMemo(() => {
-    return [
+    const items = [
+      {
+        key: "stats",
+        component: (
+          <StatsOverview
+            wellbeingCount={wellbeingChartData.totalEntries}
+            sleepCount={sleepChartData.totalEntries}
+            impactsCount={impactsStats.totalCount}
+            emotionsCount={emotionsStats.totalCount}
+          />
+        ),
+      },
+      {
+        key: "mood",
+        component: (
+          <MoodLogsChart
+            dataMap={wellbeingChartData}
+            currentDate={date}
+            period={period}
+          />
+        ),
+      },
       {
         key: "sleepQuality",
-        renderItem: () => renderSleepLogsChart(),
-      },
-      {
-        key: "wellbeing",
-        renderItem: () => renderWellbeingChart(),
-      },
-      {
-        key: "medications",
-        renderItem: () => renderMedLogsCard(),
+        component: (
+          <SleepLogsChart
+            dataMap={sleepChartData}
+            currentDate={date}
+            period={period}
+          />
+        ),
       },
       {
         key: "impactsStats",
-        renderItem: () => renderImpactsStats(),
+        component: (
+          <SentimentStatsCard
+            title={t("impacts.top_impacts")}
+            stats={impactsStats}
+            sentimentType="impact"
+          />
+        ),
       },
       {
         key: "emotionsStats",
-        renderItem: () => renderEmotionsStats(),
+        component: (
+          <SentimentStatsCard
+            title={t("emotions.top_emotions")}
+            stats={emotionsStats}
+            sentimentType="emotion"
+          />
+        ),
       },
     ];
+
+    if (medsChartData) {
+      items.splice(3, 0, {
+        key: "medications",
+        component: (
+          <MedsChart data={medsChartData} currentDate={date} period={period} />
+        ),
+      });
+    }
+
+    return items;
   }, [
-    renderWellbeingChart,
-    renderSleepLogsChart,
-    renderMedLogsCard,
-    renderImpactsStats,
-    renderEmotionsStats,
+    wellbeingChartData,
+    sleepChartData,
+    medsChartData,
+    impactsStats,
+    emotionsStats,
+    date,
+    period,
+    t,
   ]);
-
-  const renderList = () => {
-    return (
-      <FlatList
-        data={listData}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          gap: theme.layout.spacing.sm,
-          paddingBottom,
-        }}
-        keyExtractor={(item) => item.key}
-        renderItem={({ item }) => item.renderItem()}
-      />
-    );
-  };
-
-  const renderHeader = () => {
-    return <Header title={t("statistics.title")} />;
-  };
 
   return (
     <View style={styles.container}>
-      {renderHeader()}
-      <View style={styles.periodSelect}>{renderTimePeriodSelector()}</View>
-      <View style={styles.wrapper}>{renderList()}</View>
+      <Header
+        title={t("statistics.title")}
+        rightContent={
+          <PeriodSelector period={period} onPress={handlePeriodChange} />
+        }
+      />
+      <View style={styles.periodNavigator}>
+        <PeriodNavigator
+          date={date}
+          period={period}
+          onChangeDate={handleDateChange}
+        />
+      </View>
+      <View style={styles.wrapper}>
+        <FlatList
+          data={listData}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            gap: theme.layout.spacing.sm,
+            paddingBottom: insets.bottom + theme.layout.spacing.lg,
+          }}
+          keyExtractor={(item) => item.key}
+          renderItem={({ item }) => item.component}
+        />
+      </View>
     </View>
   );
 };
@@ -265,29 +152,12 @@ const createStyles = (theme: TTheme) =>
     container: {
       flex: 1,
     },
-    periodSelect: {
+    periodNavigator: {
       padding: theme.layout.spacing.lg,
+      paddingTop: theme.layout.spacing.xs,
     },
     wrapper: {
       flex: 1,
       paddingHorizontal: theme.layout.spacing.lg,
-    },
-    impactsSection: {
-      flex: 1,
-      padding: theme.layout.spacing.lg,
-      paddingTop: 0,
-    },
-    placeholder: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: theme.layout.spacing.xl,
-    },
-    impactsSectionHeader: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: theme.layout.spacing.md,
-      justifyContent: "space-between",
-      marginBottom: theme.layout.spacing.md,
     },
   });

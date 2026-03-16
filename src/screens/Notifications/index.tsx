@@ -210,7 +210,7 @@ export const Notifications = () => {
       <Card>
         {permissionStatus !== "granted" && <View style={styles.overlay} />}
         <View style={styles.headerRow}>
-          <Typography variant="bodyBold">
+          <Typography variant="h6">
             {APP_NAME} {t("notifications.title")}
           </Typography>
           <Switch value={enabled} onChange={handleToggleNotifications} />
@@ -232,10 +232,10 @@ export const Notifications = () => {
                   key={day}
                   size="md"
                   style={styles.dayButton}
-                  backgroundColor={isSelected ? "primary" : "surface"}
+                  color={isSelected ? "primary" : "surface"}
                   onPress={() => handleToggleDay(index)}
                   disabled={!enabled}
-                  customContent={
+                  customIcon={
                     <Typography color={isSelected ? "onPrimary" : "onSurface"}>
                       {t(day)}
                     </Typography>
@@ -265,7 +265,7 @@ export const Notifications = () => {
           <IconButton
             icon="plus"
             size="sm"
-            backgroundColor="primary"
+            color="primary"
             iconColor="onPrimary"
             onPress={handleAddTime}
             disabled={!enabled}

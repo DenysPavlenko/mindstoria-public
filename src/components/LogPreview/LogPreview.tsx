@@ -31,7 +31,7 @@ export const LogPreview = ({
   const { t } = useTranslation();
   const router = useRouter();
   const cbtLogs = useAppSelector((state) => state.cbtLogs.items);
-  const [tab, setTab] = useState<"wellbeing" | "thought">("wellbeing");
+  const [tab, setTab] = useState<"mood" | "thought">("mood");
 
   const cbtLog = useMemo(() => {
     if (!connectedCBTId) return null;
@@ -63,7 +63,7 @@ export const LogPreview = ({
         selectedValue={tab}
         onChange={setTab}
         options={[
-          { label: t("wellbeing.title"), value: "wellbeing" },
+          { label: t("mood.title"), value: "mood" },
           { label: t("common.thought"), value: "thought" },
         ]}
       />
@@ -90,7 +90,7 @@ export const LogPreview = ({
   };
 
   const renderContent = () => {
-    if (tab === "wellbeing") {
+    if (tab === "mood") {
       return renderLog();
     }
     return renderCBTLog();

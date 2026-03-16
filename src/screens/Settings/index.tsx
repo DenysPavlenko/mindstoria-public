@@ -15,8 +15,12 @@ import { useThemedSnackbar } from "@/hooks";
 import { setAppLanguage } from "@/i18n";
 import { useRevenueCat, useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { importDataThunk } from "@/store/slices";
-import { selectDataToBackUp } from "@/store/slices/backUpData/backUpDataSelectors";
+import {
+  importDataThunk,
+  selectDataToBackUp,
+  toggleHaptics,
+  toggleShowMedications,
+} from "@/store/slices";
 import { TTheme } from "@/theme";
 import {
   buildFeedbackUrl,
@@ -54,6 +58,9 @@ export const Settings = () => {
   const dispatch = useAppDispatch();
   const backUpData = useAppSelector(selectDataToBackUp);
   const [showImportConfirmation, setShowImportConfirmation] = useState(false);
+  const { showMedications, haptics } = useAppSelector(
+    (state) => state.settings,
+  );
 
   const paddingBottom = useMemo(() => {
     return insets.bottom + TAB_BAR_HEIGHT + theme.layout.spacing.lg;
@@ -84,6 +91,14 @@ export const Settings = () => {
     trackEvent(ANALYTICS_EVENTS.THEME_CHANGED, {
       theme: isDark ? "light" : "dark",
     });
+  };
+
+  const toggleShowMeds = () => {
+    dispatch(toggleShowMedications());
+  };
+
+  const toggleHapticsSetting = () => {
+    dispatch(toggleHaptics());
   };
 
   const handleDataImportPress = () => {
@@ -168,6 +183,26 @@ export const Settings = () => {
         icon="moon"
         title={t("settings.dark_theme")}
         action={<Switch value={isDark} onChange={handleThemeToggle} />}
+      />
+    );
+  };
+
+  const renderMedsSetting = () => {
+    return (
+      <SettingsItem
+        icon="pill"
+        title={t("medications.show_meds")}
+        action={<Switch value={showMedications} onChange={toggleShowMeds} />}
+      />
+    );
+  };
+
+  const renderHapticsSetting = () => {
+    return (
+      <SettingsItem
+        icon="smartphone"
+        title={t("common.haptics")}
+        action={<Switch value={haptics} onChange={toggleHapticsSetting} />}
       />
     );
   };
@@ -348,7 +383,7 @@ export const Settings = () => {
         content={t("settings.import_data_warning")}
         actionText={t("common.import")}
         actionProps={{
-          buttonColor: "primary",
+          color: "primary",
           textColor: "onPrimary",
         }}
       />
@@ -358,7 +393,13 @@ export const Settings = () => {
   const sections = [
     {
       title: t("settings.general"),
-      items: [renderThemeSetting, renderLanguageSetting, renderNotifications],
+      items: [
+        renderThemeSetting,
+        renderHapticsSetting,
+        renderMedsSetting,
+        renderLanguageSetting,
+        renderNotifications,
+      ],
     },
     {
       title: t("settings.data"),

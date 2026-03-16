@@ -94,6 +94,13 @@ export interface TColorsTheme {
     300: string;
     400: string;
   };
+  ratingContainer: {
+    50: string;
+    100: string;
+    200: string;
+    300: string;
+    400: string;
+  };
 }
 
 const size = {
@@ -191,11 +198,18 @@ export const lightTheme: TTheme = {
     surfaceContainerHigh: "#E7E8EE",
     surfaceContainerHighest: "#E2E2E9",
     rating: {
-      50: withAlpha("#BA1A1A", 0.8),
-      100: withAlpha("#E65100", 0.8),
-      200: withAlpha("#C69C26", 0.8),
-      300: withAlpha("#7CB342", 0.8),
-      400: withAlpha("#388E3C", 0.8),
+      50: "#D94545",
+      100: "#EC7A33",
+      200: "#D6B84A",
+      300: "#93C96A",
+      400: "#5BA85F",
+    },
+    ratingContainer: {
+      50: "#F3B3B3",
+      100: "#FFD1B3",
+      200: "#F8E6A8",
+      300: "#CDE7B8",
+      400: "#A3D6A7",
     },
   },
   layout: {
@@ -264,6 +278,13 @@ export const darkTheme: TTheme = {
       200: "#FFD54F",
       300: "#AED581",
       400: "#81C784",
+    },
+    ratingContainer: {
+      50: "#B26A6A",
+      100: "#B28536",
+      200: "#B2A136",
+      300: "#6B8C4F",
+      400: "#4B7B57",
     },
   },
   layout: {

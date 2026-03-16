@@ -23,5 +23,5 @@ export const getSleepLogChartDataMap = (
     return sum + (value || 0);
   }, 0);
   const average = totalSum / Object.values(data).length;
-  return { data, average };
+  return { data, average, totalEntries: Object.values(data).length };
 };

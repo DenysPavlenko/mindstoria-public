@@ -8,7 +8,7 @@ import {
   TCBTLogValues,
   TCognitiveDistortionDefinition,
   TCognitiveDistortionLog,
-  TEmotionLog,
+  TSentimentLog,
 } from "@/types";
 import { getCBTTitle } from "@/utils";
 import { useMemo } from "react";
@@ -46,19 +46,18 @@ export const CBTLogPreviewContent = ({ log }: CBTLogPreviewContentProps) => {
     );
   }, []);
 
-  const renderEmotionsChips = (items: TEmotionLog[]) => {
+  const renderEmotionsChips = (items: TSentimentLog[]) => {
     if (items.length === 0) return null;
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.chipsContainer}>
-          {items.map(({ id, definitionId, level }) => {
+          {items.map(({ id, definitionId }) => {
             const definition = emotionDefinitionsItems[definitionId];
             if (!definition) return null;
             return (
               <Chip
                 key={id}
-                bgColor="surface"
-                customContent={<Typography>{definition.icon}</Typography>}
+                customIcon={<Typography>{definition.icon}</Typography>}
                 disabled={definition.isArchived}
                 label={t(definition.name)}
               />
@@ -80,7 +79,6 @@ export const CBTLogPreviewContent = ({ log }: CBTLogPreviewContentProps) => {
             return (
               <Chip
                 key={id}
-                bgColor="surface"
                 icon={definition.icon}
                 label={t(definition.name)}
               />
@@ -171,6 +169,7 @@ const createStyles = (theme: TTheme) =>
     metricItem: {
       flexDirection: "row",
       paddingVertical: theme.layout.spacing.md,
+      overflow: "hidden",
     },
     metricInfo: {
       flex: 1,

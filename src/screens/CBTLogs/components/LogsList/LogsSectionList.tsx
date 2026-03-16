@@ -69,12 +69,10 @@ export const LogsSectionList = ({
           <LogListItem log={item} onPress={onCardPress} onDelete={onDelete} />
         )}
         renderSectionHeader={({ section: { title } }) => (
-          <Typography style={styles.header} variant="smallBold">
-            {title}
-          </Typography>
+          <Typography variant="smallBold">{title}</Typography>
         )}
         showsVerticalScrollIndicator={false}
-        stickySectionHeadersEnabled={true}
+        stickySectionHeadersEnabled={false}
       />
     </>
   );
@@ -84,14 +82,8 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     logsList: {
       flexGrow: 1,
+      paddingTop: theme.layout.spacing.lg,
       paddingHorizontal: theme.layout.spacing.lg,
       gap: theme.layout.spacing.sm,
-    },
-    header: {
-      backgroundColor: theme.colors.surfaceContainer,
-      marginHorizontal: -theme.layout.spacing.lg,
-      paddingHorizontal: theme.layout.spacing.lg,
-      marginBottom: -theme.layout.spacing.sm,
-      paddingBottom: theme.layout.spacing.sm,
     },
   });

@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
-import { TTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { DISABLED_ALPHA, TTheme } from "@/theme";
+import { TColorKey } from "@/types/common";
 import { useMemo } from "react";
 import {
   StyleProp,
@@ -11,11 +11,13 @@ import {
 } from "react-native";
 import { CustomPressable } from "../CustomPressable/CustomPressable";
 
-interface CardProps extends TouchableOpacityProps {
+export interface CardProps extends TouchableOpacityProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  bgColor?: TColorKeys;
+  bgColor?: TColorKey;
+  borderColor?: TColorKey;
   padding?: keyof TTheme["layout"]["spacing"];
+  variant?: "contained" | "outlined";
   onPress?: () => void;
   onLongPress?: () => void;
   noPadding?: boolean;
@@ -34,7 +36,10 @@ export const Card = ({
   noHorizontalPadding = false,
   noVerticalPadding = false,
   bgColor = "surfaceContainer",
+  borderColor = "surfaceContainer",
   withHaptics = false,
+  variant = "contained",
+  disabled,
   ...restProps
 }: CardProps) => {
   const { theme } = useTheme();
@@ -53,6 +58,22 @@ export const Card = ({
     };
   };
 
+  const getColorStyle = () => {
+    switch (variant) {
+      case "outlined":
+        return {
+          backgroundColor: "transparent",
+          borderColor: theme.colors[borderColor],
+          borderWidth: 1,
+        };
+      case "contained":
+      default:
+        return {
+          backgroundColor: theme.colors[bgColor],
+        };
+    }
+  };
+
   const Component = onPress || onLongPress ? CustomPressable : View;
 
   return (
@@ -60,7 +81,8 @@ export const Card = ({
       style={[
         styles.card,
         getPaddingStyle(),
-        { backgroundColor: theme.colors[bgColor] },
+        getColorStyle(),
+        { opacity: disabled ? DISABLED_ALPHA : 1 },
         style,
       ]}
       onPress={onPress}
@@ -76,9 +98,6 @@ export const Card = ({
 
 const createStyles = (theme: TTheme) =>
   StyleSheet.create({
-    container: {
-      overflow: "hidden",
-    },
     card: {
       borderRadius: theme.layout.borderRadius.xl,
     },

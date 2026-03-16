@@ -1,11 +1,10 @@
 import { RatingLevel, TChartDataPoint } from "./common";
-import { TEmotionLog } from "./emotions";
-import { TImpactLog } from "./impacts";
+import { TSentimentLog } from "./sentiment";
 
 export type TLogValues = {
   wellbeing: RatingLevel;
-  impacts: TImpactLog[];
-  emotions: TEmotionLog[];
+  impacts: TSentimentLog[];
+  emotions: TSentimentLog[];
   notes: string | null;
 };
 

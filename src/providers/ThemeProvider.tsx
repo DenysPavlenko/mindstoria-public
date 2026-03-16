@@ -30,7 +30,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const loadThemePreference = async () => {
       try {
         const savedTheme = await storage.getItem(THEME_STORAGE_KEY);
-        if (savedTheme !== undefined) {
+        if (savedTheme !== undefined && savedTheme !== null) {
           setIsDark(savedTheme === "true");
         }
       } catch (error) {

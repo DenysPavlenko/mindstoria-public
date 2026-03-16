@@ -1,4 +1,4 @@
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "@/hooks";
 import {
   GestureResponderEvent,
   TouchableOpacity,
@@ -15,10 +15,12 @@ export const CustomPressable = ({
   disabled,
   ...props
 }: CustomPressableProps) => {
+  const { triggerImpact } = useHaptics();
+
   const handlePress = (e: GestureResponderEvent) => {
     if (disabled) return;
     if (withHaptics) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      triggerImpact();
     }
     onPress?.(e);
   };

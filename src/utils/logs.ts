@@ -41,7 +41,7 @@ export const getWellbeingChartDataMap = (
   // Calculate overall average
   const allValues = Object.values(grouped).flat();
   const totalSum = allValues.reduce((acc, val) => acc + val, 0);
-  const average = totalSum / allValues.length;
+  const average = allValues.length > 0 ? totalSum / allValues.length : 0;
 
-  return { data, average };
+  return { data, average, totalEntries: allValues.length };
 };

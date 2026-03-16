@@ -1,18 +1,14 @@
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
 import { TLog } from "@/types";
-import {
-  getRatingLevelColor,
-  getRatingLevelLabel,
-  getWellbeingIcon,
-} from "@/utils";
+import { getRatingLevelLabel } from "@/utils";
 import Feather from "@react-native-vector-icons/feather";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Card } from "../Card/Card";
-import { IconBox } from "../IconBox/IconBox";
+import { MoodIcon } from "../MoodIcon/MoodIcon";
 import { Pill } from "../Pill/Pill";
 import { Typography } from "../Typography/Typography";
 
@@ -34,12 +30,6 @@ export const LogCard = ({ log, onPress, hasConnectedCBT }: LogCardProps) => {
     return dayjs(timestamp).format("HH:mm");
   }, [timestamp]);
 
-  const color = getRatingLevelColor(wellbeing, theme);
-
-  const Icon = getWellbeingIcon(wellbeing);
-
-  const iconSize = theme.layout.size.lg;
-
   const renderInfo = () => {
     let text = "";
     if (impacts.length > 0) {
@@ -53,32 +43,19 @@ export const LogCard = ({ log, onPress, hasConnectedCBT }: LogCardProps) => {
     }
     if (text.length === 0) return null;
     return (
-      <Typography variant="smallBold" color="outline" numberOfLines={1}>
+      <Typography variant="smallSemibold" color="outline" numberOfLines={1}>
         {text} {t("common.logged").toLowerCase()}
       </Typography>
     );
   };
 
   return (
-    <Card bgColor="surface" onPress={onPress}>
+    <Card onPress={onPress}>
       <View style={styles.container}>
-        <IconBox
-          size="lg"
-          customContent={
-            Icon && (
-              <Icon
-                height={iconSize}
-                width={iconSize}
-                fill={theme.colors.surface}
-              />
-            )
-          }
-          radius="lg"
-          style={{ backgroundColor: color }}
-        />
+        <MoodIcon level={wellbeing} />
         <View style={{ flex: 1 }}>
           <Typography variant="h5" numberOfLines={1}>
-            {t("common.i_feel")} {getRatingLevelLabel(wellbeing, t)}
+            {getRatingLevelLabel(wellbeing, t)}
           </Typography>
           {renderInfo()}
         </View>
@@ -122,7 +99,7 @@ const createStyles = (theme: TTheme) =>
     divider: {
       width: 1,
       height: theme.layout.size.lg,
-      backgroundColor: theme.colors.surfaceVariant,
+      backgroundColor: theme.colors.outlineVariant,
     },
     rightSection: {
       alignItems: "center",

@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/store";
 import {
   selectActiveEmotionDefinitions,
   selectEmotionDefinitions,
@@ -5,28 +6,27 @@ import {
 import { sortEmotionDefinitions } from "@/utils";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 
-export const useTranslatedEmotionDefinitions = (options: {
+export const useTranslatedEmotionDefinitions = (options?: {
   sorted?: boolean;
   activeOnly?: boolean;
 }) => {
   const { t } = useTranslation();
 
-  const selector = options.activeOnly
+  const selector = options?.activeOnly
     ? selectActiveEmotionDefinitions
     : selectEmotionDefinitions;
-  const emotions = useSelector(selector);
+  const emotions = useAppSelector(selector);
 
   return useMemo(() => {
     const translated = emotions.map((emotion) => {
       return { ...emotion, name: t(emotion.name) };
     });
 
-    if (options.sorted) {
+    if (options?.sorted) {
       return sortEmotionDefinitions(translated);
     }
 
     return translated;
-  }, [emotions, t, options.sorted]);
+  }, [emotions, t, options?.sorted]);
 };

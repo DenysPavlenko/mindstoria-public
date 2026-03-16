@@ -57,8 +57,8 @@ export const InfoModal = ({ visible, metricType, onClose }: InfoModalProps) => {
       <Card style={{ opacity: isPrev ? 0.5 : 1 }} key={label}>
         <Pill
           label={label}
-          bgColor="primary"
-          textColor="onPrimary"
+          bgColor="secondaryContainer"
+          textColor="onSecondaryContainer"
           style={{
             position: "absolute",
             top: -theme.layout.spacing.md,

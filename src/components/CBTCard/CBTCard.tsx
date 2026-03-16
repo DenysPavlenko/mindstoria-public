@@ -29,9 +29,9 @@ export const CBTCard = ({ log, onPress }: CBTCardProps) => {
   }, [timestamp]);
 
   return (
-    <Card bgColor="surface" onPress={onPress} style={{ overflow: "hidden" }}>
+    <Card onPress={onPress} style={{ overflow: "hidden" }}>
       <View style={styles.container}>
-        <IconBox size="lg" icon="feather" radius="lg" />
+        <IconBox size="lg" icon="feather" />
         <View style={styles.content}>
           <View style={styles.header}>
             <Typography variant="h5">{t("cbt.situation")}</Typography>
@@ -46,7 +46,9 @@ export const CBTCard = ({ log, onPress }: CBTCardProps) => {
               <Pill label={formattedTime} />
             </View>
           </View>
-          <Typography numberOfLines={3}>{situation}</Typography>
+          <Typography variant="smallSemibold" numberOfLines={3}>
+            {situation}
+          </Typography>
         </View>
       </View>
     </Card>

@@ -13,7 +13,11 @@ import { CBT_LOG_METRICS } from "@/data";
 import { useAndroidBackHandler, useKeyboard } from "@/hooks";
 import { useTheme } from "@/providers";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { addCBTLogThunk, updateCBTLogThunk } from "@/store/slices";
+import {
+  addCBTLogThunk,
+  selectLogItems,
+  updateCBTLogThunk,
+} from "@/store/slices";
 import { TTheme } from "@/theme";
 import { TCBTLogMetric, TCBTLogValue, TCBTLogValues } from "@/types";
 import { generateUniqueId, trackEvent } from "@/utils";
@@ -27,12 +31,12 @@ import PagerView from "react-native-pager-view";
 import { InfoModal } from "./components/InfoModal";
 import { MetricInput, TCBTLogFormValues } from "./components/MetricInput";
 
-interface CBTLogManagerProps {
+export type CBTLogManagerProps = {
   date?: string;
   logId?: string;
   metricId?: string;
   wellbeingLogId?: string;
-}
+};
 
 const NOW = dayjs().toISOString();
 
@@ -58,7 +62,7 @@ export const CBTLogManager = ({
     alternativeThought: null,
   });
   const logs = useAppSelector((state) => state.cbtLogs.items);
-  const wellbeingLogs = useAppSelector((state) => state.logs.items);
+  const wellbeingLogs = useAppSelector(selectLogItems);
   const metrics = CBT_LOG_METRICS;
   const [currentPage, setCurrentPage] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
@@ -270,7 +274,7 @@ export const CBTLogManager = ({
             style={{
               flexDirection: "row",
               alignItems: "center",
-              gap: theme.layout.spacing.sm,
+              gap: theme.layout.spacing.md,
             }}
           >
             <Pill
@@ -278,8 +282,10 @@ export const CBTLogManager = ({
               onPress={() => setShowTimePicker(true)}
             />
             <IconButton
-              size="sm"
               icon="info"
+              variant="text"
+              iconColor="outline"
+              edge={["start", "end"]}
               onPress={() => setShowInfoModal(true)}
             />
           </View>
@@ -322,7 +328,7 @@ export const CBTLogManager = ({
         content={t("common.your_data_will_be_saved")}
         actionText={t("common.confirm")}
         actionProps={{
-          buttonColor: "primary",
+          color: "primary",
           textColor: "onPrimary",
         }}
         onClose={() => setShowExitConfirmation(false)}

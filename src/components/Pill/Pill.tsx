@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
 import { DISABLED_ALPHA, TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
@@ -10,8 +10,8 @@ import { Typography } from "../Typography/Typography";
 interface PillProps {
   label: string;
   icon?: FeatherIconName;
-  bgColor?: TColorKeys;
-  textColor?: TColorKeys;
+  bgColor?: TColorKey;
+  textColor?: TColorKey;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
@@ -21,8 +21,8 @@ export const Pill = ({
   label,
   icon,
   onPress,
-  bgColor = "surfaceVariant",
-  textColor = "onSurfaceVariant",
+  bgColor = "surfaceContainerHighest",
+  textColor = "onSurface",
   disabled,
   style,
 }: PillProps) => {
@@ -36,10 +36,10 @@ export const Pill = ({
         <Feather
           name={icon}
           size={theme.layout.size.xxs - 2}
-          color={theme.colors.onSurface}
+          color={theme.colors[textColor]}
         />
       )}
-      <Typography variant="small" color={textColor}>
+      <Typography variant="tinySemibold" color={textColor}>
         {label}
       </Typography>
     </>

@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
-import { DISABLED_ALPHA, TTheme } from "@/theme";
-import { TColorKeys, TSizeKeys } from "@/types/common";
+import { DISABLED_ALPHA, TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
+import { TColorKey, TTypographyVariant } from "@/types/common";
 import { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, ViewStyle } from "react-native";
 import {
@@ -9,15 +9,37 @@ import {
 } from "../CustomPressable/CustomPressable";
 import { Typography } from "../Typography/Typography";
 
+type TButtonSize = "xs" | "sm" | "md" | "lg";
+
 export interface ButtonProps extends CustomPressableProps {
-  variant?: "contained" | "text";
+  variant?: "contained" | "text" | "outlined";
+  size?: TButtonSize;
   fullWidth?: boolean;
-  buttonColor?: TColorKeys;
-  textColor?: TColorKeys;
+  color?: TColorKey;
+  textColor?: TColorKey;
   autoSize?: boolean;
   isLoading?: boolean;
-  minHeight?: TSizeKeys | number;
 }
+
+type TSizeConfig = {
+  textVariant: TTypographyVariant;
+  paddingHorizontal: number;
+  minHeight: number;
+};
+
+const getSizeConfig = (theme: TTheme, size: TButtonSize): TSizeConfig => {
+  const textVariants: Record<TButtonSize, TTypographyVariant> = {
+    xs: "tinyBold",
+    sm: "smallBold",
+    md: "bodyBold",
+    lg: "bodyBold",
+  };
+  return {
+    textVariant: textVariants[size],
+    paddingHorizontal: theme.layout.spacing[size],
+    minHeight: theme.layout.size[size],
+  };
+};
 
 export const Button = ({
   onPress,
@@ -25,12 +47,12 @@ export const Button = ({
   variant = "contained",
   fullWidth = false,
   disabled = false,
-  buttonColor,
+  color,
   textColor,
   autoSize,
   style,
   isLoading,
-  minHeight = "lg",
+  size = "lg",
   ...restProps
 }: ButtonProps) => {
   const { theme } = useTheme();
@@ -45,24 +67,34 @@ export const Button = ({
   switch (variant) {
     case "contained":
       buttonTextColor = textColor || "onPrimary";
-      backgroundColor = theme.colors[buttonColor || "primary"];
+      backgroundColor = theme.colors[color || "primary"];
+      borderColor = "transparent";
+      break;
+    case "outlined":
+      buttonTextColor = textColor || color || "primary";
+      backgroundColor = "transparent";
+      borderColor = theme.colors[color || "primary"];
       break;
     case "text":
       buttonTextColor = textColor || "onSurface";
+      backgroundColor = "transparent";
+      borderColor = "transparent";
+      break;
     default:
       break;
   }
 
-  const minHeightValue =
-    typeof minHeight === "number" ? minHeight : theme.layout.size[minHeight];
+  // Get size config, fallback to lg
+  const sizeConfig = getSizeConfig(theme, size);
 
   const buttonStyle: ViewStyle = {
     ...styles.button,
     backgroundColor,
     borderColor,
+    borderWidth: 1,
     width: fullWidth ? "100%" : "auto",
-    minHeight: minHeightValue,
-    paddingHorizontal: autoSize ? 0 : theme.layout.spacing.lg,
+    minHeight: sizeConfig.minHeight,
+    paddingHorizontal: autoSize ? 0 : sizeConfig.paddingHorizontal,
     ...(disabled && { opacity: DISABLED_ALPHA }),
   };
 
@@ -74,7 +106,7 @@ export const Button = ({
     }
     return (
       <Typography
-        variant="buttonText"
+        variant={sizeConfig.textVariant}
         numberOfLines={1}
         color={buttonTextColor}
       >
@@ -88,6 +120,7 @@ export const Button = ({
       onPress={onPress}
       disabled={disabled}
       style={[buttonStyle, style]}
+      activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
       {...restProps}
     >
       {renderContent()}

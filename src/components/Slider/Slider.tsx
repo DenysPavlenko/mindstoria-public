@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
-import { TColorKeys } from "@/types/common";
+import { TColorKey } from "@/types/common";
 import { useCallback } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Slider as RNSlider } from "react-native-awesome-slider";
@@ -13,7 +13,7 @@ export interface SliderProps {
   max: number;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-  bgColor?: TColorKeys;
+  bgColor?: TColorKey;
   customBgColor?: string;
 }
 

@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers";
 import { TOUCHABLE_ACTIVE_OPACITY, TTheme } from "@/theme";
-import { TColorKeys, TSizeKeys } from "@/types";
+import { TColorKey, TSizeKey } from "@/types";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import React, { ReactNode, useMemo } from "react";
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
@@ -9,26 +9,26 @@ import { Typography } from "../Typography/Typography";
 
 interface ChipProps {
   label: string | ReactNode;
-  minHeight?: TSizeKeys | number;
+  minHeight?: TSizeKey | number;
   icon?: FeatherIconName;
-  customContent?: ReactNode;
+  customIcon?: ReactNode;
   onPress?: () => void;
   selected?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   iconStyle?: StyleProp<TextStyle>;
-  bgColor?: TColorKeys;
-  textColor?: TColorKeys;
-  iconColor?: TColorKeys;
-  selectedBgColor?: TColorKeys;
+  bgColor?: TColorKey;
+  textColor?: TColorKey;
+  iconColor?: TColorKey;
+  selectedBgColor?: TColorKey;
   testID?: string;
 }
 
 export const Chip = ({
   label,
   icon,
-  customContent,
+  customIcon,
   onPress,
   selected = false,
   disabled = false,
@@ -66,7 +66,7 @@ export const Chip = ({
       return (
         <Typography
           color={selected ? "onPrimary" : textColor}
-          variant="smallBold"
+          variant="smallSemibold"
           style={textStyle}
         >
           {label}
@@ -77,7 +77,7 @@ export const Chip = ({
   };
 
   const renderIcon = () => {
-    if (customContent) return customContent;
+    if (customIcon) return customIcon;
     const color = selected ? theme.colors.onPrimary : theme.colors[iconColor];
     if (icon) {
       return (

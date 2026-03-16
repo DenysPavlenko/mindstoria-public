@@ -1,12 +1,13 @@
 import { useTheme } from "@/providers";
 import { TTheme } from "@/theme";
+import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import NoData from "../../assets/images/no-data.svg";
 import { Typography } from "../Typography/Typography";
 
 interface PlaceholderProps {
   title?: string | React.ReactNode;
+  icon?: FeatherIconName;
   content?: string | React.ReactNode;
   style?: StyleProp<ViewStyle>;
   hideIcon?: boolean;
@@ -14,6 +15,7 @@ interface PlaceholderProps {
 
 export const Placeholder = ({
   title,
+  icon = "heart",
   content,
   style,
   hideIcon = false,
@@ -21,28 +23,15 @@ export const Placeholder = ({
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const iconSize = 150;
-
   const renderImage = () => {
     if (hideIcon) return null;
     return (
-      <View
-        style={{
-          height: iconSize,
-          width: iconSize,
-          overflow: "hidden",
-          justifyContent: "center",
-          alignItems: "center",
-          marginBottom: theme.layout.spacing.md,
-        }}
-      >
-        <NoData
-          width={iconSize * 1.2}
-          height={iconSize * 1.2}
-          fill={theme.colors.outlineVariant}
-          color={theme.colors.outlineVariant}
-        />
-      </View>
+      <Feather
+        name={icon}
+        size={theme.layout.size.xl}
+        color={theme.colors.outlineVariant}
+        style={styles.icon}
+      />
     );
   };
 
@@ -65,17 +54,12 @@ export const Placeholder = ({
   const renderContent = () => {
     if (typeof content === "string") {
       return (
-        <Typography
-          align="center"
-          variant="small"
-          color="outline"
-          style={styles.content}
-        >
+        <Typography align="center" variant="small" color="outline">
           {content}
         </Typography>
       );
     }
-    return <View style={styles.content}>{content}</View>;
+    return <View>{content}</View>;
   };
 
   return (
@@ -95,7 +79,9 @@ const createStyles = (theme: TTheme) =>
       maxWidth: 270,
       marginHorizontal: "auto",
     },
-    content: {},
+    icon: {
+      marginBottom: theme.layout.spacing.md,
+    },
     action: {
       marginTop: theme.layout.spacing.lg,
     },

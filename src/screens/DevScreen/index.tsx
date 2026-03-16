@@ -1,8 +1,8 @@
 import { Button, Header, SafeView } from "@/components";
 import { clearDatabase } from "@/db";
+import { storage } from "@/services/storage";
 import { persistor } from "@/store";
-import { themeStorage } from "@/theme";
-import { backdoorStorage, getAppVariant } from "@/utils";
+import { getAppVariant } from "@/utils";
 import { useMemo } from "react";
 import { View } from "react-native";
 
@@ -26,8 +26,7 @@ export const DevScreen = () => {
         <Button onPress={clearDatabase}>Clear DB</Button>
         <Button
           onPress={() => {
-            themeStorage.clearAll();
-            backdoorStorage.clearAll();
+            storage.clearAll();
             persistor.purge();
           }}
         >
