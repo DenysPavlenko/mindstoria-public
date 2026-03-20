@@ -1,4 +1,4 @@
-import WelcomeIllustration from "@/assets/images/welcome-illustration.svg";
+import Logo from "@/assets/icons/logo.svg";
 import { Button, SafeView, Typography } from "@/components";
 import { useTheme } from "@/providers";
 import { useAppDispatch } from "@/store";
@@ -27,7 +27,7 @@ export const Welcome = ({ onNext }: WelcomeProps) => {
     onNext?.();
   };
 
-  const iconSize = 240;
+  const iconSize = 120;
 
   return (
     <SafeView
@@ -46,35 +46,18 @@ export const Welcome = ({ onNext }: WelcomeProps) => {
           paddingBottom: theme.layout.spacing.xxl,
         }}
       >
-        <View
-          style={{
-            marginBottom: theme.layout.spacing.lg,
-            width: iconSize,
-            height: iconSize,
-            justifyContent: "center",
-            alignItems: "center",
-            overflow: "hidden",
-          }}
-        >
-          <WelcomeIllustration
-            width={iconSize * 1.5}
-            height={iconSize * 1.5}
-            fill={theme.colors.outlineVariant}
-          />
-        </View>
+        <Logo
+          width={iconSize}
+          height={iconSize}
+          fill={theme.colors.outline}
+          style={{ marginBottom: theme.layout.spacing.lg }}
+        />
         <Typography
           variant="h1"
           align="center"
-          style={{ marginBottom: theme.layout.spacing.lg }}
-        >
-          {t("welcome.title")}
-        </Typography>
-        <Typography
-          variant="h5"
-          align="center"
           style={{ marginBottom: theme.layout.spacing.sm }}
         >
-          {t("welcome.subtitle")}
+          {t("welcome.title")}
         </Typography>
         <Typography variant="body" align="center" style={{ maxWidth: 350 }}>
           {t("welcome.description")}

@@ -13,8 +13,12 @@ export type TSentimentSearchResult =
 export const useSentimentSearch = (
   searchQuery: string,
 ): TSentimentSearchResult[] => {
-  const impactDefinitions = useTranslatedImpactDefinitions();
-  const emotionDefinitions = useTranslatedEmotionDefinitions();
+  const impactDefinitions = useTranslatedImpactDefinitions({
+    activeOnly: true,
+  });
+  const emotionDefinitions = useTranslatedEmotionDefinitions({
+    activeOnly: true,
+  });
 
   const allDefinitions = useMemo(() => {
     const impacts = impactDefinitions.map((impact) => ({

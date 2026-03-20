@@ -65,18 +65,18 @@ export const Notifications = ({ onNext }: NotificationsProps) => {
       >
         <View
           style={{
-            marginBottom: theme.layout.spacing.sm,
+            marginBottom: theme.layout.spacing.lg,
             justifyContent: "center",
             alignItems: "center",
             overflow: "hidden",
           }}
         >
-          <Feather name="bell" size={120} color={theme.colors.outlineVariant} />
+          <Feather name="bell" size={120} color={theme.colors.outline} />
         </View>
         <Typography
           variant="h1"
           align="center"
-          style={{ marginBottom: theme.layout.spacing.lg }}
+          style={{ marginBottom: theme.layout.spacing.sm }}
         >
           {t("notifications.title")}
         </Typography>

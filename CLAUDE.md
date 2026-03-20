@@ -69,6 +69,10 @@ Three variants controlled by `APP_VARIANT` env var: `development` (bundle id suf
 
 Analytics events are tracked via Mixpanel (`src/utils/analytics.ts`). Track events for all significant user actions. User profile properties are updated on app load in `_layout.tsx`.
 
+## Code Exploration
+
+Before modifying any file, you MUST read the full implementation of every hook and utility it uses. Do not skip this step even for seemingly simple changes. Prefer built-in options of existing abstractions over adding manual logic.
+
 ## Conventions
 
 - TypeScript types are prefixed with `T` (e.g., `TLog`, `TSleepLog`)
