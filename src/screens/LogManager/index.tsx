@@ -237,6 +237,7 @@ export const LogManager = ({ date, logId }: LogManagerProps) => {
             renderItem={({ item }) => item.render()}
             contentContainerStyle={styles.contentListContainer}
             showsVerticalScrollIndicator={false}
+            scrollEnabled={!hasSearchResults}
           />
           {hasSearchResults && (
             <SearchResults

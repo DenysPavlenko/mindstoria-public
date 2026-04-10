@@ -71,10 +71,9 @@ const createStyles = (theme: TTheme) =>
   StyleSheet.create({
     container: {
       gap: theme.layout.spacing.sm,
-      marginHorizontal: -theme.layout.spacing.xxs,
     },
     item: {
       width: `${100 / NUM_COLUMNS}%`,
-      paddingHorizontal: theme.layout.spacing.xs,
+      paddingHorizontal: theme.layout.spacing.xxs,
     },
   });

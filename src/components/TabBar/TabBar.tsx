@@ -7,7 +7,6 @@ import { TOUCHABLE_ACTIVE_OPACITY, TTheme, withAlpha } from "@/theme";
 import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { DeviceEventEmitter, StyleSheet, View } from "react-native";
 import { LinearGradient } from "react-native-linear-gradient";
 import Animated, {
@@ -18,31 +17,25 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CustomPressable } from "../CustomPressable/CustomPressable";
 import { IconButton } from "../IconButton/IconButton";
-import { Typography } from "../Typography/Typography";
 
 const TAB_BAR_PADDING = 4;
-const TAB_ITEM_HEIGHT = 52;
-const TAB_ITEM_WIDTH = TAB_ITEM_HEIGHT * 1.6;
-export const TAB_BAR_HEIGHT = TAB_ITEM_HEIGHT + TAB_BAR_PADDING * 2;
+const TAB_ITEM_SIZE = 56;
+export const TAB_BAR_HEIGHT = TAB_ITEM_SIZE + TAB_BAR_PADDING * 2;
 const ADD_BUTTON_SIZE = TAB_BAR_HEIGHT;
 
 type TTabDataItem = {
   icon: FeatherIconName;
-  label: string;
 };
 
 const TABS_DATA: Record<string, TTabDataItem> = {
   index: {
     icon: "home",
-    label: "common.home",
   },
   "cbt-logs": {
-    icon: "book-open",
-    label: "common.thoughts",
+    icon: "edit-3",
   },
   settings: {
     icon: "settings",
-    label: "settings.title",
   },
 };
 
@@ -51,7 +44,6 @@ export const TabBar = ({
   descriptors,
   navigation,
 }: BottomTabBarProps) => {
-  const { t } = useTranslation();
   const { theme, isDark } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -99,10 +91,11 @@ export const TabBar = ({
             {
               position: "absolute",
               backgroundColor: theme.colors.secondaryContainer,
-              borderRadius: TAB_ITEM_HEIGHT / 2,
-              width: TAB_ITEM_WIDTH,
-              height: TAB_ITEM_HEIGHT,
+              borderRadius: TAB_ITEM_SIZE / 2,
+              width: TAB_ITEM_SIZE,
+              height: TAB_ITEM_SIZE,
               left: TAB_BAR_PADDING,
+              zIndex: 1,
             },
           ]}
         />
@@ -112,10 +105,13 @@ export const TabBar = ({
           if (!tabData) return null;
           const isFocused = state.index === index;
           const onPress = () => {
-            tabPositionX.value = withSpring(TAB_ITEM_WIDTH * index, {
-              damping: 70,
-              stiffness: 900,
-            });
+            tabPositionX.value = withSpring(
+              (TAB_ITEM_SIZE + theme.layout.spacing.xs) * index,
+              {
+                damping: 70,
+                stiffness: 900,
+              },
+            );
             const event = navigation.emit({
               type: "tabPress",
               target: route.key,
@@ -132,34 +128,34 @@ export const TabBar = ({
               target: route.key,
             });
           };
+          const bgColor = isFocused
+            ? theme.colors.secondaryContainer
+            : isDark
+              ? theme.colors.surface
+              : theme.colors.surfaceContainer;
           return (
-            <CustomPressable
-              key={route.name}
-              onPress={onPress}
-              onLongPress={onLongPress}
-              style={styles.tabItem}
-              accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarButtonTestID}
-              activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
-            >
-              <Feather
-                size={theme.layout.size.xs}
-                name={tabData.icon}
-                color={
-                  isFocused
-                    ? theme.colors.onSecondaryContainer
-                    : theme.colors.onSurface
-                }
-              />
-              <Typography
-                variant="extraTiny"
-                align="center"
-                color={isFocused ? "onSecondaryContainer" : "onSurface"}
+            <View key={route.key}>
+              <CustomPressable
+                onPress={onPress}
+                onLongPress={onLongPress}
+                style={styles.tabItem}
+                accessibilityState={isFocused ? { selected: true } : {}}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                testID={options.tabBarButtonTestID}
+                activeOpacity={TOUCHABLE_ACTIVE_OPACITY}
               >
-                {t(tabData.label)}
-              </Typography>
-            </CustomPressable>
+                <Feather
+                  size={20}
+                  name={tabData.icon}
+                  color={
+                    isFocused
+                      ? theme.colors.onPrimaryContainer
+                      : theme.colors.onSurface
+                  }
+                />
+              </CustomPressable>
+              <View style={[styles.tabItemBg, { backgroundColor: bgColor }]} />
+            </View>
           );
         })}
       </View>
@@ -169,15 +165,16 @@ export const TabBar = ({
   const renderAddButton = () => {
     if (!showAddButton) return null;
     return (
-      <IconButton
-        icon="plus"
-        size={ADD_BUTTON_SIZE}
-        color="primary"
-        iconColor="onPrimary"
-        style={[styles.shadow]}
-        onPress={handleLogButtonPress}
-        activeOpacity={1}
-      />
+      <View style={[styles.addButton, styles.shadow]}>
+        <IconButton
+          icon="plus"
+          size={ADD_BUTTON_SIZE}
+          color="primary"
+          iconColor="onPrimary"
+          onPress={handleLogButtonPress}
+          activeOpacity={1}
+        />
+      </View>
     );
   };
 
@@ -191,7 +188,7 @@ export const TabBar = ({
         colors={[withAlpha(theme.colors.surface, 0.1), theme.colors.surface]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[styles.gradient, { height: TAB_ITEM_HEIGHT + bottom }]}
+        style={[styles.gradient, { height: TAB_ITEM_SIZE + bottom }]}
         pointerEvents="none"
       />
     </View>
@@ -206,12 +203,12 @@ const createStyles = (theme: TTheme, isDark: boolean) =>
       bottom: 0,
       left: 0,
       right: 0,
+      alignItems: "center",
     },
     content: {
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      gap: theme.layout.spacing.md,
       zIndex: 2,
     },
     tabsContainer: {
@@ -223,14 +220,32 @@ const createStyles = (theme: TTheme, isDark: boolean) =>
       height: TAB_BAR_HEIGHT,
       padding: TAB_BAR_PADDING,
       borderRadius: TAB_BAR_HEIGHT / 2,
+      gap: theme.layout.spacing.xs,
     },
     tabItem: {
       alignItems: "center",
       justifyContent: "center",
       gap: theme.layout.spacing.xxs,
-      height: TAB_ITEM_HEIGHT,
-      width: TAB_ITEM_WIDTH,
+      height: TAB_ITEM_SIZE,
+      width: TAB_ITEM_SIZE,
+      borderRadius: TAB_ITEM_SIZE / 2,
       zIndex: 2,
+    },
+    tabItemBg: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: TAB_ITEM_SIZE,
+      height: TAB_ITEM_SIZE,
+      borderRadius: TAB_ITEM_SIZE / 2,
+      zIndex: -1,
+    },
+    addButton: {
+      position: "absolute",
+      borderRadius: ADD_BUTTON_SIZE / 2,
+      right: -ADD_BUTTON_SIZE - theme.layout.spacing.md,
+      top: 0,
+      zIndex: 3,
     },
     shadow: {
       shadowColor: theme.colors.shadow,
