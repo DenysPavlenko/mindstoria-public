@@ -1,16 +1,13 @@
+import { Calendar } from "@/components";
 import { useTheme } from "@/providers";
 import { CALENDAR_DATE_FORMAT, generateDaysForMonth } from "@/utils";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { MarkedDates } from "react-native-calendars/src/types";
-import { Calendar } from "../Calendar/Calendar";
-import { SlideInModal } from "../SlideInModal/SlideInModal";
 
-interface CalendarPickerProps {
+interface CBTCalendarProps {
   date: Dayjs;
-  visible: boolean;
   onClose: () => void;
   onDateChange: (date: Dayjs) => void;
   getDotsCount: (date: Dayjs) => number;
@@ -19,15 +16,13 @@ interface CalendarPickerProps {
 
 const TODAY = dayjs().format(CALENDAR_DATE_FORMAT);
 
-export const CalendarPicker = ({
-  visible,
+export const CBTCalendar = ({
   onClose,
   date,
   onDateChange,
   getDotsCount,
-}: CalendarPickerProps) => {
+}: CBTCalendarProps) => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
   const [innerDate, setInnerDate] = useState(date);
 
   const currentMonthDays = useMemo(() => {
@@ -70,30 +65,22 @@ export const CalendarPicker = ({
   }, [currentMonthDays, date, theme.colors, getDotsCount]);
 
   return (
-    <SlideInModal
-      title={t("common.select_date")}
-      visible={visible}
-      onClose={onClose}
-    >
-      <View style={{ paddingHorizontal: theme.layout.spacing.lg }}>
-        <Calendar
-          selectedDate={dayjs(date).format(CALENDAR_DATE_FORMAT)}
-          onDayPress={(day) => {
-            const selectedDate = dayjs(day.dateString)
-              .hour(date.hour())
-              .minute(date.minute())
-              .second(date.second())
-              .millisecond(date.millisecond());
-            onDateChange(selectedDate);
-            onClose();
-          }}
-          onMonthChange={(date) => {
-            setInnerDate(dayjs(date.dateString));
-          }}
-          current={dayjs(date).format(CALENDAR_DATE_FORMAT)}
-          markedDates={markedDates}
-        />
-      </View>
-    </SlideInModal>
+    <Calendar
+      selectedDate={dayjs(date).format(CALENDAR_DATE_FORMAT)}
+      onDayPress={(day) => {
+        const selectedDate = dayjs(day.dateString)
+          .hour(date.hour())
+          .minute(date.minute())
+          .second(date.second())
+          .millisecond(date.millisecond());
+        onDateChange(selectedDate);
+        onClose();
+      }}
+      onMonthChange={(date) => {
+        setInnerDate(dayjs(date.dateString));
+      }}
+      current={dayjs(date).format(CALENDAR_DATE_FORMAT)}
+      markedDates={markedDates}
+    />
   );
 };

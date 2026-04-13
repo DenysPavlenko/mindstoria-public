@@ -17,7 +17,7 @@
     "export_success": "Export successful!",
     "export_failure": "Export failed. Please try again",
     "save_changes": "Save Changes",
-    "select_date": "Select Date",
+    "select_day": "Select Day",
     "not_enough_data": "Not enough data",
     "confirm": "Confirm",
     "avg": "Avg {{count}}",

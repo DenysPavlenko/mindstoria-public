@@ -16,6 +16,7 @@ import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
+import { CBTCalendar } from "./CBTCalendar";
 import { LogsList } from "./LogsList/LogsList";
 
 export const LogsCalendarView = () => {
@@ -71,6 +72,16 @@ export const LogsCalendarView = () => {
         onDateChange={setSelectedDate}
         style={styles.weekCalendar}
         getDotsCount={getDotsCount}
+        renderCalendar={({ date, onDateChange, getDotsCount, onClose }) => {
+          return (
+            <CBTCalendar
+              date={date}
+              onDateChange={onDateChange}
+              getDotsCount={getDotsCount}
+              onClose={onClose}
+            />
+          );
+        }}
       />
       <LogsList
         date={selectedDate}

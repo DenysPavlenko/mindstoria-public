@@ -6,6 +6,7 @@ export const ANALYTICS_EVENTS = {
   MOOD_LOG_CANCELLED: "moodLog_cancelled",
   MOOD_LOG_COMPLETED: "moodLog_completed",
   MOOD_CALENDAR_OPENED: "moodCalendar_opened",
+  MOOD_CALENDAR_MONTH_CHANGED: "moodCalendar_month_changed",
   // Mood Statistics
   MOOD_STATISTICS_OPENED: "moodStatistics_opened",
   MOOD_STATISTICS_PERIOD_CHANGE_ATTEMPTED:

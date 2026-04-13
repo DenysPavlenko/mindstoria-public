@@ -5,15 +5,16 @@ import Feather, { FeatherIconName } from "@react-native-vector-icons/feather";
 import { useMemo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { CustomPressable } from "../CustomPressable/CustomPressable";
-import { Typography } from "../Typography/Typography";
+import { Typography, TypographyProps } from "../Typography/Typography";
 
 interface PillProps {
-  label: string;
+  label: string | number;
   icon?: FeatherIconName;
   bgColor?: TColorKey;
   textColor?: TColorKey;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  textProps?: TypographyProps;
   disabled?: boolean;
 }
 
@@ -24,6 +25,7 @@ export const Pill = ({
   bgColor = "surfaceContainerHighest",
   textColor = "onSurface",
   disabled,
+  textProps,
   style,
 }: PillProps) => {
   const { theme } = useTheme();
@@ -39,7 +41,7 @@ export const Pill = ({
           color={theme.colors[textColor]}
         />
       )}
-      <Typography variant="tinySemibold" color={textColor}>
+      <Typography variant="tinySemibold" color={textColor} {...textProps}>
         {label}
       </Typography>
     </>

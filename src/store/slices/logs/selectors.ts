@@ -19,3 +19,21 @@ export const selectLogDateAvailability = createSelector(selectLogs, (logs) => {
   });
   return map;
 });
+
+export const selectLogsAvarageMap = createSelector(selectLogs, (logs) => {
+  const map = new Map<string, { sum: number; cnt: number }>();
+  logs.forEach((log) => {
+    const day = dayjs(log.timestamp).format(CALENDAR_DATE_FORMAT);
+    const current = map.get(day) ?? { sum: 0, cnt: 0 };
+    current.sum += log.values.wellbeing;
+    current.cnt += 1;
+    map.set(day, current);
+  });
+
+  const result: Record<string, number> = {};
+  for (const [day, { sum, cnt }] of map) {
+    result[day] = Math.round(sum / cnt);
+  }
+
+  return result;
+});

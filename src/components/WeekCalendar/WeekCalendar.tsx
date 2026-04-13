@@ -11,8 +11,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { CalendarPicker } from "../CalendarPicker/CalendarPicker";
 import { IconButton } from "../IconButton/IconButton";
+import { SlideInModal } from "../SlideInModal/SlideInModal";
 import { Typography } from "../Typography/Typography";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -23,6 +23,17 @@ interface WeekCalendarProps {
   onDateChange: (date: Dayjs) => void;
   style?: StyleProp<ViewStyle>;
   getDotsCount: (date: Dayjs) => number;
+  renderCalendar: ({
+    date,
+    onDateChange,
+    getDotsCount,
+    onClose,
+  }: {
+    date: Dayjs;
+    onDateChange: (date: Dayjs) => void;
+    getDotsCount: (date: Dayjs) => number;
+    onClose: () => void;
+  }) => React.ReactNode;
 }
 const ICON_SIZE = MAX_WIDTH / 8;
 
@@ -31,9 +42,10 @@ export const WeekCalendar = ({
   date,
   onDateChange,
   getDotsCount,
+  renderCalendar,
 }: WeekCalendarProps) => {
   const { theme } = useTheme();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLanguage = i18n.language;
   const [showCalendarPicker, setShowCalendarPicker] = useState(false);
 
@@ -105,16 +117,20 @@ export const WeekCalendar = ({
   const renderCalendarPicker = () => {
     if (!showCalendarPicker) return null;
     return (
-      <CalendarPicker
+      <SlideInModal
+        title={t("common.select_day")}
         visible
         onClose={() => setShowCalendarPicker(false)}
-        date={date}
-        onDateChange={(newDate) => {
-          onDateChange(newDate);
-          setShowCalendarPicker(false);
-        }}
-        getDotsCount={getDotsCount}
-      />
+      >
+        <View style={{ paddingHorizontal: theme.layout.spacing.lg }}>
+          {renderCalendar({
+            date,
+            onDateChange,
+            getDotsCount,
+            onClose: () => setShowCalendarPicker(false),
+          })}
+        </View>
+      </SlideInModal>
     );
   };
 

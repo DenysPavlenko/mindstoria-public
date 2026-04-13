@@ -2,7 +2,6 @@ export * from "./AddMedicationsModal/AddMedicationsModal";
 export * from "./Badge/Badge";
 export * from "./Button/Button";
 export * from "./Calendar/Calendar";
-export * from "./CalendarPicker/CalendarPicker";
 export * from "./Card/Card";
 export * from "./CBTCard/CBTCard";
 export * from "./CBTLogPreview/CBTLogPreview";

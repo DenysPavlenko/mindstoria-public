@@ -5,7 +5,10 @@ import { Mixpanel } from "mixpanel-react-native";
 import { Platform } from "react-native";
 import { getOrCreateUserId } from "./user";
 
-const setLogging = false;
+// Dev-only flags — edit these to control analytics behavior in development
+const DEV_ANALYTICS_ENABLED = true; // set false to disable all tracking in dev
+const DEV_SEND_TO_SERVER = false; // set false to console.log only, no Mixpanel calls
+const SET_LOGGING = false;
 
 const getMixpanelToken = () => {
   return (
@@ -16,7 +19,12 @@ const getMixpanelToken = () => {
 };
 
 const isAnalyticsEnabled = () => {
-  if (__DEV__) return true;
+  if (__DEV__) return DEV_ANALYTICS_ENABLED;
+  return true;
+};
+
+const shouldSendToServer = () => {
+  if (__DEV__) return DEV_SEND_TO_SERVER;
   return true;
 };
 
@@ -55,7 +63,7 @@ export const initAnalytics = async () => {
 
   try {
     await initPromise;
-    if (setLogging) {
+    if (SET_LOGGING) {
       instance.setLoggingEnabled(true);
     }
   } catch (error) {
@@ -73,6 +81,10 @@ export const initAnalyticsUser = async () => {
 
 export const trackEvent = (name: string, data?: TUnknownObject) => {
   if (!isAnalyticsEnabled()) return;
+  if (!shouldSendToServer()) {
+    console.log("[analytics]", name, data);
+    return;
+  }
   initAnalytics().then(() => {
     getMixpanel()?.track(name, data);
   });
@@ -82,11 +94,14 @@ export const trackUserProfile = async (data: {
   locale: string;
   subscriptionActive: boolean;
   theme: "light" | "dark" | "system";
-  cbtView: "list" | "calendar";
   notificationsEnabled: boolean;
   appVersion: string | undefined;
 }) => {
   if (!isAnalyticsEnabled()) return;
+  if (!shouldSendToServer()) {
+    console.log("[analytics:profile]", data);
+    return;
+  }
   await initAnalytics();
   getMixpanel()?.getPeople().set(data);
 };

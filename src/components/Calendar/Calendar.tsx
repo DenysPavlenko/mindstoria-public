@@ -35,15 +35,18 @@ export const Calendar = ({ selectedDate, ...restProps }: CalendarProps) => {
   const calendarTheme = useMemo(() => getCalendarTheme(theme), [theme]);
 
   return (
-    <Card style={restProps.style} noHorizontalPadding>
+    <Card
+      style={[restProps.style, { paddingTop: theme.layout.spacing.sm }]}
+      noHorizontalPadding
+    >
       <RNCalendar
-        {...restProps}
         hideExtraDays
         theme={{ ...calendarTheme, ...restProps.theme }}
         current={selectedDate}
         maxDate={today}
         firstDay={1}
         disableAllTouchEventsForDisabledDays
+        {...restProps}
       />
     </Card>
   );

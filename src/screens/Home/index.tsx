@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Essentials } from "./components/Essentials";
 import { LogsList } from "./components/LogsList";
+import { MoodCalendar } from "./components/MoodCalendar";
 
 export const Home = () => {
   const { theme } = useTheme();
@@ -113,6 +114,15 @@ export const Home = () => {
           onDateChange={setSelectedDate}
           style={styles.weekCalendar}
           getDotsCount={getDotsCount}
+          renderCalendar={({ date, onDateChange, onClose }) => {
+            return (
+              <MoodCalendar
+                selectedDate={date}
+                onDateChange={onDateChange}
+                onClose={onClose}
+              />
+            );
+          }}
         />
         <Essentials date={selectedDate} />
         <LogsList
