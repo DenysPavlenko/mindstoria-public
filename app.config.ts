@@ -4,6 +4,8 @@ const APP_VARIANT = process.env.APP_VARIANT;
 const IS_DEV = APP_VARIANT === "development";
 const IS_PREVIEW = APP_VARIANT === "preview";
 
+const PROD_APP_ID = "com.mindstoria.app";
+
 const getUniqueIdentifier = () => {
   if (IS_DEV) {
     return "com.mindstoria.app.dev";
@@ -11,7 +13,7 @@ const getUniqueIdentifier = () => {
   if (IS_PREVIEW) {
     return "com.mindstoria.app.preview";
   }
-  return "com.mindstoria.app";
+  return PROD_APP_ID;
 };
 
 const getAppName = () => {
@@ -29,7 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: getAppName(),
     slug: "mindstoria",
-    version: "1.0.10",
+    version: "1.0.11",
     orientation: "portrait",
     icon: "./src/assets/images/icon.png",
     scheme: "mindstoria",
@@ -52,6 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       config: {
         usesNonExemptEncryption: false,
       },
+      appStoreUrl: "https://apps.apple.com/app/id6756604660",
     },
     android: {
       adaptiveIcon: {
@@ -63,6 +66,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       predictiveBackGestureEnabled: false,
       package: getUniqueIdentifier(),
       blockedPermissions: ["android.permission.READ_PHONE_STATE"],
+      playStoreUrl: `https://play.google.com/store/apps/details?id=${PROD_APP_ID}`,
     },
     plugins: [
       "expo-router",
@@ -106,6 +110,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ["expo-secure-store", { configureAndroidBackup: true }],
       "expo-localization",
       "expo-web-browser",
+      ["expo-dev-client", { launchMode: "most-recent" }],
     ],
     experiments: {
       typedRoutes: true,
@@ -116,14 +121,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       APP_VARIANT: APP_VARIANT,
       mixpanelToken: process.env.EXPO_PUBLIC_MIXPANEL_PROJECT_TOKEN,
       eas: {
-        projectId: "7c6015c0-d5e3-46b8-85ac-b567bd299cfd",
+        projectId: "1234",
       },
     },
     runtimeVersion: {
       policy: "appVersion",
     },
     updates: {
-      url: "https://u.expo.dev/7c6015c0-d5e3-46b8-85ac-b567bd299cfd",
+      url: "https://u.expo.dev/1234",
     },
   };
 };

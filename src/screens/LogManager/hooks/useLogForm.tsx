@@ -2,9 +2,12 @@ import { ANALYTICS_EVENTS } from "@/analytics-constants";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   addLogThunk,
+  requestRatingPrompt,
   resetDraftLog,
+  selectIsRatingEligible,
   selectLogItems,
   selectLogMetrics,
+  selectLogsList,
   setDraftField,
   setDraftLog,
   updateLogThunk,
@@ -17,7 +20,12 @@ import {
   TLogValues,
   TSentimentLog,
 } from "@/types";
-import { generateUniqueId, isStringEmpty, trackEvent } from "@/utils";
+import {
+  generateUniqueId,
+  isStringEmpty,
+  shouldTriggerRatingFromMoodLog,
+  trackEvent,
+} from "@/utils";
 import dayjs from "dayjs";
 import { useCallback, useMemo } from "react";
 
@@ -31,10 +39,15 @@ export type TLogFormValues = {
 export const useLogForm = (logId?: string) => {
   const dispatch = useAppDispatch();
   const fields = useAppSelector((state) => state.draftLog);
-  const logs = useAppSelector(selectLogItems);
+  const logItems = useAppSelector(selectLogItems);
+  const logsList = useAppSelector(selectLogsList);
   const metrics = useAppSelector(selectLogMetrics);
+  const isRatingEligible = useAppSelector(selectIsRatingEligible);
 
-  const currentLog = useMemo(() => logs[logId || ""] || null, [logs, logId]);
+  const currentLog = useMemo(
+    () => logItems[logId || ""] || null,
+    [logItems, logId],
+  );
   const isEditing = Boolean(logId);
 
   const isValid = useMemo(() => {
@@ -69,15 +82,16 @@ export const useLogForm = (logId?: string) => {
     };
     const id = currentLog?.id || generateUniqueId();
     if (currentLog) {
-      dispatch(
-        updateLogThunk({
-          ...currentLog,
-          values: logValues,
-          timestamp,
-        }),
-      );
+      dispatch(updateLogThunk({ ...currentLog, values: logValues, timestamp }));
     } else {
       dispatch(addLogThunk({ id, values: logValues, timestamp }));
+      const logCount = logsList.length + 1;
+      if (
+        isRatingEligible &&
+        shouldTriggerRatingFromMoodLog({ wellbeing, logCount })
+      ) {
+        dispatch(requestRatingPrompt());
+      }
     }
 
     trackEvent(ANALYTICS_EVENTS.MOOD_LOG_COMPLETED, {
@@ -89,7 +103,15 @@ export const useLogForm = (logId?: string) => {
     });
 
     return id;
-  }, [isValid, fields, currentLog, isEditing, dispatch]);
+  }, [
+    isValid,
+    fields,
+    currentLog,
+    isEditing,
+    dispatch,
+    isRatingEligible,
+    logsList,
+  ]);
 
   const formattedTime = useMemo(
     () => dayjs(fields.timestamp).format("HH:mm"),

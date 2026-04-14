@@ -1,5 +1,5 @@
 import { MIXPANEL_SERVER_URL } from "@/appConstants";
-import { TUnknownObject } from "@/types";
+import { TCBTScreenView, TUnknownObject } from "@/types";
 import Constants from "expo-constants";
 import { Mixpanel } from "mixpanel-react-native";
 import { Platform } from "react-native";
@@ -96,6 +96,7 @@ export const trackUserProfile = async (data: {
   theme: "light" | "dark" | "system";
   notificationsEnabled: boolean;
   appVersion: string | undefined;
+  cbtView: TCBTScreenView;
 }) => {
   if (!isAnalyticsEnabled()) return;
   if (!shouldSendToServer()) {

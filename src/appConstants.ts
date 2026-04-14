@@ -54,3 +54,8 @@ export const RATING_VALUES = Object.values(RatingLevel).filter(
 export const DEFAULT_SENTIMENT_CATEGORY_ID = "other";
 
 export const MIXPANEL_SERVER_URL = "https://api-eu.mixpanel.com";
+
+const APPLE_APP_ID = "6756604660";
+
+export const APP_STORE_REVIEW_LINK = `https://apps.apple.com/app/id${APPLE_APP_ID}?action=write-review`;
+export const PLAY_STORE_REVIEW_LINK = `https://play.google.com/store/apps/details?id=${APP_IDENTIFIER}&showAllReviews=true`;

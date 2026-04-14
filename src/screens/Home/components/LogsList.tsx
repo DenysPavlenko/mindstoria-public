@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import {
   removeLogThunk,
   selectCBTConnectionsMap,
-  selectLogs,
+  selectLogsList,
 } from "@/store/slices";
 import { TTheme } from "@/theme";
 import { TLog } from "@/types";
@@ -31,15 +31,15 @@ export const LogsList = ({ date, isLoading, onCardPress }: LogsListProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
-  const logs = useAppSelector(selectLogs);
+  const logsList = useAppSelector(selectLogsList);
   const cbtConnections = useAppSelector(selectCBTConnectionsMap);
   const [logToDelete, setLogToDelete] = useState<TLog | null>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const todayLogs = useMemo(() => {
-    return logs.filter((log) => dayjs(log.timestamp).isSame(date, "day"));
-  }, [logs, date]);
+    return logsList.filter((log) => dayjs(log.timestamp).isSame(date, "day"));
+  }, [logsList, date]);
 
   const sortedLogs = useMemo(() => {
     return todayLogs.slice().sort((a, b) => {

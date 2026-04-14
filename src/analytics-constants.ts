@@ -85,4 +85,10 @@ export const ANALYTICS_EVENTS = {
   // Feedback & rating
   FEEDBACK_LINK_CLICKED: "feedback_link_clicked",
   RATE_APP_LINK_CLICKED: "rate_app_link_clicked",
+
+  // Rating modal
+  RATE_MODAL_SHOWN: "rate_modal_showm",
+  RATE_MODAL_RATE_CLICKED: "rate_modal_rate_clicked",
+  RATE_MODAL_REVIEW_REQUESTED: "rate_modal_review_requested",
+  RATE_MODAL_LINK_OPENED: "rate_modal_link_opened",
 };

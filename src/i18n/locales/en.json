@@ -413,5 +413,11 @@
     "edit_connection": "Edit Connection",
     "edit_connection_description": "This log is already connected to a thought journal entry. You can edit the existing entry or keep it as is",
     "edit_thought_journal": "Edit Thought Journal"
+  },
+  "app_rating": {
+    "title": "Do you like Mindstoria?",
+    "subtitle": "Takes 10 seconds and means a lot to us",
+    "rate_now": "Rate it ⭐",
+    "remind_me_later": "Remind me later"
   }
 }

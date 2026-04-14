@@ -1,4 +1,5 @@
 export * from "./analytics";
+export * from "./rating";
 export * from "./backdoor";
 export * from "./cbt";
 export * from "./cbtExport";

@@ -1,4 +1,5 @@
 export * from "./AddMedicationsModal/AddMedicationsModal";
+export * from "./AppRatingDialog/AppRatingDialog";
 export * from "./Badge/Badge";
 export * from "./Button/Button";
 export * from "./Calendar/Calendar";

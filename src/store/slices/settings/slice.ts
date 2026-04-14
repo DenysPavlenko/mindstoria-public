@@ -1,6 +1,9 @@
 import { NOTIFICATION_SETTINGS } from "@/appConstants";
 import { TCBTScreenView, TNotificationSettings } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import dayjs from "dayjs";
+
+type TRatingStatus = "pending" | "rated" | "postponed";
 
 interface TSettingsState {
   showMedications: boolean;
@@ -9,7 +12,13 @@ interface TSettingsState {
   isNotificationsSetupShown: boolean;
   notifications: TNotificationSettings;
   haptics: boolean;
+  ratingStatus: TRatingStatus;
+  ratingPostponedUntil: string | null;
+  ratingPromptCount: number;
+  showRatingPrompt: boolean;
 }
+
+const POSTPONE_DAYS = 30;
 
 const initialState: TSettingsState = {
   showMedications: true,
@@ -18,6 +27,10 @@ const initialState: TSettingsState = {
   isNotificationsSetupShown: false,
   cbtScreenView: "calendar",
   notifications: { ...NOTIFICATION_SETTINGS },
+  ratingStatus: "pending",
+  ratingPostponedUntil: null,
+  ratingPromptCount: 0,
+  showRatingPrompt: false,
 };
 
 export const settingsSlice = createSlice({
@@ -72,6 +85,22 @@ export const settingsSlice = createSlice({
         (t) => t !== time,
       );
     },
+    requestRatingPrompt: (state) => {
+      state.showRatingPrompt = true;
+      state.ratingPromptCount += 1;
+    },
+    clearRatingPrompt: (state) => {
+      state.showRatingPrompt = false;
+    },
+    markAppRated: (state) => {
+      state.ratingStatus = "rated";
+    },
+    postponeAppRating: (state) => {
+      state.ratingStatus = "postponed";
+      state.ratingPostponedUntil = dayjs()
+        .add(POSTPONE_DAYS, "day")
+        .toISOString();
+    },
   },
 });
 
@@ -87,6 +116,10 @@ export const {
   toggleNotificationDay,
   addNotificationTime,
   removeNotificationTime,
+  requestRatingPrompt,
+  clearRatingPrompt,
+  markAppRated,
+  postponeAppRating,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

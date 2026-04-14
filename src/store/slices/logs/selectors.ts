@@ -7,20 +7,26 @@ import dayjs from "dayjs";
 // Helper selectors
 export const selectLogItems = (state: RootState) => state.logs.items;
 
-export const selectLogs = createSelector([selectLogItems], (logs): TLog[] => {
-  return Object.values(logs);
-});
+export const selectLogsList = createSelector(
+  [selectLogItems],
+  (logs): TLog[] => {
+    return Object.values(logs);
+  },
+);
 
-export const selectLogDateAvailability = createSelector(selectLogs, (logs) => {
-  const map: Record<string, boolean> = {};
-  logs.forEach((log) => {
-    const date = dayjs(log.timestamp).format(CALENDAR_DATE_FORMAT);
-    map[date] = true;
-  });
-  return map;
-});
+export const selectLogDateAvailability = createSelector(
+  selectLogsList,
+  (logs) => {
+    const map: Record<string, boolean> = {};
+    logs.forEach((log) => {
+      const date = dayjs(log.timestamp).format(CALENDAR_DATE_FORMAT);
+      map[date] = true;
+    });
+    return map;
+  },
+);
 
-export const selectLogsAvarageMap = createSelector(selectLogs, (logs) => {
+export const selectLogsAvarageMap = createSelector(selectLogsList, (logs) => {
   const map = new Map<string, { sum: number; cnt: number }>();
   logs.forEach((log) => {
     const day = dayjs(log.timestamp).format(CALENDAR_DATE_FORMAT);

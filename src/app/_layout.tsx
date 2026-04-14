@@ -1,4 +1,4 @@
-import { PaywallModal, Typography } from "@/components";
+import { AppRatingDialog, PaywallModal, Typography } from "@/components";
 import { db, expoDb } from "@/db";
 import migrations from "@/drizzle/migrations";
 import { initI18n } from "@/i18n";
@@ -186,6 +186,7 @@ const AppContent = () => {
               </Stack.Protected>
             </Stack>
             <PaywallModal />
+            <AppRatingDialog />
           </NavigationThemeProvider>
         </MenuProvider>
       </I18nextProvider>
